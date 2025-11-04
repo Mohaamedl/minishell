@@ -1,0 +1,148 @@
+# Object files
+*.o
+*.a
+
+# Executables
+minishell
+minishell_bonus
+
+# Debug files
+*.dSYM/
+*.gch
+*.pch
+
+# Dependency files
+*.d
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux specific
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Editor specific
+# VSCode
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+*.swp
+*.swo
+*~
+
+# Emacs
+\#*\#
+.\#*
+*.elc
+auto-save-list
+tramp
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Valgrind
+*.log
+vgcore.*
+valgrind-out.txt
+
+# Test outputs
+test_output/
+*.test
+test_results.txt
+
+# Build directory (if using)
+build/
+obj/
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Core dumps
+core
+core.*
+
+# Compilation database
+compile_commands.json
+
+# Tags
+tags
+TAGS
+
+# Library files (if not using)
+libft/*.o
+libft/libft.a
+
+# Documentation build artifacts
+docs/_build/
+docs/.doctrees/
+
+# Python (if using any Python scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv
+
+# Shell history
+.bash_history
+.zsh_history
+
+# Personal notes (optional)
+NOTES.md
+TODO_PERSONAL.md
+scratch/
+
+# CI/CD
+.gitlab-ci.yml.bak
+.github/workflows/*.bak
