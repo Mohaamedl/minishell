@@ -19,12 +19,13 @@ LIBFT       = $(LIBFT_DIR)/libft.a
 SRCS =  main.c \
 		tokenizer/tokenizer.c \
 		tokenizer/tokenizer_helpers.c \
-		tokenizer/memory.c \
+		tokenizer/token_memory.c \
 		tokenizer/type_handlers.c \
 		cmd_and_ops_list/build_list.c \
 		cmd_and_ops_list/create_cmd_node.c \
 		cmd_and_ops_list/create_cmd_node_helpers.c \
 		cmd_and_ops_list/create_op_node.c \
+		cmd_and_ops_list/node_memory.c \
 		debuggers/print_tokens.c \
 		debuggers/print_nodes.c \
 

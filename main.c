@@ -1,10 +1,5 @@
 #include "minishell.h"
 
-
-#include <stdio.h>
-
-
-
 int	main(void)
 {
 
@@ -27,6 +22,7 @@ int	main(void)
 		print_tokens(head);
 		first_node = build_cmds_and_ops_list(head);
 		print_nodes(first_node);
+		free_node_list(first_node);
 		free_tokens(head);
 		free(line);
 	}

@@ -76,5 +76,12 @@ void	create_op_node(t_token **tmp_token, t_ast **last_node);
 void	print_nodes(t_ast *node);
 void	print_cmd(t_cmd *cmd);
 void	print_redirs(t_redir *redir);
+//FUNCOES DE MEMORIA
+void	free_redirects_list(t_redir *head);
+void	free_args_array(char **args);
+void	free_cmd(t_cmd *cmd);
+void	free_node(t_ast *node);
+void	free_node_list(t_ast *head); //esta funcao serve apenas para dar free a uma lista de comandos e operadores,
+									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore
 
 #endif
