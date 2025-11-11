@@ -37,7 +37,17 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		}
 		if (*line)
+		{
+			char **args;
+			
 			add_history(line);
+			args = simple_parse(line);
+			if (args)
+			{
+				execute_command(args, shell);
+				free_array(args);
+			}
+		}
 		free(line);
 	}
 	cleanup_shell(shell);
