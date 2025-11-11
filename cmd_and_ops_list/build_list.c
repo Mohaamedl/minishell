@@ -46,7 +46,7 @@ t_ast	*build_cmds_and_ops_list(t_token *head)
 		}
 		else //o token e um operador
 		{
-			create_op_node(&tmp_token, &last_node);
+			create_op_node(&tmp_token, head, &first_node, &last_node);
 			in_operator = 1;
 		}
 	}

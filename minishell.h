@@ -56,7 +56,6 @@ const char *token_type_to_str(t_token_type type);
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS
 t_ast	*build_cmds_and_ops_list(t_token *head);
-void	create_op_node(t_token **tmp_token, t_ast **last_node);
 t_ast	*create_node(t_token *token, t_cmd* cmd);
 void	append_node(t_ast *new_node,t_ast *last_node);
 
@@ -70,7 +69,7 @@ int		calculate_numb_of_args(t_token *tmp_token);
 int		is_redirect_token(t_token *tmp_token);
 
 //ESPECIFICAS NODE OPERADOR
-void	create_op_node(t_token **tmp_token, t_ast **last_node);
+void	create_op_node(t_token **tmp_token, t_token *head, t_ast **first_node, t_ast **last_node);
 
 //DEBUG
 void	print_nodes(t_ast *node);
