@@ -28,6 +28,7 @@ SRCS =  main.c \
 		cmd_and_ops_list/node_memory.c \
 		debuggers/print_tokens.c \
 		debuggers/print_nodes.c \
+		ast/build_tree.c \
 
 OBJS = $(SRCS:.c=.o)
 

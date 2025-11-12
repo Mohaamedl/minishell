@@ -14,7 +14,8 @@ typedef enum e_token_type
 	AND,
 	LPAREN,      // (
 	RPAREN,      // )
-	CMD //este token_type e apenas utilizado em nodes, ate la todos os tokens que nao sao operadores nem redirecionamentos sao WORD
+	CMD, //este token_type e apenas utilizado em nodes, ate la todos os tokens que nao sao operadores nem redirecionamentos sao WORD
+	SUBTREE, //()
 }	t_token_type;
 
 typedef struct s_token

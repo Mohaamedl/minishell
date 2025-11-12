@@ -1,11 +1,27 @@
 #include "minishell.h"
 
+
+t_ast *	get_last_node(t_ast *head)
+{
+	t_ast *tmp;
+	tmp = head;
+	while(tmp)
+	{
+		if(tmp ->right == NULL) //cheguei ao fim da lista
+			return tmp;
+		tmp = tmp ->right;
+	}
+	return tmp;
+}
+
 int	main(void)
 {
 
 	char *line;
 	t_token *head;
 	t_ast *first_node;
+	t_ast *end_node; //podera nao ser preciso se eu ao cortar em dois num pipe por exemplo definir right do que node a esquerda do pipe como null
+	t_ast *root_node;
 
 	int exit_status = 0;
 	while (1)
@@ -22,6 +38,9 @@ int	main(void)
 		print_tokens(head);
 		first_node = build_cmds_and_ops_list(head);
 		print_nodes(first_node);
+		end_node = get_last_node(first_node);
+		root_node = build_tree(first_node, end_node); //esta funcao cria a tree mas nao lida com as subtrees
+		build_sub_trees(&root_node);
 		free_node_list(first_node);
 		free_tokens(head);
 		free(line);

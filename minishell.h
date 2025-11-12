@@ -83,4 +83,12 @@ void	free_node(t_ast *node);
 void	free_node_list(t_ast *head); //esta funcao serve apenas para dar free a uma lista de comandos e operadores,
 									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore
 
+//----------------------------------------CRIACAO DA ARVORE BINARIA---------------------------------------------------
+
+t_ast	*build_tree(t_ast *start_node, t_ast *end_node);
+t_ast	*get_split_op_node(t_ast *start_node, t_ast *end_node);
+t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
+t_ast	*skip_subtree_nodes(t_ast *tmp_node);
+void	build_sub_trees (t_ast **root_node);
+
 #endif
