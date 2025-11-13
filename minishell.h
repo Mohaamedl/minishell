@@ -94,5 +94,8 @@ t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_typ
 t_ast	*skip_subtree_nodes(t_ast *tmp_node);
 void	build_sub_trees (t_ast **root_node);
 void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
+//DEBUGGERS
+void	print_tree_node(t_ast *node);
+void	print_tree(t_ast *root);
 
 #endif

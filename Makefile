@@ -32,6 +32,7 @@ SRCS =  main.c \
 		ast/build_tree.c \
 		ast/build_tree_helpers.c \
 		ast/ast_memory.c \
+		ast/ast_debuggers.c \
 
 OBJS = $(SRCS:.c=.o)
 
