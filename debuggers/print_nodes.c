@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 16:00:17 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/10 16:01:25 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/13 14:21:00 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	print_cmd(t_cmd *cmd)
 		return;
 	}
 	printf("  [CMD] %s\n", cmd->cmd_name ? cmd->cmd_name : "(null)");
-
 	if (cmd->args)
 	{
 		printf("    Args:");

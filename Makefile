@@ -17,6 +17,7 @@ LIBFT       = $(LIBFT_DIR)/libft.a
 # Ficheiros fonte e objetos
 
 SRCS =  main.c \
+		main_helpers.c \
 		tokenizer/tokenizer.c \
 		tokenizer/tokenizer_helpers.c \
 		tokenizer/token_memory.c \
@@ -29,6 +30,8 @@ SRCS =  main.c \
 		debuggers/print_tokens.c \
 		debuggers/print_nodes.c \
 		ast/build_tree.c \
+		ast/build_tree_helpers.c \
+		ast/ast_memory.c \
 
 OBJS = $(SRCS:.c=.o)
 

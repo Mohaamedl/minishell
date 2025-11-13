@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 10:16:51 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/11 10:16:52 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/13 11:13:37 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ void	free_node(t_ast *node)
 	if(node -> cmd != NULL)
 		free_cmd(node -> cmd);
 	free(node);
-
 }
 void	free_node_list(t_ast *head) //esta funcao serve apenas para dar free a uma lista de comandos e operadores,
 {									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore

@@ -29,26 +29,18 @@ t_ast	*create_node(t_token *token, t_cmd* cmd)
 
 t_ast	*build_cmds_and_ops_list(t_token *head)
 {
-	int		in_operator;
 	t_token	*tmp_token = head;
 	t_ast	*first_node;
 	t_ast	*last_node;
 
-	in_operator = 0;
 	first_node = NULL;
 	last_node = NULL;
 	while(tmp_token)
 	{
 		if(tmp_token -> is_operator == 0) //o token nao e um operador
-		{
 			create_cmd_node(&tmp_token, head, &first_node, &last_node);//nestas funcoes atualizo o token que vou analizar a seguir (no caso de um comando passo a frente os tokens de args e redirects)
-			in_operator = 0;
-		}
 		else //o token e um operador
-		{
 			create_op_node(&tmp_token, head, &first_node, &last_node);
-			in_operator = 1;
-		}
 	}
 	return first_node;
 }
