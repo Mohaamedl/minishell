@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "minishell.h"
 
 volatile sig_atomic_t	g_signal_received = 0;
@@ -19,6 +18,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_shell	*shell;
 	char	*line;
+	char	**args;
 
 	(void)argc;
 	(void)argv;
@@ -38,8 +38,6 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (*line)
 		{
-			char **args;
-			
 			add_history(line);
 			args = simple_parse(line);
 			if (args)

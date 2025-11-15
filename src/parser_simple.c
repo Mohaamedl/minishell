@@ -60,6 +60,7 @@ int	execute_command(char **args, t_shell *shell)
 		status = execute_builtin(args, shell);
 		return (status);
 	}
-	print_error(args[0], NULL, "command not found (external commands not yet implemented)");
+	print_error(args[0], NULL,
+		"command not found (external commands not yet implemented)");
 	return (CMD_NOT_FOUND);
 }

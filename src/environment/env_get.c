@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
-
 #include "minishell.h"
 
 t_env	*find_env_node(t_env *env, const char *key)

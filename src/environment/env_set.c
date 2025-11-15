@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
-
 #include "minishell.h"
 
 static t_env	*create_env_node(const char *key, const char *value)

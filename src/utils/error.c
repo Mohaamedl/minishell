@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
-
 #include "minishell.h"
 
 void	print_error_prefix(const char *cmd)
