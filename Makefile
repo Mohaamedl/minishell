@@ -26,6 +26,7 @@ INC_DIR		= include
 SRCS		= $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/init.c \
 			  $(SRC_DIR)/cleanup.c \
+			  $(SRC_DIR)/parser_simple.c \
 			  $(SRC_DIR)/environment/env_init.c \
 			  $(SRC_DIR)/environment/env_get.c \
 			  $(SRC_DIR)/environment/env_set.c \
@@ -33,11 +34,18 @@ SRCS		= $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/signals/signals.c \
 			  $(SRC_DIR)/utils/string_utils.c \
 			  $(SRC_DIR)/utils/string_utils2.c \
-			  $(SRC_DIR)/utils/char_utils.c \
 			  $(SRC_DIR)/utils/ft_split.c \
 			  $(SRC_DIR)/utils/memory_utils.c \
 			  $(SRC_DIR)/utils/number_utils.c \
-			  $(SRC_DIR)/utils/error.c
+			  $(SRC_DIR)/utils/error.c \
+			  $(SRC_DIR)/builtins/builtin_utils.c \
+			  $(SRC_DIR)/builtins/echo.c \
+			  $(SRC_DIR)/builtins/cd.c \
+			  $(SRC_DIR)/builtins/pwd.c \
+			  $(SRC_DIR)/builtins/export.c \
+			  $(SRC_DIR)/builtins/unset.c \
+			  $(SRC_DIR)/builtins/env.c \
+			  $(SRC_DIR)/builtins/exit.c
 
 # Object files
 OBJS		= $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
