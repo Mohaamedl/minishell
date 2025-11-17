@@ -27,3 +27,65 @@ void	print_tree(t_ast *root)
 	print_tree(root->left);
 	print_tree(root->right);
 }
+
+static void	print_tree_visual_helper(t_ast *root, char *prefix, int is_left)
+{
+	char *node_str;
+	char *new_prefix;
+	
+	if (root == NULL)
+		return;
+	
+	// Print current node
+	printf("%s", prefix);
+	printf("%s", is_left ? "├── " : "└── ");
+	
+	if (root->type == CMD)
+		node_str = root->cmd->cmd_name;
+	else
+		node_str = (char *)token_type_to_str(root->type);
+	printf("%s\n", node_str);
+	
+	// Prepare prefix for children
+	new_prefix = malloc(strlen(prefix) + 5);
+	strcpy(new_prefix, prefix);
+	strcat(new_prefix, is_left ? "│   " : "    ");
+	
+	// Print children (right first, then left for visual clarity)
+	if (root->left != NULL || root->right != NULL)
+	{
+		if (root->right != NULL)
+			print_tree_visual_helper(root->right, new_prefix, root->left != NULL);
+		if (root->left != NULL)
+			print_tree_visual_helper(root->left, new_prefix, 0);
+	}
+	
+	free(new_prefix);
+}
+
+void	print_tree_visual(t_ast *root)
+{
+	char *node_str;
+	
+	if (root == NULL)
+	{
+		printf("(empty tree)\n");
+		return;
+	}
+	
+	// Print root
+	if (root->type == CMD)
+		node_str = root->cmd->cmd_name;
+	else
+		node_str = (char *)token_type_to_str(root->type);
+	printf("%s\n", node_str);
+	
+	// Print children
+	if (root->left != NULL || root->right != NULL)
+	{
+		if (root->right != NULL)
+			print_tree_visual_helper(root->right, "", root->left != NULL);
+		if (root->left != NULL)
+			print_tree_visual_helper(root->left, "", 0);
+	}
+}

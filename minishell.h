@@ -52,6 +52,7 @@ void	free_tokens(t_token *head);
 /*------------------Funcoes Debug-------------------*/
 void	print_tokens(t_token *tmp);
 const char *token_type_to_str(t_token_type type);
+void	print_tree_visual(t_ast *root);
 
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS
