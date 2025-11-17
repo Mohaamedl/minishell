@@ -29,6 +29,7 @@ int	main(void)
 		end_node = get_last_node(first_node);//vai buscar o ultimo node da lista, preciso dele na funcao build_tree()
 		root_node = build_tree(first_node, end_node); //esta funcao cria a tree mas nao lida com as subtrees
 		build_sub_trees(&root_node);
+		printf("--------------AST(preorder)-------------\n");
 		print_tree(root_node);
 		free_tree(root_node);
 		free_tokens(head);
