@@ -17,12 +17,16 @@ t_ast	*create_node(t_token *token, t_cmd* cmd)
 	if(cmd == NULL) //neste caso vou criar um node operador
 	{
 		new_node -> cmd = NULL;
-		new_node -> type = token ->type ;
+		new_node -> type = token ->type;
+		new_node -> right = NULL;
+		new_node -> left = NULL;
 	}
 	else //estou num comando
 	{
 		new_node -> cmd = cmd;
 		new_node -> type = CMD;
+		new_node -> right = NULL;
+		new_node -> left = NULL;
 	}
 	return (new_node);
 }

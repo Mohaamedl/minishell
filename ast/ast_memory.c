@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 14:19:10 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/13 14:22:03 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/17 14:25:08 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,4 +19,17 @@ void	free_parentesis_nodes(t_ast *start_node,t_ast *end_node)
 	free_node(end_node -> right);
 	start_node -> left = NULL;
 	end_node -> right = NULL;
+}
+
+void free_tree(t_ast *root)
+{
+	t_ast *tmp_left;
+	t_ast *tmp_right;
+	if(root == NULL)
+		return;
+	tmp_left = root -> left;
+	tmp_right = root ->right;
+	free_node(root);
+	free_tree(tmp_left);
+	free_tree(tmp_right);
 }

@@ -2,7 +2,7 @@
 
 void	handle_quote(char *line, int *i,t_token **last_node, t_token **head)
 {
-	create_quoted_node(last_node,head,line,*line);
+	create_quoted_token(last_node,head,line,*line);
 	*i = *i + get_quoted_size(line,*line) + 2; //passar a frente o tento dentro das quotes e das prprias quotes
 }
 void	handle_word(char *line, int *i,t_token **last_token, t_token **head)

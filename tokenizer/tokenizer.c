@@ -53,7 +53,7 @@ void	append_token(t_token **head, t_token **last_token, t_token *new_token)
 }
 //Aspas simples '...' e duplas "..." formam um único token mesmo com espaços ou operadores,
 //mas enquanto "..." permite expansão de variáveis e escapes, '...' é totalmente literal.
-void	create_quoted_node(t_token **last_token, t_token **head, char *line, char quote)
+void	create_quoted_token(t_token **last_token, t_token **head, char *line, char quote)
 {
 	char	*str;
 	t_token	*token;
@@ -65,7 +65,11 @@ void	create_quoted_node(t_token **last_token, t_token **head, char *line, char q
 	is_expandable = 1;
 	if(is_single_quote(*line))
 		is_expandable = 0;
-
+	if (last_token) //Caso especifico do HEREDOC, se o end of file estiver em aspas (single or double quote) o conteudo nao espande
+	{
+		if ((*last_token) -> type == HEREDOC)
+			is_expandable = 0;
+	}
 	str = get_quoted_text(line,quote);
 	if(ft_strlen(str) < 1) //neste caso nao crio token,
 		return;
