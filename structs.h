@@ -45,9 +45,9 @@ typedef struct s_redir
 
 typedef struct s_arg
 {
-	char			*value;   // Nome do arquivo ou delimitador \(no caso de heredoc)
+	char			*value;
 	int				is_expandable;
-	struct s_arg	*next; // Próxima redireção
+	struct s_arg	*next; // Próximo argumento
 }	t_arg;
 
 //-------------------ESTRUTURA DO COMANDO----------------------------------------

@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 13:44:03 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/17 14:19:16 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/18 13:16:05 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,3 @@ void	build_sub_trees(t_ast **root_node)
 		build_sub_trees(&((*root_node)->right));
 	}
 }
-
-
-

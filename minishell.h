@@ -85,7 +85,7 @@ void	free_node(t_ast *node);
 void	free_node_list(t_ast *head); //esta funcao serve apenas para dar free a uma lista de comandos e operadores,
 									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore
 
-t_ast *	get_last_node(t_ast *head); //vai buscar o ultimo node da lista, preciso dele na funcao build_tree()
+t_ast *get_last_node(t_ast *head); //vai buscar o ultimo node da lista, preciso dele na funcao build_tree()
 
 
 //----------------------------------------CRIACAO DA ARVORE BINARIA---------------------------------------------------

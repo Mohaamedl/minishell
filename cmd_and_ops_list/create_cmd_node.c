@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 16:07:32 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/17 14:48:14 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/18 13:31:44 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@ void	handle_redirect_token(t_cmd *cmd,t_token **tmp_token, t_redir **redir_list_
 	t_redir	*new_redir_node;
 
 	new_redir_node = malloc(sizeof(t_redir));
+
+	new_redir_node = malloc(sizeof(t_redir));
+	if (!new_redir_node)
+		return;
 	new_redir_node -> type = (*tmp_token) -> type;
 	new_redir_node -> file = (*tmp_token) -> next -> value; // o file name e o token a seguir ao token de redirect
 	new_redir_node -> file_name_is_expandable = (*tmp_token) -> next -> expandable;
@@ -44,6 +48,8 @@ void	handle_arg_token(t_cmd *cmd, t_token **tmp_token, t_arg **arg_list_head, t_
 	t_arg	*new_arg_node;
 
 	new_arg_node = malloc(sizeof(t_arg));
+	if (!new_arg_node)
+		return;
 	new_arg_node -> value = (*tmp_token) ->value;
 	new_arg_node -> is_expandable = (*tmp_token) -> expandable;
 

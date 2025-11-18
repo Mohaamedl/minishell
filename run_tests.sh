@@ -20,10 +20,6 @@ for infile in "$TEST_DIR"/*.in; do
     # Executa o parser lendo da stdin
     output=$("$EXEC" <<< "$expr")
 
-    # Remove trailing spaces
-	# Executa o parser
-	output=$("$EXEC" <<< "$expr")
-
 	# Remove linhas que começam com "minishell$>"
     output_clean=$(echo "$output" | grep -v '^minishell\$>')
     expected_clean=$(sed 's/[ \t]*$//' "$outfile")
