@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/11 10:16:51 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/11 10:16:52 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/17 14:53:31 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,24 @@ void	free_redirects_list(t_redir *head)
 		tmp = next_redir;
 	}
 }
-//nao existe memoria dinamocamente alocada neste array a nao ser o proprio array, cara argumento 'e um pointer para value de um determinado token
-void	free_args_array(char **args)
+//nao existe memoria dinamocamente alocada nesta lista a nao ser o propria lista, cada argumento value e' um pointer para value de um determinado token
+void	free_args_list(t_arg *head)
 {
-	free(args);
+	t_arg *tmp;
+	t_arg *next_arg;
+	tmp = head;
+	while(tmp)
+	{
+		next_arg = tmp -> next;
+		free(tmp);
+		tmp = next_arg;
+	}
 }
 
 void	free_cmd(t_cmd *cmd)
 {
 	free_redirects_list(cmd -> redirs);
-	free_args_array(cmd -> args);
+	free_args_list(cmd -> args);
 	//nao dou free ao cmd_name porque 'e um ponteiro para o value do token e ja dou free a essa memoria alocada em free_token()
 	free(cmd);
 }
@@ -45,7 +53,6 @@ void	free_node(t_ast *node)
 	if(node -> cmd != NULL)
 		free_cmd(node -> cmd);
 	free(node);
-
 }
 void	free_node_list(t_ast *head) //esta funcao serve apenas para dar free a uma lista de comandos e operadores,
 {									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore

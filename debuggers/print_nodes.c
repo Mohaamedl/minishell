@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 16:00:17 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/10 16:01:25 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/17 14:15:00 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,19 @@ void	print_redirs(t_redir *redir)
 	while (redir)
 	{
 		printf("    [REDIR] ");
-		printf("%s ",token_type_to_str(redir->type));
-		printf(" %s\n", redir->file ? redir->file : "(null)");
+		printf("type: %s |",token_type_to_str(redir->type));
+		printf("file name: %s | Expandable file name: %i\n", redir->file ? redir->file : "(null)", redir->file_name_is_expandable);
 		redir = redir->next;
+	}
+}
+
+void	print_args(t_arg *arg)
+{
+	while (arg)
+	{
+		printf("    [ARG] ");
+		printf("value: %s | Expandable: %i\n", arg->value ? arg->value : "(null)", arg->is_expandable);
+		arg = arg->next;
 	}
 }
 
@@ -31,14 +41,7 @@ void	print_cmd(t_cmd *cmd)
 		return;
 	}
 	printf("  [CMD] %s\n", cmd->cmd_name ? cmd->cmd_name : "(null)");
-
-	if (cmd->args)
-	{
-		printf("    Args:");
-		for (int i = 0; cmd->args[i]; i++)
-			printf(" \"%s\"", cmd->args[i]);
-		printf("\n");
-	}
+	print_args(cmd->args);
 	print_redirs(cmd->redirs);
 }
 
