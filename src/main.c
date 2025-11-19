@@ -15,6 +15,11 @@ int	main(void)
 	while (1)
 	{
 		line = readline("minishell$>");
+		if (!line)
+		{
+			break ;
+		}
+		
 		//add_history(line);
 		head = tokenize(line);
 		if (!head)
