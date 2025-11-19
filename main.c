@@ -30,7 +30,8 @@ int	main(void)
 		root_node = build_tree(first_node, end_node); //esta funcao cria a tree mas nao lida com as subtrees
 		build_sub_trees(&root_node);
 		//printf("--------------AST(preorder)-------------\n");
-		print_tree_visual(root_node);
+		print_tree(root_node);
+		//print_tree_visual(root_node);
 		free_tree(root_node);
 		free_tokens(head);
 		free(line);

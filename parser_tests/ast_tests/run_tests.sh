@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-EXEC=./minishell
-TEST_DIR=tests
+EXEC=../../minishell
+TEST_DIR=tests_data
 PASS=0
 FAIL=0
 
