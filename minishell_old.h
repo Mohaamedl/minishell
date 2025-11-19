@@ -2,7 +2,7 @@
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
-#include "../structs.h"
+#include "structs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -18,7 +18,7 @@
 #include <limits.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "../Libft/libft.h"
+#include "Libft/libft.h"
 
 /*
 ** ============================================================================
@@ -54,7 +54,6 @@ typedef struct s_shell
 	t_env	*env_list;
 	int		last_exit_status;
 	int		running;
-	int		is_interactive;
 }	t_shell;
 
 /*
@@ -235,14 +234,4 @@ void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
 
 //-----------------------------------------EXPANSAO DE VARIAVEIS--------------------------------------------------
 //turn_args_list_into_args_array() depois de expandir vou ter que chamar esta funcao para ter o array de args pronto para o execve;
-
-/*
-** ============================================================================
-** AST EXECUTION
-** ============================================================================
-*/
-
-/* execute_ast.c */
-int		execute_ast(t_ast *node, t_shell *shell);
-
 #endif
