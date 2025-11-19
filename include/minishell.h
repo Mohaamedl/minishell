@@ -199,4 +199,14 @@ int		is_numeric_string(const char *str);
 void	print_error(const char *cmd, const char *arg, const char *msg);
 void	print_error_prefix(const char *cmd);
 
+/*
+** ============================================================================
+** SIMPLE PARSER (TEMPORARY FOR PHASE 3 TESTING)
+** ============================================================================
+*/
+
+/* parser_simple.c */
+char	**simple_parse(char *line);
+int		execute_command(char **args, t_shell *shell);
+
 #endif
