@@ -1,9 +1,9 @@
 
 #include "minishell.h"
 
-size_t	get_quoted_size(char *line, char quote)
+int	get_quoted_size(char *line, char quote)
 {
-	size_t size;
+	int size;
 
 	size = 0;
 	line++; //para passar a prmeira aspa a frente (so quero o conteudo)
@@ -12,9 +12,9 @@ size_t	get_quoted_size(char *line, char quote)
 		size++;
 		line++;
 	}
-	if(*line == '\0')
-		return (0);
-	return(size);
+	if(*line == '\0')//chegou ao fim sem fechar
+		return (-1);
+	return(size); //de for uma quote sem nada("") retorna 0 
 }
 t_token *create_token(char* value, t_token_type type, int is_expandable, int is_op) //esta funcao precisa de receber o type do token e atualizar o guardalo.
 {
@@ -34,6 +34,8 @@ char *get_quoted_text(char *line,char quote)
 	size_t size;
 	char *str;
 	size = get_quoted_size(line,quote);//este size e' zero se a quote nao fechar ou se nao tiver nada dentro da quote
+	if (size == -1)//a quote nao fechou
+		return (NULL);
 	str = malloc((size + 1)*sizeof(char));
 	ft_memcpy(str, ++line, size); //ando line um char para a frente para nao copiar a aspa inicial
 	str[size] = '\0';
@@ -71,9 +73,9 @@ void	create_quoted_token(t_token **last_token, t_token **head, char *line, char 
 			is_expandable = 0;
 	}
 	str = get_quoted_text(line,quote);
-	if(ft_strlen(str) < 1) //neste caso nao crio token,
-		return;
-	token = create_token(str, WORD, is_expandable, is_op);
+	if(str == NULL) //a quote nao fechou
+		handle_unclosed_quote(head);//dar frees, encerrar o programa etc
+	token = create_token(str, WORD, is_expandable, is_op);//nota: se a quote for apenas "" crio um token vazio str[0]='\0'
 	append_token(head,last_token,token);
 }
 // Not interpret unclosed quotes or special characters which are not required by the

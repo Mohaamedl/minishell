@@ -29,7 +29,7 @@ t_token *create_token(char *value, t_token_type type, int is_expandable, int is_
 void    append_token(t_token **head, t_token **last_token, t_token *new_token);
 
 /* ---------------- Funções para lidar com aspas ---------------- */
-size_t  get_quoted_size(char *line, char quote);
+int  get_quoted_size(char *line, char quote);
 char    *get_quoted_text(char *line, char quote);
 void    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
 
