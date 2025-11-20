@@ -1,9 +1,9 @@
 
 #include "minishell.h"
 
-size_t	get_quoted_size(char *line, char quote)
+int	get_quoted_size(char *line, char quote)
 {
-	size_t size;
+	int size;
 
 	size = 0;
 	line++; //para passar a prmeira aspa a frente (so quero o conteudo)
@@ -12,8 +12,8 @@ size_t	get_quoted_size(char *line, char quote)
 		size++;
 		line++;
 	}
-	if(*line == '\0')
-		return (0);
+	if(*line == '\0') //chegou ao fim se fechar
+		return (-1);
 	return(size);
 }
 t_token *create_token(char* value, t_token_type type, int is_expandable, int is_op) //esta funcao precisa de receber o type do token e atualizar o guardalo.
@@ -31,13 +31,18 @@ t_token *create_token(char* value, t_token_type type, int is_expandable, int is_
 
 char *get_quoted_text(char *line,char quote)
 {
-	size_t size;
+	int size;
 	char *str;
-	size = get_quoted_size(line,quote);//este size e' zero se a quote nao fechar ou se nao tiver nada dentro da quote
-	str = malloc((size + 1)*sizeof(char));
-	ft_memcpy(str, ++line, size); //ando line um char para a frente para nao copiar a aspa inicial
-	str[size] = '\0';
-	return str;
+	size = get_quoted_size(line,quote);//este size e´ -1 se a quote nao fechar
+	if (size == -1)
+		return (NULL);
+	else
+	{
+		str = malloc((size + 1)*sizeof(char));
+		ft_memcpy(str, ++line, size); //ando line um char para a frente para nao copiar a aspa inicial
+		str[size] = '\0';
+		return str;
+	}
 }
 
 void	append_token(t_token **head, t_token **last_token, t_token *new_token)
@@ -71,10 +76,14 @@ void	create_quoted_token(t_token **last_token, t_token **head, char *line, char 
 			is_expandable = 0;
 	}
 	str = get_quoted_text(line,quote);
-	if(ft_strlen(str) < 1) //neste caso nao crio token,
-		return;
-	token = create_token(str, WORD, is_expandable, is_op);
-	append_token(head,last_token,token);
+	if (str == NULL) //as aspas nao fecharam
+		handle_unclosed_quotes(*head);//faço os frees e encerro o programa
+	else
+	{
+		token = create_token(str, WORD, is_expandable, is_op);
+		append_token(head,last_token,token);
+	}
+
 }
 // Not interpret unclosed quotes or special characters which are not required by the
 //subject such as \ (backslash) or ; (semicolon)

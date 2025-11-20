@@ -159,9 +159,10 @@ t_token *create_token(char *value, t_token_type type, int is_expandable, int is_
 void    append_token(t_token **head, t_token **last_token, t_token *new_token);
 
 /* ---------------- Funções para lidar com aspas ---------------- */
-size_t  get_quoted_size(char *line, char quote);
+int  get_quoted_size(char *line, char quote);
 char    *get_quoted_text(char *line, char quote);
 void    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
+void	handle_unclosed_quotes(t_token *head);
 
 /* ---------------- Funções para operadores ---------------- */
 void    handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);
@@ -183,6 +184,11 @@ void	free_tokens(t_token *head);
 void	print_tokens(t_token *tmp);
 const char *token_type_to_str(t_token_type type);
 void	print_tree_visual(t_ast *root);
+
+/*-------------Funções para validar a token list-----*/
+void	validate_token_list(t_token *head);
+void	validate_redirections(t_token *head);
+void	handle_invalid_redirections(t_token *head);
 
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS

@@ -34,7 +34,9 @@ int	main(void)
 			free(line);
 			continue;
 		}
+		validate_token_list(head);
 		first_node = build_cmds_and_ops_list(head);
+		print_nodes(first_node);
 		end_node = get_last_node(first_node);
 		root_node = build_tree(first_node, end_node);
 		build_sub_trees(&root_node);
