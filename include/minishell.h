@@ -233,8 +233,16 @@ void	print_tree(t_ast *root);
 void	free_tree(t_ast *root);
 void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
 
-//-----------------------------------------EXPANSAO DE VARIAVEIS--------------------------------------------------
-//turn_args_list_into_args_array() depois de expandir vou ter que chamar esta funcao para ter o array de args pronto para o execve;
+/*
+** ============================================================================
+** VARIABLE EXPANSION
+** ============================================================================
+*/
+
+/* var_expand.c */
+char	*expand_variables(char *str, t_shell *shell);
+void	expand_cmd_args(t_arg *args, t_shell *shell);
+void	expand_redirection_files(t_redir *redirs, t_shell *shell);
 
 /*
 ** ============================================================================
