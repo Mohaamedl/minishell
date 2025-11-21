@@ -58,13 +58,12 @@ void	append_token(t_token **head, t_token **last_token, t_token *new_token)
 }
 //Aspas simples '...' e duplas "..." formam um único token mesmo com espaços ou operadores,
 //mas enquanto "..." permite expansão de variáveis e escapes, '...' é totalmente literal.
-void	create_quoted_token(t_token **last_token, t_token **head, char *line, char quote)
+int	create_quoted_token(t_token **last_token, t_token **head, char *line, char quote)
 {
 	char	*str;
 	t_token	*token;
 	int is_expandable;
 	int is_op;
-
 	is_op = 0;
 
 	is_expandable = 1;
@@ -77,13 +76,13 @@ void	create_quoted_token(t_token **last_token, t_token **head, char *line, char 
 	}
 	str = get_quoted_text(line,quote);
 	if (str == NULL) //as aspas nao fecharam
-		handle_unclosed_quotes(*head);//faço os frees e encerro o programa
+		return 0;//failed
 	else
 	{
 		token = create_token(str, WORD, is_expandable, is_op);
 		append_token(head,last_token,token);
 	}
-
+	return 1;//sucess
 }
 // Not interpret unclosed quotes or special characters which are not required by the
 //subject such as \ (backslash) or ; (semicolon)
@@ -128,7 +127,13 @@ t_token	*tokenize(char* line)
 		if(is_space(line[i]))
 			skip_spaces(&line[i], &i);
 		else if(is_quote(line[i]))
-			handle_quote(&line[i],&i, &last_token, &head);
+		{
+			if(handle_quote(&line[i],&i, &last_token, &head)==0)
+			{
+				free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
+				return (NULL);//erro ao tokenizar
+			}
+		}
 		else if(is_operator(&line[i]))
 			handle_ops_and_reds(&line[i],&i, &last_token, &head);
 		else

@@ -161,7 +161,7 @@ void    append_token(t_token **head, t_token **last_token, t_token *new_token);
 /* ---------------- Funções para lidar com aspas ---------------- */
 int  get_quoted_size(char *line, char quote);
 char    *get_quoted_text(char *line, char quote);
-void    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
+int    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
 void	handle_unclosed_quotes(t_token *head);
 
 /* ---------------- Funções para operadores ---------------- */
@@ -172,7 +172,7 @@ void    handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_toke
 void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
 
 /* ---------------- Funções principais ---------------- */
-void    handle_quote(char *line, int *i, t_token **last_token, t_token **head);
+int		handle_quote(char *line, int *i, t_token **last_token, t_token **head); //returns the status: 0-the quote did not close 1-sucess
 void    handle_word(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
 void    skip_spaces(char *line, int *i);
@@ -186,9 +186,13 @@ const char *token_type_to_str(t_token_type type);
 void	print_tree_visual(t_ast *root);
 
 /*-------------Funções para validar a token list-----*/
-void	validate_token_list(t_token *head);
-void	validate_redirections(t_token *head);
-void	handle_invalid_redirections(t_token *head);
+int	validate_token_list(t_token *head);
+int	validate_redirections(t_token *head);
+int validate_connector_operators(t_token *head);
+//HELPERS
+t_token *find_token_before_op(t_token *head,t_token *op_token);
+int validate_right_and_left_tokens(t_token *left,t_token *right);
+int is_connector_operator(t_token *token);
 
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS

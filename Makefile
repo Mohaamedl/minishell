@@ -41,11 +41,11 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/utils/memory_utils.c \
 			  $(SRC_DIR)/utils/number_utils.c \
 			  $(SRC_DIR)/utils/error.c \
-			  $(SRC_DIR)/parser/tokenizer/tokenizer.c \
-			  $(SRC_DIR)/parser/tokenizer/tokenizer_helpers.c \
-			  $(SRC_DIR)/parser/tokenizer/token_memory.c \
-			  $(SRC_DIR)/parser/tokenizer/type_handlers.c \
-			  $(SRC_DIR)/parser/tokenizer/validate_token_list.c \
+			  $(SRC_DIR)/tokenizer/tokenizer.c \
+			  $(SRC_DIR)/tokenizer/tokenizer_helpers.c \
+			  $(SRC_DIR)/tokenizer/token_memory.c \
+			  $(SRC_DIR)/tokenizer/type_handlers.c \
+			  $(SRC_DIR)/tokenizer/validate_token_list.c \
 			  $(SRC_DIR)/cmd_and_ops_list/build_list.c \
 			  $(SRC_DIR)/cmd_and_ops_list/create_cmd_node.c \
 			  $(SRC_DIR)/cmd_and_ops_list/create_cmd_node_helpers.c \
