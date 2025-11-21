@@ -189,10 +189,12 @@ void	print_tree_visual(t_ast *root);
 int	validate_token_list(t_token *head);
 int	validate_redirections(t_token *head);
 int validate_connector_operators(t_token *head);
+int validate_parentesis(t_token *head);
 //HELPERS
-t_token *find_token_before_op(t_token *head,t_token *op_token);
+t_token *find_left_token(t_token *head,t_token *op_token);
 int validate_right_and_left_tokens(t_token *left,t_token *right);
 int is_connector_operator(t_token *token);
+int	check_balance(t_token *head);
 
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS
