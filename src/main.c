@@ -40,7 +40,7 @@ int	main(int argc, char **argv, char **envp)
 	{
 		if (interactive)
 		{
-			line = readline("minishell$>");
+			line = readline("minishell$ ");
 		}
 		else
 		{
