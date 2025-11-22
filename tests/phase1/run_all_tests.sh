@@ -31,27 +31,28 @@ echo "╚═══════════════════════�
 echo -e "${NC}"
 
 # Check if minishell exists
-if [ ! -f "./minishell" ]; then
+if [ ! -f "../../minishell" ]; then
     echo -e "${RED}ERROR: minishell executable not found!${NC}"
     echo -e "${YELLOW}Building minishell...${NC}"
-    make
+    cd ../.. && make
     if [ $? -ne 0 ]; then
         echo -e "${RED}Build failed! Exiting.${NC}"
         exit 1
     fi
+    cd tests/phase1
     echo -e "${GREEN}Build successful!${NC}"
     echo
 fi
 
 # Test files
 tests=(
-    "tests/test_echo.sh"
-    "tests/test_pwd.sh"
-    "tests/test_cd.sh"
-    "tests/test_env.sh"
-    "tests/test_export.sh"
-    "tests/test_unset.sh"
-    "tests/test_exit.sh"
+    "test_echo.sh"
+    "test_pwd.sh"
+    "test_cd.sh"
+    "test_env.sh"
+    "test_export.sh"
+    "test_unset.sh"
+    "test_exit.sh"
 )
 
 # Results tracking

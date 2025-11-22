@@ -6,7 +6,7 @@ NAME        = minishell
 
 CC          = cc
 CFLAGS      = -Wall -Wextra -Werror -g
-INCLUDES    = -I. -ILibft
+INCLUDES    = -Iinclude -I. -ILibft
 LIBS        = -lreadline
 
 # Directories
@@ -56,7 +56,8 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/ast/build_tree.c \
 			  $(SRC_DIR)/ast/build_tree_helpers.c \
 			  $(SRC_DIR)/ast/ast_memory.c \
-			  $(SRC_DIR)/ast/ast_debuggers.c
+			  $(SRC_DIR)/ast/ast_debuggers.c \
+			  $(SRC_DIR)/ast/execute_ast.c
 
 # Object files
 OBJS        = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

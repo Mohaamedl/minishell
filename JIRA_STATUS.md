@@ -1,8 +1,9 @@
 # 📊 Jira Issues Status Report
 
-**Generated**: November 11, 2025  
+**Generated**: November 19, 2025 20:35  
 **Project**: minishell (KAN)  
-**Assignee**: Current User
+**Assignee**: Current User  
+**Last Test Run**: November 19, 2025 20:35
 
 ---
 
