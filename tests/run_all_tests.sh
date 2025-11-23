@@ -139,8 +139,8 @@ echo ""
 
 # Display results for each suite
 for i in "${!SUITE_NAMES[@]}"; do
-    local name="${SUITE_NAMES[$i]}"
-    local result="${SUITE_RESULTS[$i]}"
+    name="${SUITE_NAMES[$i]}"
+    result="${SUITE_RESULTS[$i]}"
     
     if [ "$result" == "PASS" ]; then
         echo -e "  ${GREEN}✓${NC} ${name}"
