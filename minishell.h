@@ -162,7 +162,6 @@ void    append_token(t_token **head, t_token **last_token, t_token *new_token);
 int  get_quoted_size(char *line, char quote);
 char    *get_quoted_text(char *line, char quote);
 int    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
-void	handle_unclosed_quotes(t_token *head);
 
 /* ---------------- Funções para operadores ---------------- */
 void    handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);

@@ -31,21 +31,21 @@ int is_connector_operator(t_token *token)
 	return (token->type == PIPE || token->type == OR || token->type == AND);
 }
 
-int validate_right_and_left_tokens(t_token *left,t_token *right)
+int validate_right_and_left_tokens(t_token *left, t_token *right, t_token *op_token)
 {
 	if(left == NULL || right == NULL)
 	{
-		printf("syntax error near unexpected token `%s'\n",left -> next -> value);
+		printf("syntax error near unexpected token `%s'\n",op_token->value);
 		return 0;
 	}
 	if(left->type != WORD && left->type != RPAREN)
 	{
-		printf("syntax error near unexpected token `%s'\n",left -> next -> value);
+		printf("syntax error near unexpected token `%s'\n",op_token->value);
 		return 0;
 	}
 	if(right->type != WORD && right->type != LPAREN &&!is_redirect_token(right))
 	{
-		printf("syntax error near unexpected token `%s'\n",left -> next -> value);
+		printf("syntax error near unexpected token `%s'\n",op_token->value);
 		return 0;
 	}
 	return 1;
@@ -74,7 +74,7 @@ int validate_connector_operators(t_token *head)
 		if(is_connector_operator(tmp))//se for um redirect token tem que ter um file name associado no caso do heredoc tem de ter um Terminador
 		{
 			token_before_op = find_left_token(head,tmp);//retorna NULL se nao encontrar
-			if(validate_right_and_left_tokens(token_before_op,tmp->next) == 0)
+			if(validate_right_and_left_tokens(token_before_op,tmp->next, tmp) == 0)
 				return 0;
 		}
 		tmp = tmp->next;
@@ -126,7 +126,7 @@ int check_valid_content(t_token *head)
 		{
 			if(tmp->next != NULL)
 			{
-				if(tmp->next->type != WORD)
+				if(tmp->next->type != WORD && tmp->next->type != LPAREN)
 				{
 					printf("syntax error near unexpected token `%s'\n",tmp -> value);
 					return 0;
@@ -144,7 +144,7 @@ int check_valid_content(t_token *head)
 			token_before_RPAREN = find_left_token(head,tmp);
 			if(token_before_RPAREN != NULL)
 			{
-				if(token_before_RPAREN->type != WORD)
+				if(token_before_RPAREN->type != WORD  && token_before_RPAREN->type != RPAREN)
 				{
 					printf("syntax error near unexpected token `%s'\n",tmp -> value);
 					return 0;
