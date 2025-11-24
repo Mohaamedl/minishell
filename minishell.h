@@ -191,7 +191,7 @@ int validate_connector_operators(t_token *head);
 int validate_parentesis(t_token *head);
 //HELPERS
 t_token *find_left_token(t_token *head,t_token *op_token);
-int validate_right_and_left_tokens(t_token *left,t_token *right);
+int validate_right_and_left_tokens(t_token *left,t_token *right, t_token *op_token);
 int is_connector_operator(t_token *token);
 int	check_balance(t_token *head);
 
