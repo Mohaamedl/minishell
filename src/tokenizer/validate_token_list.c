@@ -8,9 +8,14 @@ int validate_redirections(t_token *head)
 	{
 		if(is_redirect_token(tmp))//se for um redirect token tem que ter um file name associado no caso do heredoc tem de ter um Terminador
 		{
-			if(tmp->next==NULL|| tmp->next->type != WORD)
+			if(tmp->next==NULL)
 			{
-				printf("bash: syntax error near unexpected token `newline'\n");
+				printf("syntax error near unexpected token `newline'\n");
+				return (0);
+			}
+			if(tmp->next->type != WORD)
+			{
+				printf("syntax error near unexpected token `%s'\n",tmp -> value);
 				return (0);
 			}
 		}
@@ -29,11 +34,20 @@ int is_connector_operator(t_token *token)
 int validate_right_and_left_tokens(t_token *left,t_token *right)
 {
 	if(left == NULL || right == NULL)
+	{
+		printf("syntax error near unexpected token `%s'\n",left -> next -> value);
 		return 0;
+	}
 	if(left->type != WORD && left->type != RPAREN)
+	{
+		printf("syntax error near unexpected token `%s'\n",left -> next -> value);
 		return 0;
+	}
 	if(right->type != WORD && right->type != LPAREN &&!is_redirect_token(right))
+	{
+		printf("syntax error near unexpected token `%s'\n",left -> next -> value);
 		return 0;
+	}
 	return 1;
 }
 
@@ -82,13 +96,21 @@ int	check_balance(t_token *head)
 		if (tmp ->type == RPAREN)
 			open--;
 		if (open < 0)
+		{
+			printf("syntax error near unexpected token `%s'\n", tmp ->value);
 			return 0;
+		}
+
 		tmp = tmp->next;
 	}
 	if(open == 0)
 		return 1;
 	else
+	{
+		printf("syntax error near unexpected token `('\n");
 		return 0;
+	}
+
 }
 
 int check_valid_content(t_token *head)
@@ -105,10 +127,17 @@ int check_valid_content(t_token *head)
 			if(tmp->next != NULL)
 			{
 				if(tmp->next->type != WORD)
+				{
+					printf("syntax error near unexpected token `%s'\n",tmp -> value);
 					return 0;
+				}
+
 			}
 			else
+			{
+				printf("syntax error near unexpected token `newline'\n");
 				return 0;
+			}
 		}
 		if (tmp ->type == RPAREN)
 		{
@@ -116,10 +145,16 @@ int check_valid_content(t_token *head)
 			if(token_before_RPAREN != NULL)
 			{
 				if(token_before_RPAREN->type != WORD)
+				{
+					printf("syntax error near unexpected token `%s'\n",tmp -> value);
 					return 0;
+				}
 			}
 			else
+			{
+				printf("syntax error near unexpected token `newline'\n");
 				return 0;
+			}
 		}
 		tmp = tmp->next;
 	}
