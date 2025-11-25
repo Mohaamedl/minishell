@@ -1,0 +1,32 @@
+| ls
+ls |
+ls ||| wc
+echo | | wc
+|| echo
+echo ||
+echo ||| echo
+&
+&&
+& echo
+<
+echo >
+echo >>
+echo <
+echo >>> out
+echo <<<
+> > out
+>> >
+< < file
+echo > > x
+echo < > x
+cat < > out
+cat <<
+cat << EOF >
+cmd <<<
+echo < file1 file2
+echo < < file
+cmd >| file1 >|
+cmd >&
+cmd <&
+cmd 2>
+cmd >> file1 >

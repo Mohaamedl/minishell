@@ -195,6 +195,14 @@ int validate_right_and_left_tokens(t_token *left,t_token *right, t_token *op_tok
 int is_connector_operator(t_token *token);
 int	check_balance(t_token *head);
 
+/*----------------Validate token list recursive--------*/
+int validate_token_list_recursive(t_token **head);
+int	parse_and_or(t_token **head);
+int parse_pipeline(t_token **head);
+int parse_cmd(t_token **head);
+int parse_subshell(t_token **head);
+//HELPERS
+void syntax_error(t_token *tok);
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS
 t_ast	*build_cmds_and_ops_list(t_token *head);

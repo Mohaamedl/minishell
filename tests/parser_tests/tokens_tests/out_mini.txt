@@ -1,0 +1,58 @@
+minishell$>ls |
+bash: syntax error near unexpected token `newline'
+minishell$>ls ||| wc
+bash: syntax error near unexpected token `|'
+minishell$>echo | | wc
+bash: syntax error near unexpected token `|'
+minishell$>|| echo
+bash: syntax error near unexpected token `||'
+minishell$>echo ||
+bash: syntax error near unexpected token `newline'
+minishell$>echo ||| echo
+bash: syntax error near unexpected token `|'
+minishell$>&
+minishell$>&&
+bash: syntax error near unexpected token `&&'
+minishell$>& echo
+minishell$><
+bash: syntax error near unexpected token `<'
+minishell$>echo >
+bash: syntax error near unexpected token `newline'
+minishell$>echo >>
+bash: syntax error near unexpected token `newline'
+minishell$>echo <
+bash: syntax error near unexpected token `newline'
+minishell$>echo >>> out
+bash: syntax error near unexpected token `>'
+minishell$>echo <<<
+bash: syntax error near unexpected token `<'
+minishell$>> > out
+bash: syntax error near unexpected token `>'
+minishell$>>> >
+bash: syntax error near unexpected token `>>'
+minishell$>< < file
+bash: syntax error near unexpected token `<'
+minishell$>echo > > x
+bash: syntax error near unexpected token `>'
+minishell$>echo < > x
+bash: syntax error near unexpected token `>'
+minishell$>cat < > out
+bash: syntax error near unexpected token `>'
+minishell$>cat <<
+bash: syntax error near unexpected token `newline'
+minishell$>cat << EOF >
+bash: syntax error near unexpected token `newline'
+minishell$>cmd <<<
+bash: syntax error near unexpected token `<'
+minishell$>echo < file1 file2
+minishell$>echo < < file
+bash: syntax error near unexpected token `<'
+minishell$>cmd >| file1 >|
+bash: syntax error near unexpected token `|'
+minishell$>cmd >&
+minishell$>cmd <&
+minishell$>cmd 2>
+bash: syntax error near unexpected token `newline'
+minishell$>cmd >> file1 >
+bash: syntax error near unexpected token `newline'
+minishell$>

@@ -46,6 +46,7 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/tokenizer/token_memory.c \
 			  $(SRC_DIR)/tokenizer/type_handlers.c \
 			  $(SRC_DIR)/tokenizer/validate_token_list.c \
+			  $(SRC_DIR)/tokenizer/validate_token_list_recursive.c \
 			  $(SRC_DIR)/cmd_and_ops_list/build_list.c \
 			  $(SRC_DIR)/cmd_and_ops_list/create_cmd_node.c \
 			  $(SRC_DIR)/cmd_and_ops_list/create_cmd_node_helpers.c \

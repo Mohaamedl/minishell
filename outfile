@@ -1,0 +1,17 @@
+total 244
+drwxr-xr-x  2 framiran 2025_porto   154 Nov 25 09:35 docs
+drwxr-xr-x  2 framiran 2025_porto    25 Nov 25 09:36 include
+-rw-r--r--  1 framiran 2025_porto  7284 Nov 25 09:36 JIRA_STATUS.md
+drwxr-xr-x  2 framiran 2025_porto  4096 Nov 25 09:35 Libft
+-rw-r--r--  1 framiran 2025_porto  3926 Nov 25 15:30 Makefile
+-rwxr-xr-x  1 framiran 2025_porto 95872 Nov 25 16:33 minishell
+-rw-r--r--  1 framiran 2025_porto  9396 Nov 25 15:33 minishell.h
+drwxr-xr-x 10 framiran 2025_porto  4096 Nov 25 15:34 obj
+-rw-r--r--  1 framiran 2025_porto     0 Nov 25 16:35 outfile
+-rw-r--r--  1 framiran 2025_porto 10170 Nov 25 09:36 README.md
+-rw-r--r--  1 framiran 2025_porto 39368 Nov 25 09:35 readmeMS.md
+drwxr-xr-x 10 framiran 2025_porto  4096 Nov 25 09:36 src
+-rw-r--r--  1 framiran 2025_porto  2739 Nov 25 09:36 structs.h
+drwxr-xr-x  4 framiran 2025_porto  4096 Nov 25 09:36 tests
+-rw-r--r--  1 framiran 2025_porto 22398 Nov 25 09:35 TODO.md
+-rw-r--r--  1 framiran 2025_porto 27783 Nov 25 09:35 TODOMS.md
