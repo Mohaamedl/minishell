@@ -15,7 +15,7 @@ void	handle_word(char *line, int *i,t_token **last_token, t_token **head)
 	is_op = 0;
 
 	j = 1; //vou para o char seguinte apos a letra que encontrei
-	while(!is_operator(&line[j]) && !is_space(line[j]) && line[j] != '\0' && !is_quote(line[j]) && line[j] != '-' ) //validar a mudanca no is_operator, ver o que fazer se receber uma quote
+	while(!is_operator(&line[j]) && !is_space(line[j]) && line[j] != '\0' && !is_quote(line[j])) //validar a mudanca no is_operator, ver o que fazer se receber uma quote
 	{
 		j++;
 	}
