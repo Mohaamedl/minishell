@@ -62,6 +62,8 @@ static char	**convert_args_to_array(t_cmd *cmd)
  * Builtins are executed in the current process, external commands would
  * require fork/exec (to be implemented).
  * 
+ * Variable expansion is performed before command execution.
+ * 
  * @param node The AST node containing the command
  * @param shell The shell state structure
  * @return Exit status of the command
@@ -73,6 +75,9 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 
 	if (!node || !node->cmd || !node->cmd->cmd_name)
 		return (ERROR);
+	// Expand variables in arguments and redirections
+	expand_cmd_args(node->cmd->args, shell);
+	expand_redirection_files(node->cmd->redirs, shell);
 	args = convert_args_to_array(node->cmd);
 	if (!args)
 		return (ERROR);

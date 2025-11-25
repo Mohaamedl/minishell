@@ -236,11 +236,61 @@ $ echo "pwd" | ./minishell
    - ✅ Exit code validation (modulo 256)
    - ✅ Error messages for invalid args
 
+### ✅ Phase 4: Variable Expansion (NEW! November 21, 2025)
+**Status**: ✅ **COMPLETE** - PR #8 created  
+**Branch**: `feature/KAN-45-variable-expansion` → `feature/KAN-74-execution-integration`  
+**Jira Issues**: KAN-45, KAN-46, KAN-47
+
+1. **Variable Expansion (`$VAR`)**
+   - ✅ Expands environment variables in commands
+   - ✅ Expands in command arguments
+   - ✅ Expands in redirection filenames
+   - ✅ Handles undefined variables (→ empty string)
+   - ✅ Handles empty variables
+   - ✅ Proper variable name extraction (alphanumeric + `_`)
+
+2. **Exit Status (`$?`)**
+   - ✅ Expands to last command's exit status
+   - ✅ Works in arguments and redirections
+
+3. **Quote Handling**
+   - ✅ Single quotes (`'`) prevent expansion
+   - ✅ Double quotes (`"`) allow expansion
+   - ✅ Mixed quote handling
+
+4. **Edge Cases**
+   - ✅ `$` not followed by variable name (kept as-is)
+   - ✅ Multiple variables in one argument
+   - ✅ Variables with underscores in name
+   - ✅ No infinite loops on invalid `$`
+
+**Implementation Details**:
+- **New Module**: `src/expander/var_expand.c` (213 lines)
+  - `expand_variables()`: Core expansion logic
+  - `expand_cmd_args()`: Expands command arguments
+  - `expand_redirection_files()`: Expands redirection filenames
+- **Memory Management**: Added `was_expanded` field to `t_arg` and `t_redir` structs
+- **Integration**: Expansion happens at execution time in `execute_ast.c`
+
+**Test Results**: ✅ **18/18 passing (100%)**
+```bash
+$ bash tests/phase1/test_expansion.sh
+✓ Test 1-5: Basic variable expansion
+✓ Test 6-7: Special variables ($?)
+✓ Test 8-9: Undefined variables
+✓ Test 10-11: Empty variables
+✓ Test 12-14: Quote handling
+✓ Test 15-18: Complex cases
+
+SUMMARY: 18/18 passed (100%)
+```
+
 ### ✅ Testing Infrastructure
 1. **Test Files Created**
    - ✅ `run_all_tests.sh` - Master test runner
    - ✅ Individual test files for each builtin (7 files)
-   - ✅ 173+ comprehensive test cases
+   - ✅ **NEW**: `test_expansion.sh` - Variable expansion tests (18 tests)
+   - ✅ 191+ comprehensive test cases total
    - ✅ Colored output, pass/fail tracking
    - ✅ Exit code validation
 

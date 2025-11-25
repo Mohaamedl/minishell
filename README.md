@@ -46,7 +46,7 @@ Minishell is a 42 school project that challenges students to create their own si
 - ⚠️ **Redirections**: Parsed but not executed (`<`, `>`, `<<`, `>>`)
 - ❌ **External commands**: PATH resolution not implemented
 - ❌ **Quote processing**: Quotes detected but not removed/processed
-- ❌ **Variable expansion**: `$VAR`, `$?` not implemented
+- ✅ **Variable expansion**: `$VAR`, `$?` fully implemented (18 tests passing)
 
 ### Bonus Features (Planned)
 - ⚠️ **Logical operators**: `&&`, `||` (parsed, placeholder implementation)
@@ -111,6 +111,9 @@ minishell/
 │   │   ├── env.c            # env display
 │   │   └── exit.c           # exit with validation
 │   │
+│   ├── 📁 expander/     # ✅ **NEW** Variable expansion (1 file)
+│   │   └── var_expand.c     # $VAR and $? expansion
+│   │
 │   ├── 📁 debuggers/    # ✅ Debug utilities (2 files)
 │   │   ├── print_tokens.c   # Token visualization
 │   │   └── print_nodes.c    # Node/tree visualization
@@ -125,7 +128,7 @@ minishell/
 │
 ├── 📁 Libft/            # ✅ 42's standard library (43 functions)
 │
-├── 📁 tests/phase1/     # ✅ Comprehensive test suite (13 files)
+├── 📁 tests/phase1/     # ✅ Comprehensive test suite (14 files)
 │   ├── run_all_tests.sh # Master test runner
 │   ├── test_echo.sh     # 24 tests
 │   ├── test_pwd.sh      # 12 tests
@@ -133,7 +136,8 @@ minishell/
 │   ├── test_env.sh      # 11 tests
 │   ├── test_export.sh   # 16 tests
 │   ├── test_unset.sh    # 13 tests
-│   └── test_exit.sh     # 17 tests
+│   ├── test_exit.sh     # 17 tests
+│   └── test_expansion.sh # ✅ **NEW** 18 tests
 │
 ├── 📁 parser_tests/ast_tests/ # Parser tests (bonus features)
 │

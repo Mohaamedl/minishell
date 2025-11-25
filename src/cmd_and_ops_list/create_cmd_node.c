@@ -25,6 +25,7 @@ void	handle_redirect_token(t_cmd *cmd,t_token **tmp_token, t_redir **redir_list_
 	new_redir_node -> type = (*tmp_token) -> type;
 	new_redir_node -> file = (*tmp_token) -> next -> value; // o file name e o token a seguir ao token de redirect
 	new_redir_node -> file_name_is_expandable = (*tmp_token) -> next -> expandable;
+	new_redir_node -> file_was_expanded = 0; // Initially points to token value
 	if(*redir_list_head == NULL)//ainda nao existe head, este sera o primeiro redir_node
 	{
 		*redir_list_head = new_redir_node;
@@ -52,6 +53,7 @@ void	handle_arg_token(t_cmd *cmd, t_token **tmp_token, t_arg **arg_list_head, t_
 		return;
 	new_arg_node -> value = (*tmp_token) ->value;
 	new_arg_node -> is_expandable = (*tmp_token) -> expandable;
+	new_arg_node -> was_expanded = 0; // Initially points to token value
 
 	if(*arg_list_head == NULL)//ainda nao existe head, este sera o primeiro arg
 	{
