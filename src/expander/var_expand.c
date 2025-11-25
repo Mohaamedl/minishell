@@ -32,8 +32,14 @@ static char	*extract_var_name(const char *str)
 	if (*str == '?')
 		return (ft_strdup("?"));
 	len = 0;
-	while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
+	// First character must be a letter or underscore
+	if (str[len] && (ft_isalpha(str[len]) || str[len] == '_'))
+	{
 		len++;
+		// Subsequent characters can be alphanumeric or underscore
+		while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
+			len++;
+	}
 	if (len == 0)
 		return (NULL);
 	var_name = malloc(len + 1);
