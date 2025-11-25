@@ -116,9 +116,8 @@ int	check_balance(t_token *head)
 int check_valid_content(t_token *head)
 {
 	t_token *tmp;
-	int	open;
 	t_token *token_before_RPAREN;
-	open = 0;
+
 	tmp = head;
 	while(tmp)
 	{
@@ -176,7 +175,7 @@ int validate_token_list(t_token *head)
 		return 0;
 	if(validate_connector_operators(head) == 0)//valida os operadores AND, OR ou PIPE
 		return 0;
-	if(validate_parentesis(head) == 0)//valida os operadores AND, OR ou PIPE
+	if(validate_parentesis(head) == 0)//valida parentesis
 		return 0;
 	return 1;
 }
