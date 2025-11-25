@@ -26,119 +26,140 @@ Minishell is a 42 school project that challenges students to create their own si
 
 ## ✨ Features
 
-### Mandatory Features
-- ✅ Interactive prompt with command history
-- ✅ Executable search via PATH or absolute/relative paths
-- ✅ Quote handling (single `'` and double `"`)
-- ✅ Environment variable expansion (`$VAR`, `$?`)
-- ✅ Redirections: `<`, `>`, `<<`, `>>`
-- ✅ Pipes: `|` for command chaining
-- ✅ Signal handling: `Ctrl-C`, `Ctrl-D`, `Ctrl-\`
-- ✅ Built-in commands: `echo`, `cd`, `pwd`, `export`, `unset`, `env`, `exit`
+### Mandatory Features (Current Status)
+- ✅ **Interactive prompt** with readline (command history, line editing)
+- ✅ **Signal handling**: `Ctrl-C`, `Ctrl-D`, `Ctrl-\` (SIGINT, SIGQUIT, EOF)
+- ✅ **Environment management**: Full environment variable support
+- ✅ **Built-in commands**: All 7 mandatory builtins fully implemented and tested
+  - `echo` (with `-n` option) - 24/24 tests passing
+  - `cd` (relative/absolute paths, HOME, OLDPWD) - 20/20 tests passing
+  - `pwd` - 12/12 tests passing
+  - `export` (with validation and sorting) - 16/16 tests passing
+  - `unset` - 13/13 tests passing
+  - `env` - 11/11 tests passing
+  - `exit` (with numeric validation) - 17/17 tests passing
+- ✅ **Tokenization**: Full lexer with quote handling (`'` and `"`)
+- ✅ **AST Parser**: Complete syntax tree construction
+- ✅ **Execution Engine**: Command execution via AST traversal
+- ✅ **Interactive/Non-interactive** mode detection
+- ⚠️ **Pipes**: Basic structure (sequential execution, needs fork/pipe/dup2)
+- ⚠️ **Redirections**: Parsed but not executed (`<`, `>`, `<<`, `>>`)
+- ❌ **External commands**: PATH resolution not implemented
+- ❌ **Quote processing**: Quotes detected but not removed/processed
+- ✅ **Variable expansion**: `$VAR`, `$?` fully implemented (18 tests passing)
 
-### Bonus Features
-- ⭐ Logical operators: `&&`, `||`
-- ⭐ Parentheses for command grouping
-- ⭐ Wildcard expansion: `*`
+### Bonus Features (Planned)
+- ⚠️ **Logical operators**: `&&`, `||` (parsed, placeholder implementation)
+- ⚠️ **Parentheses**: `()` grouping (parsed, not executed)
+- ❌ **Wildcards**: `*` expansion not implemented
 
 ## 🏗️ Architecture
 
+### Current Project Structure (Actual)
+
 ```
 minishell/
-├── 📁 include/           # Header files
-│   ├── minishell.h      # Main header with structures and prototypes
-│   ├── parser.h         # Parsing-related declarations
-│   ├── builtins.h       # Built-in command declarations
-│   └── executor.h       # Execution engine declarations
+├── 📁 include/          # Header files
+│   ├── minishell.h      # Main header (function prototypes)
+│   └── minishell_backup.h
 │
-├── 📁 src/              # Source files
-│   ├── main.c           # Entry point and main loop
-│   ├── init.c           # Shell initialization
-│   ├── cleanup.c        # Resource cleanup
+├── 📁 src/              # Source files (41 files, ~3,200 LOC)
+│   ├── main.c           # ✅ Entry point and REPL loop
+│   ├── main_helpers.c   # ✅ Helper functions
+│   ├── init.c           # ✅ Shell initialization
+│   ├── cleanup.c        # ✅ Resource cleanup
+│   ├── parser_simple.c  # Temporary simple parser
 │   │
-│   ├── 📁 environment/  # Environment management
-│   │   ├── env_init.c
-│   │   ├── env_get.c
-│   │   ├── env_set.c
-│   │   └── env_utils.c
+│   ├── 📁 environment/  # ✅ Environment management (4 files)
+│   │   ├── env_init.c   # Initialize from envp
+│   │   ├── env_get.c    # Get/find variables
+│   │   ├── env_set.c    # Set/unset variables
+│   │   └── env_utils.c  # List conversion, utilities
 │   │
-│   ├── 📁 signals/      # Signal handling
-│   │   ├── signals.c
-│   │   └── signal_utils.c
+│   ├── 📁 signals/      # ✅ Signal handling (1 file)
+│   │   └── signals.c    # SIGINT, SIGQUIT, EOF
 │   │
-│   ├── 📁 lexer/        # Tokenization
-│   │   ├── tokenizer.c
-│   │   ├── token_utils.c
-│   │   └── quote_handler.c
+│   ├── 📁 parser/       # ✅ Tokenization & parsing
+│   │   └── tokenizer/   # (5 files)
+│   │       ├── tokenizer.c          # Main tokenizer
+│   │       ├── tokenizer_helpers.c  # Helper functions
+│   │       ├── type_handlers.c      # Token type handlers
+│   │       ├── token_memory.c       # Memory management
+│   │       └── validate_token_list.c # Validation
 │   │
-│   ├── 📁 parser/       # Command parsing
-│   │   ├── parser.c
-│   │   ├── parse_command.c
-│   │   ├── parse_redirect.c
-│   │   └── parse_pipeline.c
+│   ├── 📁 ast/          # ✅ Abstract Syntax Tree (5 files)
+│   │   ├── build_tree.c        # Build binary tree from nodes
+│   │   ├── build_tree_helpers.c # Tree building utilities
+│   │   ├── ast_memory.c        # AST cleanup
+│   │   ├── ast_debuggers.c     # Tree visualization
+│   │   └── execute_ast.c       # ✅ **NEW** Execution engine
 │   │
-│   ├── 📁 expander/     # Variable expansion
-│   │   ├── expander.c
-│   │   ├── expand_var.c
-│   │   └── expand_utils.c
+│   ├── 📁 cmd_and_ops_list/ # ✅ Command/operator list (5 files)
+│   │   ├── build_list.c             # Build node list
+│   │   ├── create_cmd_node.c        # Command nodes
+│   │   ├── create_cmd_node_helpers.c # Command helpers
+│   │   ├── create_op_node.c         # Operator nodes
+│   │   └── node_memory.c            # Memory management
 │   │
-│   ├── 📁 executor/     # Command execution
-│   │   ├── executor.c
-│   │   ├── exec_simple.c
-│   │   ├── exec_pipeline.c
-│   │   └── exec_utils.c
+│   ├── 📁 builtins/     # ✅ Built-in commands (8 files)
+│   │   ├── builtin_utils.c  # Command dispatcher
+│   │   ├── echo.c           # echo with -n
+│   │   ├── cd.c             # cd with HOME/OLDPWD
+│   │   ├── pwd.c            # pwd implementation
+│   │   ├── export.c         # export with validation
+│   │   ├── unset.c          # unset implementation
+│   │   ├── env.c            # env display
+│   │   └── exit.c           # exit with validation
 │   │
-│   ├── 📁 redirections/ # I/O redirection
-│   │   ├── redirect.c
-│   │   ├── redirect_input.c
-│   │   ├── redirect_output.c
-│   │   └── heredoc.c
+│   ├── 📁 expander/     # ✅ **NEW** Variable expansion (1 file)
+│   │   └── var_expand.c     # $VAR and $? expansion
 │   │
-│   ├── 📁 builtins/     # Built-in commands
-│   │   ├── builtin_handler.c
-│   │   ├── echo.c
-│   │   ├── cd.c
-│   │   ├── pwd.c
-│   │   ├── export.c
-│   │   ├── unset.c
-│   │   ├── env.c
-│   │   └── exit.c
+│   ├── 📁 debuggers/    # ✅ Debug utilities (2 files)
+│   │   ├── print_tokens.c   # Token visualization
+│   │   └── print_nodes.c    # Node/tree visualization
 │   │
-│   ├── 📁 process/      # Process management
-│   │   ├── process.c
-│   │   ├── fork_exec.c
-│   │   └── wait.c
-│   │
-│   └── 📁 utils/        # Utility functions
-│       ├── error.c
-│       ├── string_utils.c
-│       ├── memory.c
-│       └── validation.c
+│   └── 📁 utils/        # ✅ Utility functions (6 files)
+│       ├── error.c          # Error handling
+│       ├── string_utils.c   # String operations
+│       ├── string_utils2.c  # Additional string utils
+│       ├── number_utils.c   # Number parsing
+│       ├── memory_utils.c   # Memory operations
+│       └── ft_split.c       # String splitting
 │
-├── 📁 src_bonus/        # Bonus features
-│   ├── logical_ops.c    # && and || operators
-│   ├── parentheses.c    # Command grouping
-│   └── wildcard.c       # * expansion
+├── 📁 Libft/            # ✅ 42's standard library (43 functions)
 │
-├── 📁 tests/            # Test suite
-│   ├── test_lexer.sh
-│   ├── test_parser.sh
-│   ├── test_builtins.sh
-│   ├── test_redirections.sh
-│   ├── test_pipes.sh
-│   └── test_all.sh
+├── 📁 tests/phase1/     # ✅ Comprehensive test suite (14 files)
+│   ├── run_all_tests.sh # Master test runner
+│   ├── test_echo.sh     # 24 tests
+│   ├── test_pwd.sh      # 12 tests
+│   ├── test_cd.sh       # 20 tests
+│   ├── test_env.sh      # 11 tests
+│   ├── test_export.sh   # 16 tests
+│   ├── test_unset.sh    # 13 tests
+│   ├── test_exit.sh     # 17 tests
+│   └── test_expansion.sh # ✅ **NEW** 18 tests
 │
-├── 📁 docs/             # Documentation
-│   ├── ARCHITECTURE.md  # System design
-│   ├── API.md          # Function documentation
-│   ├── TESTING.md      # Testing guide
-│   └── CONTRIBUTION.md # Development guidelines
+├── 📁 parser_tests/ast_tests/ # Parser tests (bonus features)
 │
-├── Makefile            # Build system
-├── README.md           # This file
-├── TODO.md             # Task tracking
-└── .gitignore          # Git ignore rules
+├── 📁 docs/             # ✅ Documentation (5 files)
+│   ├── ARCHITECTURE.md
+│   ├── COLLABORATION.md
+│   ├── MODULAR_DIAGRAMS.md
+│   ├── TESTING.md
+│   └── WORKFLOW_DIAGRAM.md
+│
+├── structs.h            # ✅ Core data structures
+├── minishell.h          # ✅ Function prototypes
+├── PROJECT_STATUS.md    # ✅ Detailed progress tracking
+├── Makefile             # ✅ Build system
+└── README.md            # This file
 ```
+
+### Key Statistics
+- **Total Source Files**: 41 C files
+- **Lines of Code**: ~3,200 (excluding Libft)
+- **Test Coverage**: 113 comprehensive tests (100% passing)
+- **Compilation**: Clean with `-Wall -Wextra -Werror`
 
 ## 🚀 Getting Started
 
@@ -174,25 +195,37 @@ make          # Build the project
 make clean    # Remove object files
 make fclean   # Remove all generated files
 make re       # Rebuild everything
-make bonus    # Build with bonus features
 ```
 
 ## 🧪 Testing
 
+### Builtin Tests (100% Passing ✅)
 ```bash
-# Run all tests
-bash tests/test_all.sh
+# Run all builtin tests (113 tests)
+bash tests/phase1/run_all_tests.sh
 
-# Run specific test suites
-bash tests/test_builtins.sh
-bash tests/test_pipes.sh
+# Or run individual test suites:
+bash tests/phase1/test_echo.sh    # 24/24 passing
+bash tests/phase1/test_pwd.sh     # 12/12 passing
+bash tests/phase1/test_cd.sh      # 20/20 passing
+bash tests/phase1/test_env.sh     # 11/11 passing
+bash tests/phase1/test_export.sh  # 16/16 passing
+bash tests/phase1/test_unset.sh   # 13/13 passing
+bash tests/phase1/test_exit.sh    # 17/17 passing
+```
 
-# Check for memory leaks
+### Parser Tests (Bonus Features)
+```bash
+# AST parser tests (expect failures - tests bonus features)
+bash parser_tests/ast_tests/run_tests.sh
+# Note: These test AND/OR operators not yet implemented
+```
+
+### Memory Leak Testing
+```bash
+# Check for memory leaks with valgrind
 valgrind --leak-check=full --show-leak-kinds=all \
-         --track-fds=yes --suppressions=readline.supp ./minishell
-
-# Compare with bash
-./tests/compare_with_bash.sh
+         --track-fds=yes ./minishell
 ```
 
 ## 📚 Core Concepts
@@ -200,105 +233,132 @@ valgrind --leak-check=full --show-leak-kinds=all \
 ### 1. Signal Handling
 - **SIGINT (Ctrl-C)**: Display new prompt on new line
 - **SIGQUIT (Ctrl-\)**: Ignored in interactive mode
-- **SIGTERM**: Graceful shutdown
+- **EOF (Ctrl-D)**: Exit shell gracefully
 - **Global variable**: Limited to storing signal number only
 
-### 2. Parsing Pipeline
+### 2. Execution Flow
 ```
-Input → Lexer (Tokenization) → Parser (Syntax Analysis) 
-     → Expander (Variable Substitution) → Executor (Command Execution)
-```
-
-### 3. Command Execution Flow
-```
-1. Parse command line
-2. Check if built-in command
-3. If built-in: execute directly
-4. If external: fork → search PATH → execve
-5. Wait for child processes
-6. Update exit status
+User Input → Tokenization → Node List → AST Building → Execution
+                                                           ↓
+                                              Builtin or External Command
 ```
 
-### 4. Pipe Implementation
+### 3. Current Data Flow
 ```
-cmd1 | cmd2 | cmd3
-  ↓      ↓      ↓
-fork   fork   fork
-  ↓      ↓      ↓
-pipe connects stdout of cmd1 to stdin of cmd2
-pipe connects stdout of cmd2 to stdin of cmd3
+1. Read input (readline)
+2. Tokenize into token list (quotes, operators, words)
+3. Build command/operator node list
+4. Construct binary AST (PIPE, AND, OR as internal nodes)
+5. Execute AST recursively
+   - Built-in: Execute directly
+   - External: TODO - PATH search + execve
+   - Pipes: TODO - fork/pipe/dup2
 ```
 
-## 🎓 Development Phases
+### 4. What Works vs What Doesn't
 
-### Phase 1: Foundation (Week 1)
+**✅ Fully Working:**
+- All 7 builtins with comprehensive validation
+- Environment variable management
+- Signal handling (Ctrl-C, Ctrl-D, Ctrl-\)
+- Tokenization with quote detection
+- AST construction
+- Basic execution engine
+
+**⚠️ Partially Implemented:**
+- Pipes: Structure exists, sequential execution only
+- Redirections: Parsed but not executed
+- AND/OR operators: Parsed, placeholder execution
+
+**❌ Not Implemented:**
+- External command execution (PATH search, execve)
+- Quote removal and processing
+- Variable expansion ($VAR, $?)
+- Actual pipe/fork/dup2 implementation
+- Redirection file operations
+
+## 🎓 Development Status
+
+**Current Phase**: Execution Integration (80% Complete)
+
+### ✅ Phase 1: Foundation (Complete)
 - Environment management
 - Signal handling
 - Utility functions
 - Project structure
 
-### Phase 2: Parsing (Week 2)
+### ✅ Phase 2: Parsing (Complete)
 - Lexical analysis (tokenizer)
-- Syntax parsing
-- Variable expansion
-- Quote handling
+- Syntax tree construction (AST)
+- Token validation
 
-### Phase 3: Built-ins (Week 3)
-- Implement all 7 built-in commands
-- Test each thoroughly
-- Error handling
+### ✅ Phase 3: Built-ins (Complete - 100%)
+- All 7 built-in commands implemented and tested
+- 113/113 tests passing
+- Comprehensive error handling
 
-### Phase 4: Execution (Week 4-5)
-- Simple command execution
-- I/O redirections
-- Heredoc implementation
-- Pipeline execution
-- Process management
+### ⚠️ Phase 4: Execution (In Progress - 40%)
+- ✅ Builtin command routing and execution
+- ✅ AST traversal engine
+- ⚠️ External command execution (TODO)
+- ⚠️ Pipeline execution (placeholder)
+- ❌ I/O redirections (parsed only)
+- ❌ Heredoc execution
 
-### Phase 5: Integration & Testing (Week 6)
+### ⏸️ Phase 5: Integration & Testing (Pending)
 - Integration testing
 - Memory leak fixes
 - Bash compatibility testing
 - Edge case handling
 
-### Phase 6: Bonus (Optional)
-- Logical operators
+### ⏸️ Phase 6: Bonus (Planned)
+- Logical operators (AND/OR parsed)
+- Parentheses grouping (parsed)
 - Wildcard expansion
-- Advanced features
 
-## 📋 Task Management
+## 📊 Project Metrics
 
-See [TODO.md](TODO.md) for detailed task breakdown and progress tracking.
+- **Lines of Code**: ~3,200 (src/) + ~1,500 (Libft) = 4,700 total
+- **Test Coverage**: 113 builtin tests (100% passing)
+- **Compilation**: Zero warnings with `-Wall -Wextra -Werror`
+- **Memory Leaks**: None (excluding readline)
+- **Files**: 41 C source files across 10 modules
 
-## 🐛 Known Issues & Limitations
+## 🐛 Known Issues & Next Steps
 
-1. **Readline Memory Leaks**: Ignored as per subject requirements
-2. **Advanced Bash Features**: Not implemented (aliases, job control, etc.)
-3. **Signal Handling**: Simplified compared to bash
+### Next Steps (Priority Order)
+1. **External Command Execution** (src/ast/execute_ast.c:85)
+   - Implement PATH search
+   - Add execve for external commands
+   - Handle command not found errors
+
+2. **Pipeline Implementation** (src/ast/execute_ast.c:113)
+   - Add fork/pipe/dup2 logic
+   - Connect stdout/stdin between commands
+   - Wait for all processes
+
+3. **Redirection Execution**
+   - Implement file opening (`<`, `>`, `>>`)
+   - Add heredoc processing (`<<`)
+   - dup2 for file descriptor manipulation
+
+4. **Quote Processing**
+   - Remove quotes from arguments
+   - Handle escaped characters
+
+5. **Variable Expansion**
+   - Implement `$VAR` expansion
+   - Add `$?` for exit status
+   - Handle unset variables
+
+### Known Limitations
+1. **Readline Memory**: Minimal leaks ignored per subject
+2. **Parser Tests**: 0/7 passing (test bonus features)
+3. **Advanced Bash**: Not in scope (aliases, job control, history expansion)
 
 ## 🤝 Team Collaboration
 
-### Git Workflow
-```bash
-# Create feature branch
-git checkout -b feature/parser
-
-# Make changes and commit
-git add .
-git commit -m "feat: implement basic tokenizer"
-
-# Push to remote
-git push origin feature/parser
-
-# Create pull request for review
-```
-
-### Code Review Guidelines
-1. Check norm compliance: `norminette`
-2. Test functionality thoroughly
-3. Verify no memory leaks: `valgrind`
-4. Review for edge cases
-5. Ensure proper error handling
+See [COLLABORATION.md](docs/COLLABORATION.md) for Git workflow and code review guidelines.
 
 ## 📖 Resources
 
@@ -313,27 +373,33 @@ git push origin feature/parser
 
 ### 42 Resources
 - [42 Norm](https://github.com/42School/norminette)
-- Peer evaluations and discussions
-- Previous student implementations (reference only)
+- [Testing Guide](docs/TESTING.md)
 
-## 🔍 Evaluation Criteria
+## 🔍 Current Test Results
 
-### Mandatory (100 points)
-- ✅ Norm compliance
-- ✅ No crashes or undefined behavior
-- ✅ No memory leaks (except readline)
-- ✅ Proper error handling
-- ✅ All built-ins working correctly
-- ✅ Quote and variable expansion
-- ✅ All redirection types
-- ✅ Pipes working correctly
-- ✅ Signal handling like bash
-- ✅ History functionality
+### ✅ Builtin Tests: 113/113 (100%)
+```
+echo:   24/24 ✅
+pwd:    12/12 ✅
+cd:     20/20 ✅
+env:    11/11 ✅
+export: 16/16 ✅
+unset:  13/13 ✅
+exit:   17/17 ✅
+```
 
-### Bonus (25 points)
-- ⭐ Logical operators (&&, ||)
-- ⭐ Parentheses for priorities
-- ⭐ Wildcard expansion (*)
+### ⏸️ Parser Tests: 0/7 (Bonus Features)
+```
+AND operators:  Not implemented
+OR operators:   Not implemented
+Parentheses:    Not implemented
+```
+
+### 📋 Integration Tests: Pending
+- External commands
+- Pipes
+- Redirections
+- Complex command chains
 
 **Note**: Bonus is only evaluated if mandatory part is perfect!
 

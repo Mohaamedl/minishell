@@ -14,19 +14,20 @@
 
 void	free_redirects_list(t_redir *head)
 {
-	//nao ou free a file porque ja dou free em free_token(), (e um ponteiro para um value de determinado token)
-	//nao existe memoria dinamicamente alocada nesta struct a nao ser a propria struct
 	t_redir *tmp;
 	t_redir *next_redir;
 	tmp = head;
 	while(tmp)
 	{
 		next_redir = tmp -> next;
+		// Free file if it was expanded (malloc'd by expansion)
+		if (tmp->file_was_expanded && tmp->file)
+			free(tmp->file);
 		free(tmp);
 		tmp = next_redir;
 	}
 }
-//nao existe memoria dinamocamente alocada nesta lista a nao ser o propria lista, cada argumento value e' um pointer para value de um determinado token
+
 void	free_args_list(t_arg *head)
 {
 	t_arg *tmp;
@@ -35,6 +36,9 @@ void	free_args_list(t_arg *head)
 	while(tmp)
 	{
 		next_arg = tmp -> next;
+		// Free value if it was expanded (malloc'd by expansion)
+		if (tmp->was_expanded && tmp->value)
+			free(tmp->value);
 		free(tmp);
 		tmp = next_arg;
 	}

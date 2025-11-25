@@ -2,7 +2,7 @@
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
-#include "../structs.h"
+#include "structs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -18,7 +18,7 @@
 #include <limits.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "../Libft/libft.h"
+#include "Libft/libft.h"
 
 /*
 ** ============================================================================
@@ -54,7 +54,6 @@ typedef struct s_shell
 	t_env	*env_list;
 	int		last_exit_status;
 	int		running;
-	int		is_interactive;
 }	t_shell;
 
 /*
@@ -160,9 +159,9 @@ t_token *create_token(char *value, t_token_type type, int is_expandable, int is_
 void    append_token(t_token **head, t_token **last_token, t_token *new_token);
 
 /* ---------------- Funções para lidar com aspas ---------------- */
-int     get_quoted_size(char *line, char quote);
+size_t  get_quoted_size(char *line, char quote);
 char    *get_quoted_text(char *line, char quote);
-int     create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
+void    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
 
 /* ---------------- Funções para operadores ---------------- */
 void    handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);
@@ -172,7 +171,7 @@ void    handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_toke
 void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
 
 /* ---------------- Funções principais ---------------- */
-int     handle_quote(char *line, int *i, t_token **last_token, t_token **head);
+void    handle_quote(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_word(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
 void    skip_spaces(char *line, int *i);
@@ -233,33 +232,6 @@ void	print_tree(t_ast *root);
 void	free_tree(t_ast *root);
 void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
 
-/*
-** ============================================================================
-** TOKENIZER VALIDATION
-** ============================================================================
-*/
-
-/* validate_token_list.c */
-int		validate_token_list(t_token *head);
-
-/*
-** ============================================================================
-** VARIABLE EXPANSION
-** ============================================================================
-*/
-
-/* var_expand.c */
-char	*expand_variables(char *str, t_shell *shell);
-void	expand_cmd_args(t_arg *args, t_shell *shell);
-void	expand_redirection_files(t_redir *redirs, t_shell *shell);
-
-/*
-** ============================================================================
-** AST EXECUTION
-** ============================================================================
-*/
-
-/* execute_ast.c */
-int		execute_ast(t_ast *node, t_shell *shell);
-
+//-----------------------------------------EXPANSAO DE VARIAVEIS--------------------------------------------------
+//turn_args_list_into_args_array() depois de expandir vou ter que chamar esta funcao para ter o array de args pronto para o execve;
 #endif

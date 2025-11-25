@@ -37,6 +37,7 @@ typedef struct s_redir
 	t_token_type	type; // Tipo de redireção , e do tipo token_type mas so vai assumir valores de redirecoes
 	char			*file;   // Nome do arquivo ou delimitador \(no caso de heredoc)
 	int				file_name_is_expandable;
+	int				file_was_expanded; // Flag to track if file was malloc'd by expansion
 	struct s_redir	*next; // Próxima redireção
 }	t_redir;
 
@@ -46,6 +47,7 @@ typedef struct s_arg
 {
 	char			*value;
 	int				is_expandable;
+	int				was_expanded; // Flag to track if value was malloc'd by expansion
 	struct s_arg	*next; // Próximo argumento
 }	t_arg;
 

@@ -126,7 +126,8 @@ int	builtin_exit(char **args, int last_exit_status, t_shell *shell)
 	int	exit_status;
 	int	arg_count;
 
-	printf("exit\n");
+	if (shell->is_interactive)
+		printf("exit\n");
 	arg_count = count_args(args);
 	if (arg_count == 1)
 		cleanup_and_exit(shell, last_exit_status);

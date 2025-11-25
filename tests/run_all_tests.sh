@@ -1,131 +1,181 @@
 #!/bin/bash
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    run_all_tests.sh                                   :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/11/15 00:00:00 by mhaddadi          #+#    #+#              #
-#    Updated: 2025/11/15 00:00:00 by mhaddadi         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
 
-# Colors
+# Minishell Test Suite - Master Runner
+# Runs all tests across all modules
+
+# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
+YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
-NC='\033[0m'
+NC='\033[0m' # No Color
+
+# Global counters
+TOTAL_SUITES=0
+PASSED_SUITES=0
+FAILED_SUITES=0
+
+# Test results storage
+declare -a SUITE_RESULTS
+declare -a SUITE_NAMES
+
+# Function to run a test suite
+run_suite() {
+    local suite_path="$1"
+    local suite_name="$2"
+    
+    TOTAL_SUITES=$((TOTAL_SUITES + 1))
+    
+    echo ""
+    echo -e "${CYAN}========================================"
+    echo -e "Running: ${suite_name}"
+    echo -e "========================================${NC}"
+    echo ""
+    
+    # Make executable and run
+    chmod +x "$suite_path"
+    bash "$suite_path"
+    local exit_code=$?
+    
+    if [ $exit_code -eq 0 ]; then
+        PASSED_SUITES=$((PASSED_SUITES + 1))
+        SUITE_RESULTS+=("PASS")
+        echo -e "${GREEN}✓ ${suite_name} completed successfully${NC}"
+    else
+        FAILED_SUITES=$((FAILED_SUITES + 1))
+        SUITE_RESULTS+=("FAIL")
+        echo -e "${RED}✗ ${suite_name} failed${NC}"
+    fi
+    
+    SUITE_NAMES+=("$suite_name")
+}
 
 # Banner
-echo -e "${CYAN}"
-echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║                                                                ║"
-echo "║          MINISHELL COMPREHENSIVE TEST SUITE                    ║"
-echo "║          Built-in Commands Testing Framework                   ║"
-echo "║                                                                ║"
-echo "╚════════════════════════════════════════════════════════════════╝"
+echo -e "${BLUE}"
+echo "╔════════════════════════════════════════╗"
+echo "║     MINISHELL COMPREHENSIVE TEST SUITE ║"
+echo "║                                        ║"
+echo "║  Testing all modules and components   ║"
+echo "╚════════════════════════════════════════╝"
 echo -e "${NC}"
 
 # Check if minishell exists
 if [ ! -f "./minishell" ]; then
-    echo -e "${RED}ERROR: minishell executable not found!${NC}"
-    echo -e "${YELLOW}Building minishell...${NC}"
-    make
-    if [ $? -ne 0 ]; then
-        echo -e "${RED}Build failed! Exiting.${NC}"
-        exit 1
-    fi
-    echo -e "${GREEN}Build successful!${NC}"
-    echo
+    echo -e "${RED}Error: minishell binary not found!${NC}"
+    echo "Please run 'make' first to build the project."
+    exit 1
 fi
 
-# Test files
-tests=(
-    "tests/test_echo.sh"
-    "tests/test_pwd.sh"
-    "tests/test_cd.sh"
-    "tests/test_env.sh"
-    "tests/test_export.sh"
-    "tests/test_unset.sh"
-    "tests/test_exit.sh"
-)
+echo -e "${YELLOW}Starting test execution...${NC}"
+echo ""
 
-# Results tracking
-total_suites=0
-passed_suites=0
-failed_suites=0
+# Run all test suites in order
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}UNIT TESTS${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-echo -e "${MAGENTA}════════════════════════════════════════════════════════════════${NC}"
-echo -e "${MAGENTA}                    RUNNING TEST SUITES                         ${NC}"
-echo -e "${MAGENTA}════════════════════════════════════════════════════════════════${NC}"
-echo
+# Tokenizer tests
+if [ -f "tests/tokenizer/test_tokenizer.sh" ]; then
+    run_suite "tests/tokenizer/test_tokenizer.sh" "Tokenizer Tests"
+fi
 
-# Run each test suite
-for test in "${tests[@]}"; do
-    if [ -f "$test" ]; then
-        ((total_suites++))
-        
-        test_name=$(basename "$test" .sh)
-        echo -e "${BLUE}┌────────────────────────────────────────────────────────────┐${NC}"
-        echo -e "${BLUE}│ Running: ${test_name}${NC}"
-        echo -e "${BLUE}└────────────────────────────────────────────────────────────┘${NC}"
-        
-        # Run the test
-        ./"$test"
-        result=$?
-        
-        if [ $result -eq 0 ]; then
-            ((passed_suites++))
-            echo -e "${GREEN}✓ ${test_name} PASSED${NC}"
-        else
-            ((failed_suites++))
-            echo -e "${RED}✗ ${test_name} FAILED${NC}"
-        fi
-        echo
-        echo -e "${BLUE}────────────────────────────────────────────────────────────${NC}"
-        echo
+# Parser tests
+if [ -f "tests/parser/test_parser.sh" ]; then
+    run_suite "tests/parser/test_parser.sh" "Parser Tests"
+fi
+
+# AST tests
+if [ -f "tests/ast/test_ast.sh" ]; then
+    run_suite "tests/ast/test_ast.sh" "AST Tests"
+fi
+
+# Expander tests
+if [ -f "tests/expander/test_expansion.sh" ]; then
+    run_suite "tests/expander/test_expansion.sh" "Variable Expansion Tests"
+fi
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}BUILTIN COMMAND TESTS${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Builtin tests
+if [ -f "tests/builtins/test_echo.sh" ]; then
+    run_suite "tests/builtins/test_echo.sh" "Echo Builtin Tests"
+fi
+
+if [ -f "tests/builtins/test_cd.sh" ]; then
+    run_suite "tests/builtins/test_cd.sh" "CD Builtin Tests"
+fi
+
+if [ -f "tests/builtins/test_pwd.sh" ]; then
+    run_suite "tests/builtins/test_pwd.sh" "PWD Builtin Tests"
+fi
+
+if [ -f "tests/builtins/test_env.sh" ]; then
+    run_suite "tests/builtins/test_env.sh" "ENV Builtin Tests"
+fi
+
+if [ -f "tests/builtins/test_export.sh" ]; then
+    run_suite "tests/builtins/test_export.sh" "Export Builtin Tests"
+fi
+
+if [ -f "tests/builtins/test_unset.sh" ]; then
+    run_suite "tests/builtins/test_unset.sh" "Unset Builtin Tests"
+fi
+
+if [ -f "tests/builtins/test_exit.sh" ]; then
+    run_suite "tests/builtins/test_exit.sh" "Exit Builtin Tests"
+fi
+
+# Final Summary
+echo ""
+echo ""
+echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║          FINAL TEST SUMMARY            ║${NC}"
+echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
+echo ""
+
+# Display results for each suite
+for i in "${!SUITE_NAMES[@]}"; do
+    name="${SUITE_NAMES[$i]}"
+    result="${SUITE_RESULTS[$i]}"
+    
+    if [ "$result" == "PASS" ]; then
+        echo -e "  ${GREEN}✓${NC} ${name}"
     else
-        echo -e "${YELLOW}Warning: ${test} not found!${NC}"
-        echo
+        echo -e "  ${RED}✗${NC} ${name}"
     fi
 done
 
-# Final summary
-echo -e "${CYAN}"
-echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║                                                                ║"
-echo "║                      FINAL TEST SUMMARY                        ║"
-echo "║                                                                ║"
-echo "╚════════════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "Total Test Suites:  ${TOTAL_SUITES}"
+echo -e "Passed:             ${GREEN}${PASSED_SUITES}${NC}"
+echo -e "Failed:             ${RED}${FAILED_SUITES}${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
-echo -e "Total test suites run: ${total_suites}"
-echo -e "${GREEN}Passed: ${passed_suites}${NC}"
-echo -e "${RED}Failed: ${failed_suites}${NC}"
-
-if [ $total_suites -gt 0 ]; then
-    success_rate=$(awk "BEGIN {printf \"%.1f\", ($passed_suites/$total_suites)*100}")
-    echo -e "Success rate: ${success_rate}%"
+# Calculate success rate
+if [ $TOTAL_SUITES -gt 0 ]; then
+    success_rate=$((PASSED_SUITES * 100 / TOTAL_SUITES))
+    echo ""
+    echo -e "Success Rate: ${success_rate}%"
 fi
 
-echo
+echo ""
 
-if [ $failed_suites -eq 0 ]; then
-    echo -e "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${GREEN}║                                                                ║${NC}"
-    echo -e "${GREEN}║  🎉 🎊 ALL TEST SUITES PASSED! EXCELLENT WORK! 🎊 🎉          ║${NC}"
-    echo -e "${GREEN}║                                                                ║${NC}"
-    echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
+# Final verdict
+if [ $FAILED_SUITES -eq 0 ]; then
+    echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+    echo -e "${GREEN}║   ✓ ALL TESTS PASSED SUCCESSFULLY!    ║${NC}"
+    echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
+    echo ""
     exit 0
 else
-    echo -e "${RED}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${RED}║                                                                ║${NC}"
-    echo -e "${RED}║  ❌ SOME TEST SUITES FAILED - REVIEW RESULTS ABOVE             ║${NC}"
-    echo -e "${RED}║                                                                ║${NC}"
-    echo -e "${RED}╚════════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${RED}╔════════════════════════════════════════╗${NC}"
+    echo -e "${RED}║     ✗ SOME TESTS FAILED                ║${NC}"
+    echo -e "${RED}╔════════════════════════════════════════╗${NC}"
+    echo ""
     exit 1
 fi
