@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_ast.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 20:40:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/19 20:40:00 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2025/11/26 13:13:14 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 /**
  * @brief Convert argument linked list to NULL-terminated array
- * 
+ *
  * Converts the t_arg linked list to an array format needed for execution.
  * First element is the command name, followed by arguments.
- * 
+ *
  * @param cmd The command structure containing name and args
  * @return NULL-terminated array of strings, NULL on error
  */
@@ -57,13 +57,13 @@ static char	**convert_args_to_array(t_cmd *cmd)
 
 /**
  * @brief Execute a simple command node
- * 
+ *
  * Executes a command by checking if it's a builtin or external command.
  * Builtins are executed in the current process, external commands would
  * require fork/exec (to be implemented).
- * 
+ *
  * Variable expansion is performed before command execution.
- * 
+ *
  * @param node The AST node containing the command
  * @param shell The shell state structure
  * @return Exit status of the command
@@ -78,17 +78,23 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	// Expand variables in arguments and redirections
 	expand_cmd_args(node->cmd->args, shell);
 	expand_redirection_files(node->cmd->redirs, shell);
+
 	args = convert_args_to_array(node->cmd);
 	if (!args)
 		return (ERROR);
 	if (is_builtin(args[0]))
 	{
+		int saved_stdout = dup(STDOUT_FILENO);
+		apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externar nao preciso de restaurar porque estao num forks
 		status = execute_builtin(args, shell);
+		dup2(saved_stdout, STDOUT_FILENO); // volta a apontar para terminal
+		close(saved_stdout);
 	}
 	else
 	{
 		// TODO: Implement external command execution
 		// For now, print command not found
+		//apply_redirections(node); no caso de ser uma funcao externa esta funcao aplica se no processo filho, depois do fork()
 		fprintf(stderr, "minishell: %s: command not found\n", args[0]);
 		status = CMD_NOT_FOUND;
 	}
@@ -99,11 +105,11 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 
 /**
  * @brief Execute a pipe node
- * 
+ *
  * Executes a pipeline by executing left and right sides.
  * Note: This is a simplified version. Full pipe implementation
  * with fork/exec will be added later.
- * 
+ *
  * @param node The AST node with type PIPE
  * @param shell The shell state structure
  * @return Exit status of the last command in the pipeline
@@ -127,13 +133,13 @@ static int	execute_pipe_node(t_ast *node, t_shell *shell)
 
 /**
  * @brief Execute an AST node recursively
- * 
+ *
  * Main executor that traverses the AST and executes nodes based on type.
  * Handles:
  * - CMD nodes: Execute as simple commands
  * - PIPE nodes: Execute as pipelines
  * - Other operators (AND, OR): To be implemented for bonus
- * 
+ *
  * @param node The AST node to execute
  * @param shell The shell state structure
  * @return Exit status of the execution

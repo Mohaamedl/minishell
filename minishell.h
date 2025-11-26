@@ -245,4 +245,8 @@ void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
 
 //-----------------------------------------EXPANSAO DE VARIAVEIS--------------------------------------------------
 //turn_args_list_into_args_array() depois de expandir vou ter que chamar esta funcao para ter o array de args pronto para o execve;
+
+//-----------------------------------------EXECUTER--------------------------------------------------
+void	apply_redirections(t_ast *cmd_node);
+void	apply_redir_out(t_redir *redir);
 #endif
