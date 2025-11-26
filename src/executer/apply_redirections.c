@@ -15,11 +15,15 @@ void	apply_redir_out(t_redir *redir)
 }
 void	apply_redirections(t_ast *cmd_node)
 {
-	t_redir *tmp_redir = cmd_node -> cmd ->redirs;
-	while(tmp_redir)
+	t_redir *curr_redir = cmd_node -> cmd ->redirs;
+	while(curr_redir)
 	{
-		if(tmp_redir ->type == REDIR_OUT)
-			apply_redir_out(tmp_redir);
-		tmp_redir = tmp_redir -> next;
+		if(curr_redir ->type == REDIR_OUT)
+			apply_redir_out(curr_redir);
+		if(curr_redir ->type == APPEND)
+			apply_redir_app(curr_redir);
+		if(curr_redir ->type == REDIR_IN)
+			apply_redir_in(curr_redir);
+		curr_redir = curr_redir -> next;
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 20:40:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/26 13:13:14 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/26 13:24:40 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	if (is_builtin(args[0]))
 	{
 		int saved_stdout = dup(STDOUT_FILENO);
-		apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externar nao preciso de restaurar porque estao num forks
+		apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externar nao preciso de restaurar porque estao num fork
 		status = execute_builtin(args, shell);
 		dup2(saved_stdout, STDOUT_FILENO); // volta a apontar para terminal
 		close(saved_stdout);
