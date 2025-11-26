@@ -102,15 +102,17 @@ int	main(int argc, char **argv, char **envp)
 
 		// Build and execute AST
 		first_node = build_cmds_and_ops_list(head);
+		print_nodes(first_node);
 		end_node = get_last_node(first_node);
 		root_node = build_tree(first_node, end_node);
 		build_sub_trees(&root_node);
-
+		// print_tree(root_node);
+		print_tree_visual(root_node);
 		// Execute AST
 		execute_ast(root_node, &shell);
 
 		// Optional: Print tree for debugging (can be removed/commented)
-		// print_tree(root_node);
+		
 
 		// Cleanup
 		free_tree(root_node);

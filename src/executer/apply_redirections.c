@@ -5,6 +5,23 @@
 	//APPEND,      // >>
 	//HEREDOC,      // <<
 
+void 	apply_redir_in(t_redir *redir)
+{
+	int fd;
+
+	fd = open(redir->file, O_RDONLY);
+	//lidar com erro de nao encontrar o file ou nao ter permissao
+	dup2(fd, STDIN_FILENO);
+	close(fd);
+}
+void	apply_redir_app(t_redir *redir)
+{
+	int fd;
+
+	fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644); 
+	dup2(fd, STDOUT_FILENO);
+	close(fd);
+}
 void	apply_redir_out(t_redir *redir)
 {
 	int fd;

@@ -85,16 +85,21 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	if (is_builtin(args[0]))
 	{
 		int saved_stdout = dup(STDOUT_FILENO);
+		int saved_stdin = dup(STDIN_FILENO);
 		apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externar nao preciso de restaurar porque estao num fork
+		//so executa se apply redirections correu bem entao tenho que retornar o status dentro dessa funcao e ja definir o status code
 		status = execute_builtin(args, shell);
 		dup2(saved_stdout, STDOUT_FILENO); // volta a apontar para terminal
 		close(saved_stdout);
+		dup2(saved_stdin, STDIN_FILENO); // volta a apontar para terminal
+		close(saved_stdin);
 	}
 	else
 	{
 		// TODO: Implement external command execution
 		// For now, print command not found
 		//apply_redirections(node); no caso de ser uma funcao externa esta funcao aplica se no processo filho, depois do fork()
+		//tenho de ter atencao quando so tenho rediracao apenas ex heredoc sem comando e tenho que fazer so a redir, neste caso o cmd_name é uma redirecao ex <<
 		fprintf(stderr, "minishell: %s: command not found\n", args[0]);
 		status = CMD_NOT_FOUND;
 	}
