@@ -1,9 +1,9 @@
 
 #include "minishell.h"
 
-size_t	get_quoted_size(char *line, char quote)
+int	get_quoted_size(char *line, char quote)
 {
-	size_t size;
+	int size;
 
 	size = 0;
 	line++; //para passar a prmeira aspa a frente (so quero o conteudo)
@@ -12,8 +12,8 @@ size_t	get_quoted_size(char *line, char quote)
 		size++;
 		line++;
 	}
-	if(*line == '\0')
-		return (0);
+	if(*line == '\0') //chegou ao fim se fechar
+		return (-1);
 	return(size);
 }
 t_token *create_token(char* value, t_token_type type, int is_expandable, int is_op) //esta funcao precisa de receber o type do token e atualizar o guardalo.
@@ -31,13 +31,18 @@ t_token *create_token(char* value, t_token_type type, int is_expandable, int is_
 
 char *get_quoted_text(char *line,char quote)
 {
-	size_t size;
+	int size;
 	char *str;
-	size = get_quoted_size(line,quote);//este size e' zero se a quote nao fechar ou se nao tiver nada dentro da quote
-	str = malloc((size + 1)*sizeof(char));
-	ft_memcpy(str, ++line, size); //ando line um char para a frente para nao copiar a aspa inicial
-	str[size] = '\0';
-	return str;
+	size = get_quoted_size(line,quote);//este size e´ -1 se a quote nao fechar
+	if (size == -1)
+		return (NULL);
+	else
+	{
+		str = malloc((size + 1)*sizeof(char));
+		ft_memcpy(str, ++line, size); //ando line um char para a frente para nao copiar a aspa inicial
+		str[size] = '\0';
+		return str;
+	}
 }
 
 void	append_token(t_token **head, t_token **last_token, t_token *new_token)
@@ -53,13 +58,12 @@ void	append_token(t_token **head, t_token **last_token, t_token *new_token)
 }
 //Aspas simples '...' e duplas "..." formam um único token mesmo com espaços ou operadores,
 //mas enquanto "..." permite expansão de variáveis e escapes, '...' é totalmente literal.
-void	create_quoted_token(t_token **last_token, t_token **head, char *line, char quote)
+int	create_quoted_token(t_token **last_token, t_token **head, char *line, char quote)
 {
 	char	*str;
 	t_token	*token;
 	int is_expandable;
 	int is_op;
-
 	is_op = 0;
 
 	is_expandable = 1;
@@ -71,10 +75,14 @@ void	create_quoted_token(t_token **last_token, t_token **head, char *line, char 
 			is_expandable = 0;
 	}
 	str = get_quoted_text(line,quote);
-	if(ft_strlen(str) < 1) //neste caso nao crio token,
-		return;
-	token = create_token(str, WORD, is_expandable, is_op);
-	append_token(head,last_token,token);
+	if (str == NULL) //as aspas nao fecharam
+		return 0;//failed
+	else
+	{
+		token = create_token(str, WORD, is_expandable, is_op);
+		append_token(head,last_token,token);
+	}
+	return 1;//sucess
 }
 // Not interpret unclosed quotes or special characters which are not required by the
 //subject such as \ (backslash) or ; (semicolon)
@@ -119,7 +127,13 @@ t_token	*tokenize(char* line)
 		if(is_space(line[i]))
 			skip_spaces(&line[i], &i);
 		else if(is_quote(line[i]))
-			handle_quote(&line[i],&i, &last_token, &head);
+		{
+			if(handle_quote(&line[i],&i, &last_token, &head)==0)
+			{
+				free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
+				return (NULL);//erro ao tokenizar
+			}
+		}
 		else if(is_operator(&line[i]))
 			handle_ops_and_reds(&line[i],&i, &last_token, &head);
 		else

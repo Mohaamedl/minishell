@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 14:31:25 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/19 20:21:00 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2025/11/26 10:26:29 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	
+
 	// Initialize shell
 	shell.env_list = init_env(envp);
 	shell.last_exit_status = 0;
 	shell.running = 1;
 	shell.is_interactive = isatty(STDIN_FILENO);
-	
+
 	// Check if stdin is a terminal (interactive mode)
 	interactive = shell.is_interactive;
 
@@ -48,7 +48,7 @@ int	main(int argc, char **argv, char **envp)
 			char	*buffer;
 			size_t	bufsize;
 			ssize_t	len;
-			
+
 			buffer = NULL;
 			bufsize = 0;
 			len = getline(&buffer, &bufsize, stdin);
@@ -71,40 +71,53 @@ int	main(int argc, char **argv, char **envp)
 				printf("exit\n");  // Ctrl+D pressed
 			break ;
 		}
-		if (!*line)  // Empty line
+
+		// Empty line check
+		if (!*line)
 		{
 			free(line);
 			continue ;
 		}
-		add_history(line);
-		
+
+		if (interactive)
+			add_history(line);
+
 		// Tokenize input
 		head = tokenize(line);
 		if (!head)
 		{
-			fprintf(stderr, "Error tokenizing input.\n");
+			fprintf(stderr, "Error: Unclosed quotes\n");
 			free(line);
 			continue;
 		}
-		
-		// Build AST
+
+		// Validate token list (from KAN-73)
+		if (validate_token_list(head) != 1)
+		{
+			shell.last_exit_status = SYNTAX_ERROR;
+			free_tokens(head);
+			free(line);
+			continue;
+		}
+
+		// Build and execute AST
 		first_node = build_cmds_and_ops_list(head);
 		end_node = get_last_node(first_node);
 		root_node = build_tree(first_node, end_node);
 		build_sub_trees(&root_node);
-		
+
 		// Execute AST
 		execute_ast(root_node, &shell);
-		
-		// Optional: Print tree for debugging (can be removed)
+
+		// Optional: Print tree for debugging (can be removed/commented)
 		// print_tree(root_node);
-		
+
 		// Cleanup
 		free_tree(root_node);
 		free_tokens(head);
 		free(line);
 	}
-	
+
 	// Cleanup shell
 	free_env(shell.env_list);
 	return (shell.last_exit_status);

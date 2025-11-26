@@ -160,9 +160,9 @@ t_token *create_token(char *value, t_token_type type, int is_expandable, int is_
 void    append_token(t_token **head, t_token **last_token, t_token *new_token);
 
 /* ---------------- Funções para lidar com aspas ---------------- */
-size_t  get_quoted_size(char *line, char quote);
+int     get_quoted_size(char *line, char quote);
 char    *get_quoted_text(char *line, char quote);
-void    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
+int     create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
 
 /* ---------------- Funções para operadores ---------------- */
 void    handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);
@@ -172,7 +172,7 @@ void    handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_toke
 void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
 
 /* ---------------- Funções principais ---------------- */
-void    handle_quote(char *line, int *i, t_token **last_token, t_token **head);
+int     handle_quote(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_word(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
 void    skip_spaces(char *line, int *i);
@@ -232,6 +232,15 @@ void	print_tree(t_ast *root);
 //MEMORY
 void	free_tree(t_ast *root);
 void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
+
+/*
+** ============================================================================
+** TOKENIZER VALIDATION
+** ============================================================================
+*/
+
+/* validate_token_list.c */
+int		validate_token_list(t_token *head);
 
 /*
 ** ============================================================================
