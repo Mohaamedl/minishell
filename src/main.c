@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 14:31:25 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/26 10:26:29 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/27 15:34:57 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	main(int argc, char **argv, char **envp)
 			free(line);
 			continue;
 		}
-
+		print_tokens(head);
 		// Build and execute AST
 		first_node = build_cmds_and_ops_list(head);
 		print_nodes(first_node);
@@ -112,7 +112,7 @@ int	main(int argc, char **argv, char **envp)
 		execute_ast(root_node, &shell);
 
 		// Optional: Print tree for debugging (can be removed/commented)
-		
+
 
 		// Cleanup
 		free_tree(root_node);

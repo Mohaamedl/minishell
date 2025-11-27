@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 20:40:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/26 13:24:40 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/27 17:36:36 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,20 @@ static char	**convert_args_to_array(t_cmd *cmd)
 	return (args);
 }
 
+void	save_std_fds(int *saved_std_fds)
+{
+	saved_std_fds[0] = dup(STDIN_FILENO);
+	saved_std_fds[1] = dup(STDOUT_FILENO);
+}
+void restore_std_fds(int saved_stdin, int saved_stdout)
+{
+	dup2(saved_stdin, STDIN_FILENO);
+	close(saved_stdin);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdout);
+}
+
+
 /**
  * @brief Execute a simple command node
  *
@@ -72,7 +86,7 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 {
 	char	**args;
 	int		status;
-
+	int		saved_std_fds[2];
 	if (!node || !node->cmd || !node->cmd->cmd_name)
 		return (ERROR);
 	// Expand variables in arguments and redirections
@@ -84,24 +98,32 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 		return (ERROR);
 	if (is_builtin(args[0]))
 	{
-		int saved_stdout = dup(STDOUT_FILENO);
-		int saved_stdin = dup(STDIN_FILENO);
-		apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externar nao preciso de restaurar porque estao num fork
+		save_std_fds(saved_std_fds);
+		status = apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externas nao preciso de restaurar porque estao num fork
 		//so executa se apply redirections correu bem entao tenho que retornar o status dentro dessa funcao e ja definir o status code
-		status = execute_builtin(args, shell);
-		dup2(saved_stdout, STDOUT_FILENO); // volta a apontar para terminal
-		close(saved_stdout);
-		dup2(saved_stdin, STDIN_FILENO); // volta a apontar para terminal
-		close(saved_stdin);
+		if (status == SUCCESS)
+			status = execute_builtin(args, shell);
+		restore_std_fds(saved_std_fds[0], saved_std_fds[1]);
 	}
 	else
 	{
-		// TODO: Implement external command execution
-		// For now, print command not found
-		//apply_redirections(node); no caso de ser uma funcao externa esta funcao aplica se no processo filho, depois do fork()
-		//tenho de ter atencao quando so tenho rediracao apenas ex heredoc sem comando e tenho que fazer so a redir, neste caso o cmd_name é uma redirecao ex <<
-		fprintf(stderr, "minishell: %s: command not found\n", args[0]);
-		status = CMD_NOT_FOUND;
+		pid_t pid = fork();
+
+		if (pid == 0)
+		{ //no processo filho:
+			apply_redirections(node);//no caso de ser uma funcao externa esta funcao aplica se no processo filho, depois do fork()
+			//tenho de ter atencao quando so tenho rediracao apenas ex heredoc sem comando e tenho que fazer so a redir, neste caso o cmd_name é uma redirecao ex <<
+			//if CMD name is not a redirection
+				//execute_cmd() //chama o excve e se nao funcionar da exit com um status code
+			fprintf(stderr, "minishell: %s: command not found\n", args[0]);
+			status = CMD_NOT_FOUND;
+		}
+		else //processo pai
+		{
+			waitpid(pid, &status, 0); //nao preciso de resetar os fds no pai porque alterei os no processo filho e esse processo vai morrer com o execve
+			//vou buscar o status que o filho retornou com waitpid(pid, &status, 0);
+			return(WEXITSTATUS(status));
+		}
 	}
 	// Free args array (not the strings, they belong to the AST)
 	free(args);
