@@ -31,18 +31,18 @@ int apply_redir_in(t_redir *redir)
 	int fd = open(redir->file, O_RDONLY);
 	if (fd == -1)
 	{
-		fprintf(stderr, "minishell: %s: %s\n",redir->file, strerror(errno));
+		printf("minishell: %s: %s\n",redir->file, strerror(errno));
 		return (ERROR);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
 	{
-		fprintf(stderr, "minishell: dup2 failed: %s\n", strerror(errno));
+		printf("minishell: dup2 failed: %s\n", strerror(errno));
 		close(fd);
 		return (ERROR);
 	}
 	if (close(fd) == -1)
 	{
-		fprintf(stderr, "minishell: close failed: %s\n", strerror(errno));
+		printf("minishell: close failed: %s\n", strerror(errno));
 		return (ERROR);
 	}
 	return (SUCCESS);
@@ -53,18 +53,18 @@ int apply_redir_app(t_redir *redir)
 	int fd = open(redir->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (fd == -1)
 	{
-		fprintf(stderr, "minishell: %s: %s\n",redir->file, strerror(errno));
+		printf("minishell: %s: %s\n",redir->file, strerror(errno));
 		return (ERROR);
 	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
-		fprintf(stderr, "minishell: dup2 failed: %s\n", strerror(errno));
+		printf("minishell: dup2 failed: %s\n", strerror(errno));
 		close(fd);
 		return (ERROR);
 	}
 	if (close(fd) == -1)
 	{
-		fprintf(stderr, "minishell: close failed: %s\n", strerror(errno));
+		printf("minishell: close failed: %s\n", strerror(errno));
 		return (ERROR);
 	}
 	return (SUCCESS);
@@ -75,18 +75,18 @@ int apply_redir_out(t_redir *redir)
 	int fd = open(redir->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 	{
-		fprintf(stderr, "minishell: %s: %s\n",redir->file, strerror(errno));
+		printf("minishell: %s: %s\n",redir->file, strerror(errno));
 		return (ERROR);
 	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
 	{
-		fprintf(stderr, "minishell: dup2 failed: %s\n", strerror(errno));
+		printf("minishell: dup2 failed: %s\n", strerror(errno));
 		close(fd);
 		return (ERROR);
 	}
 	if (close(fd) == -1)
 	{
-		fprintf(stderr, "minishell: close failed: %s\n", strerror(errno));
+		printf("minishell: close failed: %s\n", strerror(errno));
 		return (ERROR);
 	}
 	return (SUCCESS);

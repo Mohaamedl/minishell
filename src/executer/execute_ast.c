@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 20:40:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/27 17:36:36 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/28 16:13:21 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,10 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	// Expand variables in arguments and redirections
 	expand_cmd_args(node->cmd->args, shell);
 	expand_redirection_files(node->cmd->redirs, shell);
-
 	args = convert_args_to_array(node->cmd);
 	if (!args)
 		return (ERROR);
+	status = SUCCESS;
 	if (is_builtin(args[0]))
 	{
 		save_std_fds(saved_std_fds);
@@ -111,23 +111,33 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 
 		if (pid == 0)
 		{ //no processo filho:
-			apply_redirections(node);//no caso de ser uma funcao externa esta funcao aplica se no processo filho, depois do fork()
-			//tenho de ter atencao quando so tenho rediracao apenas ex heredoc sem comando e tenho que fazer so a redir, neste caso o cmd_name é uma redirecao ex <<
-			//if CMD name is not a redirection
-				//execute_cmd() //chama o excve e se nao funcionar da exit com um status code
-			fprintf(stderr, "minishell: %s: command not found\n", args[0]);
-			status = CMD_NOT_FOUND;
+			apply_redirections(node);
+			//if(!cmd_name_is_redir(node->cmd->cmd_name))//se o cmd_name for uma redirecao aplico so a redirecao e nao corro nada ex: > outfile (cria o ficheiro outfile sem nada)
+				//execute_external_cmd(args,shell); //chama o excve e se nao funcionar da exit com um status code
+			_exit(0); //so para testar as redirecoes depois sera para remover
 		}
 		else //processo pai
 		{
 			waitpid(pid, &status, 0); //nao preciso de resetar os fds no pai porque alterei os no processo filho e esse processo vai morrer com o execve
 			//vou buscar o status que o filho retornou com waitpid(pid, &status, 0);
-			return(WEXITSTATUS(status));
+			return(WEXITSTATUS(status)); //aqui faremos uma manipulacao deste resultado para retornar SUCCESS, ERROR, etc
 		}
 	}
 	// Free args array (not the strings, they belong to the AST)
 	free(args);
 	return (status);
+}
+int cmd_name_is_redir(char *cmd_name)
+{
+	if (ft_strcmp(cmd_name, ">>") == 0)
+		return 1;
+	if (ft_strcmp(cmd_name, "<<") == 0)
+		return 1;
+	if (ft_strcmp(cmd_name, ">") == 0)
+		return 1;
+	if (ft_strcmp(cmd_name, "<") == 0)
+		return 1;
+	return 0;
 }
 
 /**
