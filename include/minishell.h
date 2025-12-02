@@ -264,6 +264,7 @@ int		execute_ast(t_ast *node, t_shell *shell);
 
 //-----------------------------------------EXECUTER--------------------------------------------------
 int	apply_redirections(t_ast *cmd_node);
+void execute_external_cmd(char	**args,t_shell *shell);
 
 
 #endif
