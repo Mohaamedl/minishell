@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 20:40:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/02 14:58:00 by framiran         ###   ########.fr       */
+/*   Updated: 2025/12/02 15:30:11 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ int cmd_name_is_redir(char *cmd_name)
  */
 static int	execute_command_node(t_ast *node, t_shell *shell)
 {
+	char	**envp;
 	char	**args;
 	int		status;
 	int		saved_std_fds[2];
@@ -118,17 +119,19 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	}
 	else
 	{
+		envp = env_list_to_array(shell->env_list);
 		pid_t pid = fork();
-
 		if (pid == 0)
 		{ //no processo filho:
 			apply_redirections(node);
 			if(!cmd_name_is_redir(node->cmd->cmd_name))//se o cmd_name for uma redirecao aplico so a redirecao e nao corro nada ex: > outfile (cria o ficheiro outfile sem nada)
-				execute_external_cmd(args,shell); //chama o excve e se nao funcionar da exit com um status code
+				execute_external_cmd(args,envp); //chama o excve e se nao funcionar da exit com um status code
 			exit(0); //so para testar as redirecoes depois sera para remover
 		}
 		else //processo pai
 		{
+			printf("Entou no pai, o comando foi executado\n");
+			free(envp); //ja nao preciso mais disto
 			waitpid(pid, &status, 0); //nao preciso de resetar os fds no pai porque alterei os no processo filho e esse processo vai morrer com o execve
 			//vou buscar o status que o filho retornou com waitpid(pid, &status, 0);
 			return(WEXITSTATUS(status)); //aqui faremos uma manipulacao deste resultado para retornar SUCCESS, ERROR, etc

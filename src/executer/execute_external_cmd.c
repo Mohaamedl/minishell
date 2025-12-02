@@ -29,17 +29,16 @@ int	is_a_path(char *arg)
 	return (0);
 }
 
-char	*get_path_from_env_list(t_env *envp)
+char	*get_path_from_env(char **envp)
 {
 	int	i;
 
 	i = 0;
-	while (envp->next!= NULL)
+	while (envp[i] != NULL)
 	{
-		if (ft_strncmp(envp->key, "PATH", 4) == 0)
-			return (envp->value);
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+			return (envp[i] + 5);
 		i++;
-		envp = envp->next;
 	}
 	return (NULL);
 }
@@ -76,13 +75,13 @@ char	*handle_absolute_path(char *cmd_path)
 	return (NULL);
 }
 
-char	*handle_relative_path(char *cmd, t_env *envp)
+char	*handle_relative_path(char *cmd,char **envp)
 {
 	char	*path;
 	char	*cmd_path;
 	char	**directories;
 
-	path = get_path_from_env_list(envp);
+	path = get_path_from_env(envp);
 	if (!path)
 		return (NULL);
 	directories = ft_split(path, ':');
@@ -93,7 +92,7 @@ char	*handle_relative_path(char *cmd, t_env *envp)
 	return (cmd_path);
 }
 
-char	*get_path(char **args, t_env *envp)
+char	*get_path(char **args, char **envp)
 {
 	char	*cmd_path;
 
@@ -104,10 +103,11 @@ char	*get_path(char **args, t_env *envp)
 	return (cmd_path);
 }
 
-void execute_external_cmd(char	**args,t_shell *shell)
+void execute_external_cmd(char	**args, char **envp)
 {
 	char *cmd_path;
 	//eventualmente vou ter de dar free a este path
-	cmd_path = get_path(args, shell->env_list);
+	cmd_path = get_path(args, envp);
 	printf("Path found for %s : %s\n",args[0],cmd_path);
+	execve(cmd_path, args, envp);
 }
