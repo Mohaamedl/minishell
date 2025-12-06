@@ -57,8 +57,10 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/ast/build_tree_helpers.c \
 			  $(SRC_DIR)/ast/ast_memory.c \
 			  $(SRC_DIR)/ast/ast_debuggers.c \
-			  $(SRC_DIR)/ast/execute_ast.c \
-			  $(SRC_DIR)/expander/var_expand.c
+			  $(SRC_DIR)/expander/var_expand.c \
+			  $(SRC_DIR)/executer/execute_ast.c \
+			  $(SRC_DIR)/executer/apply_redirections.c \
+
 
 # Object files
 OBJS        = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

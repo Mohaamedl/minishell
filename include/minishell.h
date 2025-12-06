@@ -262,4 +262,8 @@ void	expand_redirection_files(t_redir *redirs, t_shell *shell);
 /* execute_ast.c */
 int		execute_ast(t_ast *node, t_shell *shell);
 
+//-----------------------------------------EXECUTER--------------------------------------------------
+int	apply_redirections(t_ast *cmd_node);
+
+
 #endif

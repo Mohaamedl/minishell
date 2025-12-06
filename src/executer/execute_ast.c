@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_ast.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 20:40:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/19 20:40:00 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2025/11/28 16:13:21 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 /**
  * @brief Convert argument linked list to NULL-terminated array
- * 
+ *
  * Converts the t_arg linked list to an array format needed for execution.
  * First element is the command name, followed by arguments.
- * 
+ *
  * @param cmd The command structure containing name and args
  * @return NULL-terminated array of strings, NULL on error
  */
@@ -55,15 +55,29 @@ static char	**convert_args_to_array(t_cmd *cmd)
 	return (args);
 }
 
+void	save_std_fds(int *saved_std_fds)
+{
+	saved_std_fds[0] = dup(STDIN_FILENO);
+	saved_std_fds[1] = dup(STDOUT_FILENO);
+}
+void restore_std_fds(int saved_stdin, int saved_stdout)
+{
+	dup2(saved_stdin, STDIN_FILENO);
+	close(saved_stdin);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdout);
+}
+
+
 /**
  * @brief Execute a simple command node
- * 
+ *
  * Executes a command by checking if it's a builtin or external command.
  * Builtins are executed in the current process, external commands would
  * require fork/exec (to be implemented).
- * 
+ *
  * Variable expansion is performed before command execution.
- * 
+ *
  * @param node The AST node containing the command
  * @param shell The shell state structure
  * @return Exit status of the command
@@ -72,7 +86,7 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 {
 	char	**args;
 	int		status;
-
+	int		saved_std_fds[2];
 	if (!node || !node->cmd || !node->cmd->cmd_name)
 		return (ERROR);
 	// Expand variables in arguments and redirections
@@ -81,29 +95,58 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	args = convert_args_to_array(node->cmd);
 	if (!args)
 		return (ERROR);
+	status = SUCCESS;
 	if (is_builtin(args[0]))
 	{
-		status = execute_builtin(args, shell);
+		save_std_fds(saved_std_fds);
+		status = apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externas nao preciso de restaurar porque estao num fork
+		//so executa se apply redirections correu bem entao tenho que retornar o status dentro dessa funcao e ja definir o status code
+		if (status == SUCCESS)
+			status = execute_builtin(args, shell);
+		restore_std_fds(saved_std_fds[0], saved_std_fds[1]);
 	}
 	else
 	{
-		// TODO: Implement external command execution
-		// For now, print command not found
-		fprintf(stderr, "minishell: %s: command not found\n", args[0]);
-		status = CMD_NOT_FOUND;
+		pid_t pid = fork();
+
+		if (pid == 0)
+		{ //no processo filho:
+			apply_redirections(node);
+			//if(!cmd_name_is_redir(node->cmd->cmd_name))//se o cmd_name for uma redirecao aplico so a redirecao e nao corro nada ex: > outfile (cria o ficheiro outfile sem nada)
+				//execute_external_cmd(args,shell); //chama o excve e se nao funcionar da exit com um status code
+			_exit(0); //so para testar as redirecoes depois sera para remover
+		}
+		else //processo pai
+		{
+			waitpid(pid, &status, 0); //nao preciso de resetar os fds no pai porque alterei os no processo filho e esse processo vai morrer com o execve
+			//vou buscar o status que o filho retornou com waitpid(pid, &status, 0);
+			return(WEXITSTATUS(status)); //aqui faremos uma manipulacao deste resultado para retornar SUCCESS, ERROR, etc
+		}
 	}
 	// Free args array (not the strings, they belong to the AST)
 	free(args);
 	return (status);
 }
+int cmd_name_is_redir(char *cmd_name)
+{
+	if (ft_strcmp(cmd_name, ">>") == 0)
+		return 1;
+	if (ft_strcmp(cmd_name, "<<") == 0)
+		return 1;
+	if (ft_strcmp(cmd_name, ">") == 0)
+		return 1;
+	if (ft_strcmp(cmd_name, "<") == 0)
+		return 1;
+	return 0;
+}
 
 /**
  * @brief Execute a pipe node
- * 
+ *
  * Executes a pipeline by executing left and right sides.
  * Note: This is a simplified version. Full pipe implementation
  * with fork/exec will be added later.
- * 
+ *
  * @param node The AST node with type PIPE
  * @param shell The shell state structure
  * @return Exit status of the last command in the pipeline
@@ -127,13 +170,13 @@ static int	execute_pipe_node(t_ast *node, t_shell *shell)
 
 /**
  * @brief Execute an AST node recursively
- * 
+ *
  * Main executor that traverses the AST and executes nodes based on type.
  * Handles:
  * - CMD nodes: Execute as simple commands
  * - PIPE nodes: Execute as pipelines
  * - Other operators (AND, OR): To be implemented for bonus
- * 
+ *
  * @param node The AST node to execute
  * @param shell The shell state structure
  * @return Exit status of the execution

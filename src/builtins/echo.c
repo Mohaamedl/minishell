@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 14:32:54 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/08 14:33:36 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2025/11/26 13:00:26 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 /**
  * @brief Check if argument is a valid -n option
- * 
+ *
  * The echo command accepts multiple -n options. This function validates
  * that the argument starts with '-n' and contains only 'n' characters.
- * 
+ *
  * @param arg The argument to check
  * @return true if valid -n option, false otherwise
- * 
+ *
  * @example
  * is_n_option("-n")     → true
  * is_n_option("-nnn")   → true
@@ -44,14 +44,14 @@ static bool	is_n_option(const char *arg)
 
 /**
  * @brief Implement echo built-in command
- * 
+ *
  * Prints arguments to standard output separated by spaces.
  * Supports the -n option which suppresses the trailing newline.
  * Multiple -n options are processed (matches bash behavior).
- * 
+ *
  * @param args NULL-terminated array of arguments (args[0] is "echo")
  * @return Always returns 0 (echo never fails)
- * 
+ *
  * @details
  * Behavior matches bash echo:
  * - echo hello world          → "hello world\n"
@@ -59,7 +59,7 @@ static bool	is_n_option(const char *arg)
  * - echo -n -n test           → "test"
  * - echo -nnn test            → "test"
  * - echo ""                   → "\n"
- * 
+ *
  * @note
  * - args[0] is the command name "echo"
  * - Processes all leading -n options
@@ -80,12 +80,14 @@ int	builtin_echo(char **args)
 	}
 	while (args[i])
 	{
-		printf("%s", args[i]);
+		//printf("%s", args[i]);
+		write(STDOUT_FILENO, args[i], ft_strlen(args[i]));
 		if (args[i + 1])
-			printf(" ");
+		//	printf(" ");
+			write(STDOUT_FILENO," ", 1);
 		i++;
 	}
 	if (newline)
-		printf("\n");
+		write(STDOUT_FILENO,"\n", 1);;
 	return (SUCCESS);
 }
