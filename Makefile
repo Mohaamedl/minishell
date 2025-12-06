@@ -60,6 +60,11 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/expander/var_expand.c \
 			  $(SRC_DIR)/executer/execute_ast.c \
 			  $(SRC_DIR)/executer/apply_redirections.c \
+			  $(SRC_DIR)/executor/process.c \
+			  $(SRC_DIR)/executor/wait.c \
+			  $(SRC_DIR)/executor/exec.c \
+			  $(SRC_DIR)/executor/pipes.c \
+			  $(SRC_DIR)/executor/pipes_utils.c \
 
 
 # Object files
