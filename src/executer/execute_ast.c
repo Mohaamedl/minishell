@@ -123,10 +123,13 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 		if (pid == 0)
 		{
 			// Child process
+			int exit_code;
 			apply_redirections(node);
 			if (!cmd_name_is_redir(node->cmd->cmd_name))
-				execute_external_cmd(args, shell);
-			_exit(0);
+				exit_code = execute_external_cmd(args, shell);
+			else
+				exit_code = SUCCESS;
+			_exit(exit_code);
 		}
 		else
 		{
@@ -176,7 +179,11 @@ static void	execute_in_child(t_ast *node, t_shell *shell)
 		if (is_builtin(args[0]))
 			_exit(execute_builtin(args, shell));
 		else if (!cmd_name_is_redir(node->cmd->cmd_name))
-			execute_external_cmd(args, shell);
+		{
+			int exit_code = execute_external_cmd(args, shell);
+			free(args);
+			_exit(exit_code);
+		}
 		free(args);
 		_exit(SUCCESS);
 	}
