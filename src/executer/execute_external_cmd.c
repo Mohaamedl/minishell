@@ -109,5 +109,5 @@ void execute_external_cmd(char	**args, char **envp)
 	//eventualmente vou ter de dar free a este path
 	cmd_path = get_path(args, envp);
 	printf("Path found for %s : %s\n",args[0],cmd_path);
-	execve(cmd_path, args, envp);
+	execve(cmd_path, args, envp); //talvez nao precise de dar free a path sendo que tudo vai ser destruido
 }
