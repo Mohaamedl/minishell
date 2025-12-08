@@ -36,6 +36,10 @@ int	main(int argc, char **argv, char **envp)
 	// Check if stdin is a terminal (interactive mode)
 	interactive = shell.is_interactive;
 
+	// Setup signal handlers for interactive mode
+	if (interactive)
+		setup_signals_interactive();
+
 	while (shell.running)
 	{
 		if (interactive)
@@ -67,18 +71,23 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (!line)
 		{
+			// Ctrl+D (EOF) handling
 			if (interactive)
-				printf("exit\n");  // Ctrl+D pressed
+			{
+				printf("exit\n");
+				shell.running = 0;
+			}
 			break ;
 		}
 
-		// Empty line check
-		if (!*line)
+		// Empty line check - skip whitespace-only lines
+		if (is_empty_or_whitespace(line))
 		{
 			free(line);
 			continue ;
 		}
 
+		// Add to history (only for interactive mode and non-empty lines)
 		if (interactive)
 			add_history(line);
 
@@ -86,7 +95,8 @@ int	main(int argc, char **argv, char **envp)
 		head = tokenize(line);
 		if (!head)
 		{
-			fprintf(stderr, "Error: Unclosed quotes\n");
+			fprintf(stderr, "syntax error: Unclosed quotes\n");
+			shell.last_exit_status = SYNTAX_ERROR;
 			free(line);
 			continue;
 		}
@@ -108,8 +118,17 @@ int	main(int argc, char **argv, char **envp)
 		build_sub_trees(&root_node);
 		// print_tree(root_node);
 		//print_tree_visual(root_node);
+		
+		// Setup signal handling for command execution
+		if (interactive)
+			setup_signals_executing();
+		
 		// Execute AST
 		execute_ast(root_node, &shell);
+
+		// Restore interactive signal handling
+		if (interactive)
+			setup_signals_interactive();
 
 		// Optional: Print tree for debugging (can be removed/commented)
 

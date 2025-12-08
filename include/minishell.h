@@ -217,6 +217,7 @@ void	free_node_list(t_ast *head); //esta funcao serve apenas para dar free a uma
 									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore
 
 t_ast	*get_last_node(t_ast *head); //vai buscar o ultimo node da lista, preciso dele na funcao build_tree()
+int		is_empty_or_whitespace(const char *str);
 
 
 //----------------------------------------CRIACAO DA ARVORE BINARIA---------------------------------------------------
@@ -261,6 +262,34 @@ void	expand_redirection_files(t_redir *redirs, t_shell *shell);
 
 /* execute_ast.c */
 int		execute_ast(t_ast *node, t_shell *shell);
+
+/*
+** ============================================================================
+** EXECUTOR MODULE (Process Management & External Commands)
+** ============================================================================
+*/
+
+/* process.c - KAN-53 */
+pid_t	create_process(void);
+
+/* wait.c - KAN-55 */
+int		wait_for_process(pid_t pid);
+int		wait_for_pipeline(pid_t *pids, int count);
+
+/* exec.c - KAN-54 */
+char	*find_command_in_path(char *cmd, t_env *env);
+int		execute_external_cmd(char **args, t_shell *shell);
+
+/* pipes.c - KAN-52 */
+int		*create_pipes(int num_commands);
+void	setup_pipe_fds(int *pipes, int index, int total);
+void	close_all_pipes(int *pipes, int num_pipes);
+
+/*
+** ============================================================================
+** REDIRECTIONS
+** ============================================================================
+*/
 
 //-----------------------------------------EXECUTER--------------------------------------------------
 int	apply_redirections(t_ast *cmd_node);
