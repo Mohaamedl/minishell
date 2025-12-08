@@ -101,13 +101,9 @@ jobs:
     
     - name: Run ${{ matrix.test-suite }} tests
       run: |
-        shopt -s nullglob
-        tests=(tests/${{ matrix.test-suite }}/test_*.sh)
-        if [ ${#tests[@]} -gt 0 ]; then
+        if [ -f "tests/${{ matrix.test-suite }}/test_*.sh" ]; then
           chmod +x tests/${{ matrix.test-suite }}/test_*.sh
-          for test in "${tests[@]}"; do
-            bash "$test"
-          done
+          bash tests/${{ matrix.test-suite }}/test_*.sh
         else
           echo "No tests found for ${{ matrix.test-suite }}"
           exit 1

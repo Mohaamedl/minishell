@@ -129,7 +129,7 @@ void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head)
 		*i = *i + 1;
 	}
 }
-void	handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **head)
+	void	handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **head)
 {
 	t_token *token;
 	char *str;
@@ -151,4 +151,18 @@ void	handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **
 		append_token(head,last_token,token);
 		*i = *i + 1;
 	}
+}
+
+void	handle_semicolon(char *line, int *i, t_token **last_token, t_token **head)
+{
+	t_token *token;
+	char *str;
+	int is_op;
+
+	(void)line;  // Unused parameter
+	is_op = 1;
+	str = ft_strdup(";");
+	token = create_token(str, SEMICOLON, 1, is_op);
+	append_token(head,last_token,token);
+	*i = *i + 1;
 }

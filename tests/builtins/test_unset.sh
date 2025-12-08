@@ -70,7 +70,7 @@ echo
 echo -e "${YELLOW}Test 2: unset multiple variables${NC}"
 ((TOTAL++))
 result=$(run_command_all $'export A=1\nexport B=2\nexport C=3\nunset A B C\nenv')
-if ! echo "$result" | grep -q "^A=" && ! echo "$result" | grep -q "^B=" && ! echo "$result" | grep -q "^C="; then
+if ! echo "$result" | grep -q "A=" && ! echo "$result" | grep -q "B=" && ! echo "$result" | grep -q "C="; then
     echo -e "${GREEN}✓ PASS${NC} - All variables removed"
     ((PASSED++))
 else

@@ -27,8 +27,8 @@ test_parser() {
     
     TOTAL=$((TOTAL + 1))
     
-    # Run the command and capture output
-    output=$(echo "$input" | $MINISHELL 2>&1)
+    # Run the command and capture output with timeout
+    output=$(echo -e "$input\nexit" | timeout 2s $MINISHELL 2>&1)
     exit_code=$?
     
     # Check for syntax error in output

@@ -14,6 +14,7 @@ typedef enum e_token_type
 	AND,
 	LPAREN,      // (
 	RPAREN,      // )
+	SEMICOLON,   // ; (not supported)
 	CMD, //este token_type e apenas utilizado em nodes, ate la todos os tokens que nao sao operadores nem redirecionamentos sao WORD
 }	t_token_type;
 
