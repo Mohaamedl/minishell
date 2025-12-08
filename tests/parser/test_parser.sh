@@ -98,7 +98,7 @@ test_parser "Pipe at start" "| echo hello" 0
 test_parser "Pipe at end" "echo hello |" 0
 test_parser "Double pipe" "echo hello || echo world" 1  # OR operator is valid
 test_parser "Redirection without file" "echo >" 0
-test_parser "Redirection without command" "> file" 0
+test_parser "Redirection without command" "> file" 1  # bash allows this - creates empty file
 test_parser "Unclosed parentheses" "(echo hello" 0
 test_parser "Mismatched parentheses" "echo hello)" 0
 test_parser "Empty parentheses" "()" 0

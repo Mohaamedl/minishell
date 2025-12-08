@@ -12,18 +12,26 @@
 
 #include "minishell.h"
 
-//esta funcao recebe o node com o primeiro parentesis e vai saltar para o ultimo parentesis, a funcao get_OP_node_based_on_type()
-//depois avalia se este e o ultimo node ou nao se for retorna null (nao encontrou operador) caso nao seja o ultimo passa para a frente
+//esta funcao recebe o node com o primeiro parentesis e vai saltar para o ultimo parentesis correspondente
+//agora conta niveis de aninhamento para lidar com parentesis aninhados ((a && b))
 t_ast	*skip_subtree_nodes(t_ast *tmp_node)
 {
-	while(tmp_node)
+	int	level;
+
+	level = 0;
+	while (tmp_node)
 	{
-		if(tmp_node -> type == RPAREN)
-			return (tmp_node);
-		tmp_node = tmp_node -> right;
+		if (tmp_node->type == LPAREN)
+			level++;
+		if (tmp_node->type == RPAREN)
+		{
+			level--;
+			if (level == 0)
+				return (tmp_node);
+		}
+		tmp_node = tmp_node->right;
 	}
 	return (NULL);
-	//se chegar aqui e porque nao encontrou a o parentesis que fecha ")", vou ter que pensar no que fazer neste caso, penso nao ser presico lidar
 }
 
 t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type)
@@ -44,25 +52,43 @@ t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_typ
 	return (NULL);
 }
 
-t_ast *get_split_op_node(t_ast *start_node, t_ast *end_node)
+/**
+ * @brief Find the rightmost operator of given type(s)
+ * 
+ * For left-to-right associativity, we need to split at the rightmost operator.
+ * This ensures (a op b op c) becomes op(op(a, b), c) not op(a, op(b, c)).
+ */
+static t_ast	*get_rightmost_op(t_ast *start, t_ast *end, int check_and_or)
 {
-	t_ast *tmp_node;
+	t_ast	*tmp;
+	t_ast	*rightmost;
 
-	tmp_node = NULL;
-	tmp_node = get_OP_node_based_on_type(start_node, end_node, OR);
-	if (tmp_node != NULL)
-		return tmp_node;
-	else
+	rightmost = NULL;
+	tmp = start;
+	while (tmp)
 	{
-		tmp_node = get_OP_node_based_on_type(start_node, end_node, AND);
-		if (tmp_node != NULL)
-			return tmp_node;
-		else
-		{
-			tmp_node = get_OP_node_based_on_type(start_node, end_node, PIPE);
-			if (tmp_node != NULL)
-				return tmp_node;
-		}
+		if (tmp->type == LPAREN)
+			tmp = skip_subtree_nodes(tmp);
+		if (check_and_or && (tmp->type == OR || tmp->type == AND))
+			rightmost = tmp;
+		else if (!check_and_or && tmp->type == PIPE)
+			rightmost = tmp;
+		if (tmp == end)
+			break ;
+		tmp = tmp->right;
 	}
-	return NULL;
+	return (rightmost);
+}
+
+t_ast	*get_split_op_node(t_ast *start_node, t_ast *end_node)
+{
+	t_ast	*tmp_node;
+
+	// First priority: rightmost AND or OR (same precedence, left-associative)
+	tmp_node = get_rightmost_op(start_node, end_node, 1);
+	if (tmp_node != NULL)
+		return (tmp_node);
+	// Second priority: rightmost PIPE
+	tmp_node = get_rightmost_op(start_node, end_node, 0);
+	return (tmp_node);
 }

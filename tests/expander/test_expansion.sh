@@ -82,19 +82,22 @@ echo "----------------------------------------"
 echo "Special Variables"
 echo "----------------------------------------"
 
-# First run a successful command
-echo "true" | $MINISHELL > /dev/null 2>&1
-
 test_expansion "Exit status after success" \
     "echo \$?" \
     "0"
 
-# Run a command that fails
-echo "false" | $MINISHELL > /dev/null 2>&1
-
-test_expansion "Exit status after failure" \
-    "echo \$?" \
-    "1"
+# Test exit status after failure - must run both commands in same shell instance
+TOTAL=$((TOTAL + 1))
+output=$(printf 'false\necho $?\n' | $MINISHELL 2>&1 | tail -n 1)
+if [ "$output" == "1" ]; then
+    echo -e "${GREEN}✓${NC} Test $TOTAL: Exit status after failure"
+    PASSED=$((PASSED + 1))
+else
+    echo -e "${RED}✗${NC} Test $TOTAL: Exit status after failure"
+    echo "  Expected: '1'"
+    echo "  Got: '$output'"
+    FAILED=$((FAILED + 1))
+fi
 
 echo ""
 echo "----------------------------------------"
