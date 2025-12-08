@@ -68,7 +68,11 @@ static t_ast	*get_rightmost_op(t_ast *start, t_ast *end, int check_and_or)
 	while (tmp)
 	{
 		if (tmp->type == LPAREN)
+		{
 			tmp = skip_subtree_nodes(tmp);
+			if (!tmp)
+				break;
+		}
 		if (check_and_or && (tmp->type == OR || tmp->type == AND))
 			rightmost = tmp;
 		else if (!check_and_or && tmp->type == PIPE)
