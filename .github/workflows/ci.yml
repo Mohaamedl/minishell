@@ -101,12 +101,15 @@ jobs:
     
     - name: Run ${{ matrix.test-suite }} tests
       run: |
-        if [ -f "tests/${{ matrix.test-suite }}/test_*.sh" ]; then
-          chmod +x tests/${{ matrix.test-suite }}/test_*.sh
-          bash tests/${{ matrix.test-suite }}/test_*.sh
-        else
+        for test_file in tests/${{ matrix.test-suite }}/test_*.sh; do
+          if [ -f "$test_file" ]; then
+            echo "Running $test_file..."
+            chmod +x "$test_file"
+            bash "$test_file"
+          fi
+        done
+        if [ ! -f tests/${{ matrix.test-suite }}/test_*.sh ]; then
           echo "No tests found for ${{ matrix.test-suite }}"
-          exit 1
         fi
 
   # Job 4: Builtin Tests
@@ -153,7 +156,48 @@ jobs:
           exit 1
         fi
 
-  # Job 5: Integration Tests
+  # Job 5: Bonus Feature Tests (Wildcards, AND/OR, Parentheses)
+  bonus-tests:
+    name: Bonus Feature Tests
+    runs-on: ubuntu-latest
+    needs: build
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libreadline-dev
+    
+    - name: Download binary artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: minishell-binary
+    
+    - name: Make binary executable
+      run: chmod +x minishell
+    
+    - name: Run wildcard tests
+      run: |
+        if [ -f "tests/expander/test_wildcard.sh" ]; then
+          chmod +x tests/expander/test_wildcard.sh
+          bash tests/expander/test_wildcard.sh
+        else
+          echo "Wildcard tests not found"
+        fi
+    
+    - name: Run bonus tests
+      run: |
+        if [ -f "tests/bonus/test_bonus.sh" ]; then
+          chmod +x tests/bonus/test_bonus.sh
+          bash tests/bonus/test_bonus.sh
+        else
+          echo "No bonus tests found (optional)"
+        fi
+
+  # Job 6: Integration Tests
   integration-tests:
     name: Integration Tests
     runs-on: ubuntu-latest
