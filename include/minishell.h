@@ -255,6 +255,13 @@ char	*expand_variables(char *str, t_shell *shell);
 void	expand_cmd_args(t_arg *args, t_shell *shell);
 void	expand_redirection_files(t_redir *redirs, t_shell *shell);
 
+/* wildcard.c */
+int		has_wildcard(const char *str);
+char	**expand_wildcard(const char *pattern);
+void	free_wildcard_matches(char **arr);
+char	*join_wildcard_matches(char **matches);
+t_arg	*expand_wildcards_in_args(t_arg *args);
+
 /*
 ** ============================================================================
 ** AST EXECUTION
