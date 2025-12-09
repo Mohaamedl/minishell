@@ -120,6 +120,8 @@ void handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **hea
 		handle_redap_or_redout(line,i,last_token,head); // função que cria token REDIR_OUTPUT (>) ou REDIR_APPEND (>>)
 	else if (*line == '(' || *line == ')')
 		handle_parentesis(line,i,last_token,head);
+	else if (*line == ';')
+		handle_semicolon(line,i,last_token,head);
 }
 
 //por agora o trata espacos e aspas;

@@ -49,13 +49,13 @@ else
     ((FAIL++))
 fi
 
-# Test 4: echo with wc
-result=$(echo "echo -e 'line1\nline2\nline3' | wc -l" | $MINISHELL 2>&1)
+# Test 4: echo with wc (simplified - no -e flag needed)
+result=$(echo "echo one two three | wc -w" | $MINISHELL 2>&1 | tr -d ' ')
 if [ "$result" == "3" ]; then
-    echo "✓ PASS: echo with wc -l"
+    echo "✓ PASS: echo with wc -w"
     ((PASS++))
 else
-    echo "✗ FAIL: echo with wc -l"
+    echo "✗ FAIL: echo with wc -w"
     ((FAIL++))
 fi
 

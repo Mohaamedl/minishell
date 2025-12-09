@@ -262,17 +262,17 @@ int	execute_ast(t_ast *node, t_shell *shell)
 	}
 	else if (node->type == AND)
 	{
-		// TODO: Implement AND logic (bonus)
-		// Execute left, if success then execute right
-		status = ERROR;
-		fprintf(stderr, "minishell: AND operator not yet implemented\n");
+		// AND: Execute right only if left succeeds (exit 0)
+		status = execute_ast(node->left, shell);
+		if (status == SUCCESS)
+			status = execute_ast(node->right, shell);
 	}
 	else if (node->type == OR)
 	{
-		// TODO: Implement OR logic (bonus)
-		// Execute left, if failure then execute right
-		status = ERROR;
-		fprintf(stderr, "minishell: OR operator not yet implemented\n");
+		// OR: Execute right only if left fails (exit != 0)
+		status = execute_ast(node->left, shell);
+		if (status != SUCCESS)
+			status = execute_ast(node->right, shell);
 	}
 	else
 	{

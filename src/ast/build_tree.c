@@ -44,26 +44,27 @@ t_ast *build_tree(t_ast *start_node, t_ast *end_node)
 
 void	build_sub_trees(t_ast **root_node)
 {
-	t_ast *start_node;
-	t_ast *end_node;
-	//percorro a arvore, se encontrar uma subtree, chamo a funcao build tree ,
-	//start_node e o node imediatamente a frente de "("  e end node e o node que esta imediatamente atras de ")"
-	if((*root_node) ->type == CMD || (*root_node )-> type == LPAREN) //encontrei um comando ou uma subtree;
+	t_ast	*start_node;
+	t_ast	*end_node;
+
+	if (!root_node || !(*root_node))
+		return ;
+	if ((*root_node)->type == CMD)
+		return ;
+	if ((*root_node)->type == LPAREN)
 	{
-		if((*root_node )-> type == LPAREN) // no caso de uma subtree, independentemente de ela estar a direita ou esquerda do split_operator o root node e o parentesis esquerdo "("
-		{
-			//ok, e uma subtree, este node vai se transformar no output de build_tree()
-			start_node = (*root_node) -> right;//o node imediatamente apos  "("
-			end_node = skip_subtree_nodes(*root_node);
-			end_node = end_node -> left; //o node imediatamente antes de ")" (uma das vantagens desta tree ter comecado como uma lista duplamente ligada)
-			free_parentesis_nodes(start_node,end_node);
-			*root_node = build_tree(start_node, end_node);
-		}
-		return;
+		start_node = (*root_node)->right;
+		end_node = skip_subtree_nodes(*root_node);
+		if (!end_node || !end_node->left)
+			return ;
+		end_node = end_node->left;
+		free_parentesis_nodes(start_node, end_node);
+		*root_node = build_tree(start_node, end_node);
+		// Recursively process the result in case it contains more subtrees
+		build_sub_trees(root_node);
+		return ;
 	}
-	else //estou num operador;
-	{
-		build_sub_trees(&((*root_node)->left));
-		build_sub_trees(&((*root_node)->right));
-	}
+	// Process operator nodes
+	build_sub_trees(&((*root_node)->left));
+	build_sub_trees(&((*root_node)->right));
 }

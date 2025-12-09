@@ -169,7 +169,8 @@ void    handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **he
 void    handle_and(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
+void    handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
+void    handle_semicolon(char *line, int *i, t_token **last_token, t_token **head);
 
 /* ---------------- Funções principais ---------------- */
 int     handle_quote(char *line, int *i, t_token **last_token, t_token **head);

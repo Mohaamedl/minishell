@@ -183,6 +183,19 @@ int validate_parentesis(t_token *head)
 
 int validate_token_list(t_token *head)
 {
+	t_token *tmp;
+
+	// First check for unsupported tokens like semicolon
+	tmp = head;
+	while (tmp)
+	{
+		if (tmp->type == SEMICOLON)
+		{
+			printf("syntax error near unexpected token `%s'\n", tmp->value);
+			return 0;
+		}
+		tmp = tmp->next;
+	}
 	if(validate_redirections(head) == 0)//valida se as redirecoes tem sempre um file name a frente
 		return 0;
 	if(validate_connector_operators(head) == 0)//valida os operadores AND, OR ou PIPE
