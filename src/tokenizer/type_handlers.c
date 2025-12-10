@@ -12,15 +12,15 @@
 
 #include "minishell.h"
 
-int	handle_quote(char *line, int *i,t_token **last_node, t_token **head)
+int	handle_quote(char *line, int *i, t_token **last_node, t_token **head)
 {
 	int status;
 
-	status = create_quoted_token(last_node,head,line,*line);
-	*i = *i + get_quoted_size(line,*line) + 2; //passar a frente o tento dentro das quotes e das prprias quotes
-	return status; //0-failed 1-sucess
+	status = create_quoted_token(last_node, head, line, *line);
+	*i = *i + get_quoted_size(line, *line) + 2; //passar a frente o tento dentro das quotes e das prprias quotes
+	return (status); //0-failed 1-sucess
 }
-void	handle_word(char *line, int *i,t_token **last_token, t_token **head)
+void	handle_word(char *line, int *i, t_token **last_token, t_token **head)
 {
 	int		j;
 	t_token	*token;
@@ -40,7 +40,7 @@ void	handle_word(char *line, int *i,t_token **last_token, t_token **head)
 	ft_memcpy(str, line, j); //ando line um char para a frente para nao copiar a aspa inicial
 	str[j] = '\0';
 	token = create_token(str, WORD, 1, is_op);
-	append_token(head,last_token,token);
+	append_token(head, last_token, token);
 	//atualizar i (posicao na line)
 	*i = *i + j;
 }
@@ -79,7 +79,7 @@ void	handle_and(char *line, int *i, t_token **last_token, t_token **head)
 	{
 		str = ft_strdup("&&"); //faco strdup porque ate agora todos os values dos tokens foram dinamicamente alocadas
 		token = create_token(str, AND, 1, is_op);
-		append_token(head,last_token,token);
+		append_token(head, last_token, token);
 		*i = *i + 2;
 	}
 }
@@ -95,14 +95,14 @@ void	handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_token *
 	{
 		str = ft_strdup("<<"); //faco strdup porque ate agora todos os values dos tokens foram dinamicamente alocadas
 		token = create_token(str, HEREDOC, 1, is_op);
-		append_token(head,last_token,token);
+		append_token(head, last_token, token);
 		*i = *i + 2;
 	}
 	else
 	{
 		str = ft_strdup("<");
 		token = create_token(str, REDIR_IN, 1, is_op);
-		append_token(head,last_token,token);
+		append_token(head, last_token, token);
 		*i = *i + 1;
 	}
 }
@@ -118,14 +118,14 @@ void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head)
 	{
 		str = ft_strdup("("); //faco strdup porque ate agora todos os values dos tokens foram dinamicamente alocadas
 		token = create_token(str, LPAREN, 1, is_op);
-		append_token(head,last_token,token);
+		append_token(head, last_token, token);
 		*i = *i + 1;
 	}
 	if(*(line) == ')')
 	{
 		str = ft_strdup(")"); //faco strdup porque ate agora todos os values dos tokens foram dinamicamente alocadas
 		token = create_token(str, RPAREN, 1, is_op);
-		append_token(head,last_token,token);
+		append_token(head, last_token, token);
 		*i = *i + 1;
 	}
 }
@@ -137,18 +137,18 @@ void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head)
 
 	is_op = 0;
 
-	if(*(++line) == '>')
+	if (*(++line) == '>')
 	{
 		str = ft_strdup(">>");
 		token = create_token(str, APPEND, 1, is_op);
-		append_token(head,last_token,token);
+		append_token(head, last_token, token);
 		*i = *i + 2;
 	}
 	else
 	{
 		str = ft_strdup(">");
 		token = create_token(str, REDIR_OUT, 1, is_op);
-		append_token(head,last_token,token);
+		append_token(head, last_token, token);
 		*i = *i + 1;
 	}
 }
@@ -163,6 +163,6 @@ void	handle_semicolon(char *line, int *i, t_token **last_token, t_token **head)
 	is_op = 1;
 	str = ft_strdup(";");
 	token = create_token(str, SEMICOLON, 1, is_op);
-	append_token(head,last_token,token);
+	append_token(head, last_token, token);
 	*i = *i + 1;
 }
