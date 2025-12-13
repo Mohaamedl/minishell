@@ -52,10 +52,21 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 		new_arg = create_arg_node(matches[i]);
 		if (new_arg)
 			append_arg(head, tail, new_arg);
+		else
+		{
+			// Allocation failed, free all previously duplicated strings
+			int j = 0;
+			while (matches[j])
+			{
+				free(matches[j]);
+				j++;
+			}
+			free(matches);
+			return;
+		}
 		i++;
 	}
 	free(matches);
-}
 
 static void	copy_arg(t_arg *current, t_arg **head, t_arg **tail)
 {
