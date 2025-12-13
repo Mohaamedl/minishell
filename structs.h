@@ -23,7 +23,7 @@ typedef struct s_token
 	int is_operator;
 	int	expandable; //0 - does not expand vars, 1 - expands vars
 	int is_quoted;  // 1 if token was inside quotes (single or double)
-	char            *value;   // conteúdo do token \("cat", ">", etc.)
+	char            *value;   // token content ("cat", ">", etc.)
 	t_token_type    type;     // tipo \(WORD, PIPE, etc.)
 	struct s_token  *next;    // próximo token
 }	t_token;
