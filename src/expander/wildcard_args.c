@@ -53,6 +53,8 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 		if (new_arg)
 			append_arg(head, tail, new_arg);
 		else
+			free(matches[i]);
+		else
 		{
 			// Allocation failed, free all previously duplicated strings
 			int j = 0;
