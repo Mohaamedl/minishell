@@ -202,7 +202,7 @@ static void	execute_in_child(t_ast *node, t_shell *shell)
 		if (!args)
 			_exit(ERROR);
 		if (apply_redirections(node) == ERROR)
-			_exit(1); // exit immediately if redirections fail
+			_exit(ERROR); // exit immediately if redirections fail
 		if (is_builtin(args[0]))
 			_exit(execute_builtin(args, shell));
 		else if (!cmd_name_is_redir(node->cmd->cmd_name))
