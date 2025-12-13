@@ -60,10 +60,14 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 static void	copy_arg(t_arg *current, t_arg **head, t_arg **tail)
 {
 	t_arg	*new_arg;
+	char	*dup_value;
 
-	new_arg = create_arg_node(ft_strdup(current->value));
+	dup_value = ft_strdup(current->value);
+	new_arg = create_arg_node(dup_value);
 	if (new_arg)
 		append_arg(head, tail, new_arg);
+	else
+		free(dup_value);
 }
 
 t_arg	*expand_wildcards_in_args(t_arg *args)
