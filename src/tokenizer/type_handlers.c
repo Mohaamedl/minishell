@@ -26,22 +26,45 @@ void	handle_word(char *line, int *i,t_token **last_token, t_token **head)
 	t_token	*token;
 	char	*str;
 	int is_op;
+	int	has_equals;
+	char	quote_char;
 
 	is_op = 0;
-
-	j = 1; //vou para o char seguinte apos a letra que encontrei
-	while(!is_operator(&line[j]) && !is_space(line[j]) && line[j] != '\0' && !is_quote(line[j])) //validar a mudanca no is_operator, ver o que fazer se receber uma quote
-	{
+	has_equals = 0;
+	j = 0;
+	// Read until '=' or delimiter
+	while (line[j] && line[j] != '=' && !is_operator(&line[j]) 
+		&& !is_space(line[j]) && !is_quote(line[j]))
 		j++;
+	// If we found '=', mark it and continue past it
+	if (line[j] == '=')
+	{
+		has_equals = 1;
+		j++; // Move past '='
 	}
-	//neste ponto line[j] e' um operador, espaco ou '\0'
-	// com j tava deslocado, tamanhao a copiar da str e' j
+	// If there's a quote after '=', read the entire quoted string
+	if (has_equals && is_quote(line[j]))
+	{
+		quote_char = line[j];
+		j++; // Move past opening quote
+		// Read until closing quote
+		while (line[j] && line[j] != quote_char)
+			j++;
+		if (line[j] == quote_char)
+			j++; // Move past closing quote
+	}
+	else
+	{
+		// Continue reading word normally
+		while(!is_operator(&line[j]) && !is_space(line[j]) 
+			&& line[j] != '\0' && !is_quote(line[j]))
+			j++;
+	}
 	str = malloc((j + 1)*sizeof(char));
-	ft_memcpy(str, line, j); //ando line um char para a frente para nao copiar a aspa inicial
+	ft_memcpy(str, line, j);
 	str[j] = '\0';
 	token = create_token(str, WORD, 1, is_op);
 	append_token(head,last_token,token);
-	//atualizar i (posicao na line)
 	*i = *i + j;
 }
 

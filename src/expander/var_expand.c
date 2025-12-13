@@ -13,6 +13,38 @@
 #include "minishell.h"
 
 /**
+ * @brief Remove quotes from a string
+ * 
+ * Removes both single (') and double (") quotes from the string.
+ * Example: q="hello world" → q=hello world
+ * 
+ * @param str String potentially containing quotes
+ * @return Newly allocated string without quotes
+ */
+static char	*remove_quotes(const char *str)
+{
+	char	*result;
+	int		i;
+	int		j;
+
+	if (!str)
+		return (NULL);
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i])
+	{
+		if (str[i] != '"' && str[i] != '\'')
+			result[j++] = str[i];
+		i++;
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+/**
  * @brief Extract variable name from string starting with $
  * 
  * Extracts the variable name after $ until finding a non-alphanumeric char.
@@ -165,6 +197,7 @@ char	*expand_variables(char *str, t_shell *shell)
  * @brief Expand variables in command arguments
  * 
  * Iterates through all arguments and expands those marked as expandable.
+ * Also removes quotes from all arguments.
  * Replaces argument values with expanded versions and marks them as expanded.
  * 
  * @param args Linked list of arguments
@@ -174,6 +207,7 @@ void	expand_cmd_args(t_arg *args, t_shell *shell)
 {
 	t_arg	*current;
 	char	*expanded;
+	char	*without_quotes;
 
 	current = args;
 	while (current)
@@ -183,8 +217,19 @@ void	expand_cmd_args(t_arg *args, t_shell *shell)
 			expanded = expand_variables(current->value, shell);
 			if (expanded)
 			{
-				current->value = expanded;
-				current->was_expanded = 1; // Mark for later freeing
+				without_quotes = remove_quotes(expanded);
+				free(expanded);
+				current->value = without_quotes;
+				current->was_expanded = 1;
+			}
+		}
+		else if (current->value)
+		{
+			without_quotes = remove_quotes(current->value);
+			if (without_quotes)
+			{
+				current->value = without_quotes;
+				current->was_expanded = 1;
 			}
 		}
 		current = current->next;
