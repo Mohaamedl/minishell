@@ -140,7 +140,7 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 			
 			redir_status = apply_redirections(node);
 			if (redir_status == ERROR)
-				_exit(1); // exit immediately if redirections fail
+				_exit(ERROR); // exit immediately if redirections fail
 			if (!cmd_name_is_redir(node->cmd->cmd_name))
 				exit_code = execute_external_cmd(args, shell);
 			else
