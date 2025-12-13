@@ -51,7 +51,7 @@ typedef struct s_arg
 	int				is_expandable;  // 1 for double quotes (var expand), 0 for single
 	int				is_wildcard_expandable; // 0 for all quoted, 1 for unquoted
 	int				was_expanded; // Flag to track if value was malloc'd by expansion
-	struct s_arg	*next; // Próximo argumento
+	struct s_arg	*next; // Next argument
 }	t_arg;
 
 //-------------------ESTRUTURA DO COMANDO----------------------------------------
