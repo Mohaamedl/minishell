@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/08 20:00:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/08 20:00:00 by mhaddadi         ###   ########.fr       */
+/*   Created: 2025/12/13 12:53:00 by mhaddadi          #+#    #+#             */
+/*   Updated: 2025/12/13 12:53:12 by mhaddadi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 {
 	t_arg	*new_arg;
 	int		i;
-
+:
 	i = 0;
 	while (matches[i])
 	{
@@ -53,10 +53,7 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 		if (new_arg)
 			append_arg(head, tail, new_arg);
 		else
-			free(matches[i]);
-		else
 		{
-			// Allocation failed, free all previously duplicated strings
 			int j = 0;
 			while (matches[j])
 			{
@@ -69,6 +66,7 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 		i++;
 	}
 	free(matches);
+}
 
 static void	copy_arg(t_arg *current, t_arg **head, t_arg **tail)
 {
