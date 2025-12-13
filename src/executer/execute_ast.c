@@ -13,6 +13,12 @@
 #include "minishell.h"
 #include "../structs.h"
 
+/* Forward declarations */
+static char	**convert_args_to_array(t_cmd *cmd);
+static int	execute_command_node(t_ast *node, t_shell *shell);
+static int	execute_pipe_node(t_ast *node, t_shell *shell);
+int			cmd_name_is_redir(char *cmd_name);
+
 /**
  * @brief Convert argument linked list to NULL-terminated array
  *
@@ -87,11 +93,23 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	char	**args;
 	int		status;
 	int		saved_std_fds[2];
+	t_arg	*expanded_args;
+
 	if (!node || !node->cmd || !node->cmd->cmd_name)
 		return (ERROR);
 	// Expand variables in arguments and redirections
 	expand_cmd_args(node->cmd->args, shell);
 	expand_redirection_files(node->cmd->redirs, shell);
+	// Expand wildcards in arguments
+	expanded_args = expand_wildcards_in_args(node->cmd->args);
+	if (expanded_args)
+	{
+		free_args_list(node->cmd->args);
+		node->cmd->args = expanded_args;
+		// Update cmd_name to first arg after wildcard expansion
+		if (expanded_args->value)
+			node->cmd->cmd_name = expanded_args->value;
+	}
 	args = convert_args_to_array(node->cmd);
 	if (!args)
 		return (ERROR);
@@ -107,20 +125,28 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	}
 	else
 	{
-		pid_t pid = fork();
+		pid_t pid = create_process();
 
-		if (pid == 0)
-		{ //no processo filho:
-			apply_redirections(node);
-			//if(!cmd_name_is_redir(node->cmd->cmd_name))//se o cmd_name for uma redirecao aplico so a redirecao e nao corro nada ex: > outfile (cria o ficheiro outfile sem nada)
-				//execute_external_cmd(args,shell); //chama o excve e se nao funcionar da exit com um status code
-			_exit(0); //so para testar as redirecoes depois sera para remover
-		}
-		else //processo pai
+		if (pid == -1)
 		{
-			waitpid(pid, &status, 0); //nao preciso de resetar os fds no pai porque alterei os no processo filho e esse processo vai morrer com o execve
-			//vou buscar o status que o filho retornou com waitpid(pid, &status, 0);
-			return(WEXITSTATUS(status)); //aqui faremos uma manipulacao deste resultado para retornar SUCCESS, ERROR, etc
+			free(args);
+			return (ERROR);
+		}
+		if (pid == 0)
+		{
+			// Child process
+			int exit_code;
+			apply_redirections(node);
+			if (!cmd_name_is_redir(node->cmd->cmd_name))
+				exit_code = execute_external_cmd(args, shell);
+			else
+				exit_code = SUCCESS;
+			_exit(exit_code);
+		}
+		else
+		{
+			// Parent process
+			status = wait_for_process(pid);
 		}
 	}
 	// Free args array (not the strings, they belong to the AST)
@@ -141,11 +167,56 @@ int cmd_name_is_redir(char *cmd_name)
 }
 
 /**
- * @brief Execute a pipe node
+ * @brief Execute a single command in a pipeline
  *
- * Executes a pipeline by executing left and right sides.
- * Note: This is a simplified version. Full pipe implementation
- * with fork/exec will be added later.
+ * @param node Command node to execute
+ * @param shell Shell state
+ */
+static void	execute_in_child(t_ast *node, t_shell *shell)
+{
+	char	**args;
+	t_arg	*expanded_args;
+
+	if (!node)
+		_exit(ERROR);
+	if (node->type == CMD)
+	{
+		if (!node->cmd)
+			_exit(ERROR);
+		expand_cmd_args(node->cmd->args, shell);
+		expand_redirection_files(node->cmd->redirs, shell);
+		// Expand wildcards in arguments
+		expanded_args = expand_wildcards_in_args(node->cmd->args);
+		if (expanded_args)
+		{
+			free_args_list(node->cmd->args);
+			node->cmd->args = expanded_args;
+			if (expanded_args->value)
+				node->cmd->cmd_name = expanded_args->value;
+		}
+		args = convert_args_to_array(node->cmd);
+		if (!args)
+			_exit(ERROR);
+		apply_redirections(node);
+		if (is_builtin(args[0]))
+			_exit(execute_builtin(args, shell));
+		else if (!cmd_name_is_redir(node->cmd->cmd_name))
+		{
+			int exit_code = execute_external_cmd(args, shell);
+			free(args);
+			_exit(exit_code);
+		}
+		free(args);
+		_exit(SUCCESS);
+	}
+	else
+	{
+		_exit(execute_ast(node, shell));
+	}
+}
+
+/**
+ * @brief Execute a pipe node (two-command pipeline)
  *
  * @param node The AST node with type PIPE
  * @param shell The shell state structure
@@ -153,18 +224,33 @@ int cmd_name_is_redir(char *cmd_name)
  */
 static int	execute_pipe_node(t_ast *node, t_shell *shell)
 {
-	int	status;
+	int		pipe_fds[2];
+	pid_t	pids[2];
+	int		status;
 
-	if (!node)
+	if (!node || !node->left || !node->right)
 		return (ERROR);
-	// For now, execute sequentially (not a real pipe)
-	// TODO: Implement proper pipeline with fork, pipe, dup2
-	if (node->left)
-		execute_ast(node->left, shell);
-	if (node->right)
-		status = execute_ast(node->right, shell);
-	else
-		status = ERROR;
+	if (pipe(pipe_fds) == -1)
+		return (perror("minishell: pipe"), ERROR);
+	pids[0] = create_process();
+	if (pids[0] == 0)
+	{
+		close(pipe_fds[0]);
+		dup2(pipe_fds[1], STDOUT_FILENO);
+		close(pipe_fds[1]);
+		execute_in_child(node->left, shell);
+	}
+	pids[1] = create_process();
+	if (pids[1] == 0)
+	{
+		close(pipe_fds[1]);
+		dup2(pipe_fds[0], STDIN_FILENO);
+		close(pipe_fds[0]);
+		execute_in_child(node->right, shell);
+	}
+	close(pipe_fds[0]);
+	close(pipe_fds[1]);
+	status = wait_for_pipeline(pids, 2);
 	return (status);
 }
 
@@ -198,17 +284,17 @@ int	execute_ast(t_ast *node, t_shell *shell)
 	}
 	else if (node->type == AND)
 	{
-		// TODO: Implement AND logic (bonus)
-		// Execute left, if success then execute right
-		status = ERROR;
-		fprintf(stderr, "minishell: AND operator not yet implemented\n");
+		// AND: Execute right only if left succeeds (exit 0)
+		status = execute_ast(node->left, shell);
+		if (status == SUCCESS)
+			status = execute_ast(node->right, shell);
 	}
 	else if (node->type == OR)
 	{
-		// TODO: Implement OR logic (bonus)
-		// Execute left, if failure then execute right
-		status = ERROR;
-		fprintf(stderr, "minishell: OR operator not yet implemented\n");
+		// OR: Execute right only if left fails (exit != 0)
+		status = execute_ast(node->left, shell);
+		if (status != SUCCESS)
+			status = execute_ast(node->right, shell);
 	}
 	else
 	{

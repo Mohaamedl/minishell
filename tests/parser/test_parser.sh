@@ -27,8 +27,8 @@ test_parser() {
     
     TOTAL=$((TOTAL + 1))
     
-    # Run the command and capture output
-    output=$(echo "$input" | $MINISHELL 2>&1)
+    # Run the command and capture output with timeout
+    output=$(echo -e "$input\nexit" | timeout 2s $MINISHELL 2>&1)
     exit_code=$?
     
     # Check for syntax error in output
@@ -98,7 +98,7 @@ test_parser "Pipe at start" "| echo hello" 0
 test_parser "Pipe at end" "echo hello |" 0
 test_parser "Double pipe" "echo hello || echo world" 1  # OR operator is valid
 test_parser "Redirection without file" "echo >" 0
-test_parser "Redirection without command" "> file" 0
+test_parser "Redirection without command" "> file" 1  # bash allows this - creates empty file
 test_parser "Unclosed parentheses" "(echo hello" 0
 test_parser "Mismatched parentheses" "echo hello)" 0
 test_parser "Empty parentheses" "()" 0

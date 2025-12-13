@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   build_list.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/07 18:21:40 by mhaddadi          #+#    #+#             */
+/*   Updated: 2025/12/07 18:21:51 by mhaddadi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 //1- token WORD encontrada no inicio da list ou logo apos um operador e o nume de um comando, o que vem a seguir sao args ou redirecionamentos

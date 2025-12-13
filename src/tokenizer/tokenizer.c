@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/07 18:27:44 by mhaddadi          #+#    #+#             */
+/*   Updated: 2025/12/07 18:27:55 by mhaddadi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
@@ -16,15 +27,16 @@ int	get_quoted_size(char *line, char quote)
 		return (-1);
 	return(size);
 }
-t_token *create_token(char* value, t_token_type type, int is_expandable, int is_op) //esta funcao precisa de receber o type do token e atualizar o guardalo.
+t_token *create_token(char* value, t_token_type type, int is_expandable, int is_op)
 {
 	t_token *token = malloc(sizeof(t_token));
 	if (!token)
-		return NULL; // falha na alocação
-	token ->is_operator = is_op;
-	token ->type = type;
+		return NULL;
+	token->is_operator = is_op;
+	token->type = type;
 	token->value = value;
 	token->expandable = is_expandable;
+	token->is_quoted = 0; // Default: not quoted
 	token->next = NULL;
 	return token;
 }
@@ -80,6 +92,7 @@ int	create_quoted_token(t_token **last_token, t_token **head, char *line, char q
 	else
 	{
 		token = create_token(str, WORD, is_expandable, is_op);
+		token->is_quoted = 1; // Mark as quoted (no wildcard expansion)
 		append_token(head,last_token,token);
 	}
 	return 1;//sucess
@@ -109,6 +122,8 @@ void handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **hea
 		handle_redap_or_redout(line,i,last_token,head); // função que cria token REDIR_OUTPUT (>) ou REDIR_APPEND (>>)
 	else if (*line == '(' || *line == ')')
 		handle_parentesis(line,i,last_token,head);
+	else if (*line == ';')
+		handle_semicolon(line,i,last_token,head);
 }
 
 //por agora o trata espacos e aspas;

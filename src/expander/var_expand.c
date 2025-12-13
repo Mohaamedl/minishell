@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/21 23:00:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/21 23:00:00 by mhaddadi         ###   ########.fr       */
+/*   Created: 2025/12/13 12:53:32 by mhaddadi          #+#    #+#             */
+/*   Updated: 2025/12/13 12:54:13 by mhaddadi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,9 @@ static char	*extract_var_name(const char *str)
 	str++;
 	if (*str == '?')
 		return (ft_strdup("?"));
+	// Handle $$ (PID) and $@ - treat as special vars that expand to empty
+	if (*str == '$' || *str == '@')
+		return (ft_strdup(str[0] == '$' ? "$" : "@"));
 	len = 0;
 	// First character must be a letter or underscore
 	if (str[len] && (ft_isalpha(str[len]) || str[len] == '_'))
@@ -68,6 +71,9 @@ static char	*get_var_value(const char *var_name, t_shell *shell)
 		return (ft_strdup(""));
 	if (ft_strcmp(var_name, "?") == 0)
 		return (ft_itoa(shell->last_exit_status));
+	// Handle $$ and $@ - expand to empty string (not implemented)
+	if (ft_strcmp(var_name, "$") == 0 || ft_strcmp(var_name, "@") == 0)
+		return (ft_strdup(""));
 	value = get_env_value(shell->env_list, var_name);
 	if (!value)
 		return (ft_strdup(""));
