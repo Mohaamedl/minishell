@@ -93,11 +93,23 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 	char	**args;
 	int		status;
 	int		saved_std_fds[2];
+	t_arg	*expanded_args;
+
 	if (!node || !node->cmd || !node->cmd->cmd_name)
 		return (ERROR);
 	// Expand variables in arguments and redirections
 	expand_cmd_args(node->cmd->args, shell);
 	expand_redirection_files(node->cmd->redirs, shell);
+	// Expand wildcards in arguments
+	expanded_args = expand_wildcards_in_args(node->cmd->args);
+	if (expanded_args)
+	{
+		free_args_list(node->cmd->args);
+		node->cmd->args = expanded_args;
+		// Update cmd_name to first arg after wildcard expansion
+		if (expanded_args->value)
+			node->cmd->cmd_name = expanded_args->value;
+	}
 	args = convert_args_to_array(node->cmd);
 	if (!args)
 		return (ERROR);
@@ -163,6 +175,7 @@ int cmd_name_is_redir(char *cmd_name)
 static void	execute_in_child(t_ast *node, t_shell *shell)
 {
 	char	**args;
+	t_arg	*expanded_args;
 
 	if (!node)
 		_exit(ERROR);
@@ -172,6 +185,15 @@ static void	execute_in_child(t_ast *node, t_shell *shell)
 			_exit(ERROR);
 		expand_cmd_args(node->cmd->args, shell);
 		expand_redirection_files(node->cmd->redirs, shell);
+		// Expand wildcards in arguments
+		expanded_args = expand_wildcards_in_args(node->cmd->args);
+		if (expanded_args)
+		{
+			free_args_list(node->cmd->args);
+			node->cmd->args = expanded_args;
+			if (expanded_args->value)
+				node->cmd->cmd_name = expanded_args->value;
+		}
 		args = convert_args_to_array(node->cmd);
 		if (!args)
 			_exit(ERROR);
