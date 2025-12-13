@@ -45,7 +45,8 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 {
 	t_arg	*new_arg;
 	int		i;
-:
+	int		j;
+
 	i = 0;
 	while (matches[i])
 	{
@@ -54,14 +55,14 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 			append_arg(head, tail, new_arg);
 		else
 		{
-			int j = 0;
+			j = 0;
 			while (matches[j])
 			{
 				free(matches[j]);
 				j++;
 			}
 			free(matches);
-			return;
+			return ;
 		}
 		i++;
 	}
