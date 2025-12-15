@@ -40,7 +40,7 @@ static void	print_tree_visual_helper(t_ast *root, char *prefix, int is_left)
 	printf("%s", prefix);
 	printf("%s", is_left ? "├── " : "└── ");
 	
-	if (root->type == CMD)
+	if (root->type == CMD ||root->type == 11 ) //just because was bugging
 		node_str = root->cmd->cmd_name;
 	else
 		node_str = (char *)token_type_to_str(root->type);

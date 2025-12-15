@@ -2,7 +2,7 @@
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
-#include "structs.h"
+#include "../structs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -18,7 +18,7 @@
 #include <limits.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include "Libft/libft.h"
+#include "../Libft/libft.h"
 
 /*
 ** ============================================================================
@@ -54,6 +54,7 @@ typedef struct s_shell
 	t_env	*env_list;
 	int		last_exit_status;
 	int		running;
+	int		is_interactive;
 }	t_shell;
 
 /*
@@ -159,19 +160,20 @@ t_token *create_token(char *value, t_token_type type, int is_expandable, int is_
 void    append_token(t_token **head, t_token **last_token, t_token *new_token);
 
 /* ---------------- Funções para lidar com aspas ---------------- */
-size_t  get_quoted_size(char *line, char quote);
+int     get_quoted_size(char *line, char quote);
 char    *get_quoted_text(char *line, char quote);
-void    create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
+int     create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
 
 /* ---------------- Funções para operadores ---------------- */
 void    handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_and(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
+void    handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
+void    handle_semicolon(char *line, int *i, t_token **last_token, t_token **head);
 
 /* ---------------- Funções principais ---------------- */
-void    handle_quote(char *line, int *i, t_token **last_token, t_token **head);
+int     handle_quote(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_word(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
 void    skip_spaces(char *line, int *i);
@@ -216,6 +218,7 @@ void	free_node_list(t_ast *head); //esta funcao serve apenas para dar free a uma
 									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore
 
 t_ast	*get_last_node(t_ast *head); //vai buscar o ultimo node da lista, preciso dele na funcao build_tree()
+int		is_empty_or_whitespace(const char *str);
 
 
 //----------------------------------------CRIACAO DA ARVORE BINARIA---------------------------------------------------
@@ -232,6 +235,75 @@ void	print_tree(t_ast *root);
 void	free_tree(t_ast *root);
 void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
 
-//-----------------------------------------EXPANSAO DE VARIAVEIS--------------------------------------------------
-//turn_args_list_into_args_array() depois de expandir vou ter que chamar esta funcao para ter o array de args pronto para o execve;
+/*
+** ============================================================================
+** TOKENIZER VALIDATION
+** ============================================================================
+*/
+
+/* validate_token_list.c */
+int		validate_token_list(t_token *head);
+
+/*
+** ============================================================================
+** VARIABLE EXPANSION
+** ============================================================================
+*/
+
+/* var_expand.c */
+char	*expand_variables(char *str, t_shell *shell);
+void	expand_cmd_args(t_arg *args, t_shell *shell);
+void	expand_redirection_files(t_redir *redirs, t_shell *shell);
+
+/*
+** ============================================================================
+** AST EXECUTION
+** ============================================================================
+*/
+
+/* execute_ast.c */
+int		execute_ast(t_ast *node, t_shell *shell);
+
+/*
+** ============================================================================
+** EXECUTOR MODULE (Process Management & External Commands)
+** ============================================================================
+*/
+
+/* process.c - KAN-53 */
+pid_t	create_process(void);
+
+/* wait.c - KAN-55 */
+int		wait_for_process(pid_t pid);
+int		wait_for_pipeline(pid_t *pids, int count);
+
+/* exec.c - KAN-54 */
+char	*find_command_in_path(char *cmd, t_env *env);
+int		execute_external_cmd(char **args, t_shell *shell);
+
+/* pipes.c - KAN-52 */
+int		*create_pipes(int num_commands);
+void	setup_pipe_fds(int *pipes, int index, int total);
+void	close_all_pipes(int *pipes, int num_pipes);
+
+/*
+** ============================================================================
+** REDIRECTIONS
+** ============================================================================
+*/
+
+//-----------------------------------------EXECUTER--------------------------------------------------
+int	apply_redirections(t_ast *cmd_node, int heredoc_pipe_read_fd);
+
+void	save_std_fds(int saved_std_fds[2]);
+void	restore_std_fds(int saved_stdin, int saved_stdout);
+void	execute_in_child( t_ast *node, t_shell *shell);
+int		execute_command_node(t_ast *node, t_shell *shell);
+int     cmd_name_is_redir(char *cmd_name);
+int     has_in_redirs(t_redir *redirs);
+int     has_out_redirs(t_redir *redirs);
+char    **prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
+int     handle_heredocs(t_redir *redirs);
+int execute_ast_in_child(t_ast *node, t_shell *shell);
+int execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
 #endif
