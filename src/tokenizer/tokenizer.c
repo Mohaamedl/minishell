@@ -81,7 +81,7 @@ int	create_quoted_token(t_token **last_token, t_token **head, char *line, char q
 	is_expandable = 1;
 	if(is_single_quote(*line))
 		is_expandable = 0;
-	if (last_token) //Caso especifico do HEREDOC, se o end of file estiver em aspas (single or double quote) o conteudo nao espande
+	if (last_token && *last_token) //Caso especifico do HEREDOC, se o end of file estiver em aspas (single or double quote) o conteudo nao espande
 	{
 		if ((*last_token) -> type == HEREDOC)
 			is_expandable = 0;
