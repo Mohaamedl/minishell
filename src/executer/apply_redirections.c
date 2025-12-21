@@ -21,16 +21,39 @@
 int	apply_heredoc(t_redir *redir)
 {
 	int pipefd[2];
-	pipe(pipefd);
 	char *line;
+
+	pipe(pipefd);
+	setup_signals_heredoc();
 	line = readline("heredoc> ");
 	while (line && ft_strcmp(line, redir->file) != 0)
 	{
+		// Check if Ctrl+C was pressed
+		if (g_signal_received == SIGINT)
+		{
+			free(line);
+			close(pipefd[0]);
+			close(pipefd[1]);
+			write(STDOUT, "\n", 1);
+			return (ERROR);
+		}
 		// Aqui você processa a linha do heredoc, por exemplo:
 		write(pipefd[1], line, strlen(line)); //escreve para o pipe
 		write(pipefd[1], "\n", 1); //readline nao adiciona o \n
 		free(line); // libera a linha anterior
 		line = readline("heredoc> "); // lê a próxima linha
+	}
+	// Check if loop ended due to NULL (Ctrl+D or Ctrl+C)
+	if (!line)
+	{
+		// If Ctrl+C was pressed
+		if (g_signal_received == SIGINT)
+		{
+			close(pipefd[0]);
+			close(pipefd[1]);
+			write(STDOUT, "\n", 1);
+			return (ERROR);
+		}
 	}
 	free(line); // libera a última linha (que é igual ao delimitador)
 	close(pipefd[1]);//fecha o lado de escrita do pipe
