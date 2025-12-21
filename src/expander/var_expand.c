@@ -13,6 +13,50 @@
 #include "minishell.h"
 
 /**
+ * @brief Remove quotes from a string
+ * 
+ * Removes only the outermost layer of quotes, preserving nested quotes.
+ * Example: '"hello"' → "hello", "'world'" → world
+ * 
+ * @param str String potentially containing quotes
+ * @return Newly allocated string without outer quotes
+ */
+static char	*remove_quotes(const char *str)
+{
+	char	*result;
+	int		i;
+	int		j;
+	char	in_quote;
+
+	if (!str)
+		return (NULL);
+	result = malloc(ft_strlen(str) + 1);
+	if (!result)
+		return (NULL);
+	i = 0;
+	j = 0;
+	in_quote = 0;
+	while (str[i])
+	{
+		if (!in_quote && (str[i] == '"' || str[i] == '\''))
+		{
+			in_quote = str[i];
+			i++;
+			continue;
+		}
+		if (in_quote && str[i] == in_quote)
+		{
+			in_quote = 0;
+			i++;
+			continue;
+		}
+		result[j++] = str[i++];
+	}
+	result[j] = '\0';
+	return (result);
+}
+
+/**
  * @brief Extract variable name from string starting with $
  * 
  * Extracts the variable name after $ until finding a non-alphanumeric char.
@@ -165,6 +209,7 @@ char	*expand_variables(char *str, t_shell *shell)
  * @brief Expand variables in command arguments
  * 
  * Iterates through all arguments and expands those marked as expandable.
+ * Also removes quotes from all arguments.
  * Replaces argument values with expanded versions and marks them as expanded.
  * 
  * @param args Linked list of arguments
@@ -173,18 +218,32 @@ char	*expand_variables(char *str, t_shell *shell)
 void	expand_cmd_args(t_arg *args, t_shell *shell)
 {
 	t_arg	*current;
+	char	*without_quotes;
 	char	*expanded;
 
 	current = args;
 	while (current)
 	{
-		if (current->is_expandable && current->value)
+		if (current->value)
 		{
-			expanded = expand_variables(current->value, shell);
-			if (expanded)
+			// First remove quotes from the original token
+			without_quotes = remove_quotes(current->value);
+			
+			// Then expand variables if expandable
+			if (current->is_expandable && without_quotes)
 			{
-				current->value = expanded;
-				current->was_expanded = 1; // Mark for later freeing
+				expanded = expand_variables(without_quotes, shell);
+				free(without_quotes);
+				if (expanded)
+				{
+					current->value = expanded;
+					current->was_expanded = 1;
+				}
+			}
+			else if (without_quotes)
+			{
+				current->value = without_quotes;
+				current->was_expanded = 1;
 			}
 		}
 		current = current->next;

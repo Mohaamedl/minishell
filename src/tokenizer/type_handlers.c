@@ -20,29 +20,67 @@ int	handle_quote(char *line, int *i,t_token **last_node, t_token **head)
 	*i = *i + get_quoted_size(line,*line) + 2; //passar a frente o tento dentro das quotes e das prprias quotes
 	return status; //0-failed 1-sucess
 }
-void	handle_word(char *line, int *i,t_token **last_token, t_token **head)
+int	handle_word(char *line, int *i,t_token **last_token, t_token **head)
 {
 	int		j;
 	t_token	*token;
 	char	*str;
 	int is_op;
+	int	has_equals;
+	char	quote_char;
 
 	is_op = 0;
-
-	j = 1; //vou para o char seguinte apos a letra que encontrei
-	while(!is_operator(&line[j]) && !is_space(line[j]) && line[j] != '\0' && !is_quote(line[j])) //validar a mudanca no is_operator, ver o que fazer se receber uma quote
-	{
+	has_equals = 0;
+	j = 0;
+	// Read until '=' or delimiter
+	while (line[j] && line[j] != '=' && !is_operator(&line[j]) 
+		&& !is_space(line[j]) && !is_quote(line[j]))
 		j++;
+	// If we found '=', mark it and continue past it
+	if (line[j] == '=')
+	{
+		has_equals = 1;
+		j++; // Move past '='
 	}
-	//neste ponto line[j] e' um operador, espaco ou '\0'
-	// com j tava deslocado, tamanhao a copiar da str e' j
+	// After '=', read all adjacent quoted and unquoted segments
+	if (has_equals)
+	{
+		while (line[j] && !is_operator(&line[j]) && !is_space(line[j]))
+		{
+			if (is_quote(line[j]))
+			{
+				quote_char = line[j];
+				j++; // Move past opening quote
+				// Read until closing quote
+				while (line[j] && line[j] != quote_char)
+					j++;
+				if (line[j] != quote_char)
+					return (0); // Unclosed quote error
+				j++; // Move past closing quote
+			}
+			else
+			{
+				// Read unquoted characters until quote, space, or operator
+				while (line[j] && !is_quote(line[j]) && !is_space(line[j]) 
+					&& !is_operator(&line[j]))
+					j++;
+			}
+		}
+	}
+	else
+	{
+		// No equals sign - read word normally
+		while(!is_operator(&line[j]) && !is_space(line[j]) 
+			&& line[j] != '\0' && !is_quote(line[j]))
+			j++;
+	}
 	str = malloc((j + 1)*sizeof(char));
-	ft_memcpy(str, line, j); //ando line um char para a frente para nao copiar a aspa inicial
+	ft_memcpy(str, line, j);
 	str[j] = '\0';
 	token = create_token(str, WORD, 1, is_op);
 	append_token(head,last_token,token);
-	//atualizar i (posicao na line)
 	*i = *i + j;
+	return (1);
 }
 
 void	handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head) //em todas estas funcoes de handle, seja o que receber aqui sei que e' um operador valido basta me saber qual
