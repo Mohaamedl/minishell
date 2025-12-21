@@ -22,6 +22,7 @@ int	apply_heredoc(t_redir *redir)
 {
 	int pipefd[2];
 	char *line;
+	int result;
 
 	pipe(pipefd);
 	setup_signals_heredoc();
@@ -35,6 +36,7 @@ int	apply_heredoc(t_redir *redir)
 			close(pipefd[0]);
 			close(pipefd[1]);
 			write(STDOUT, "\n", 1);
+			setup_signals_executing();
 			return (ERROR);
 		}
 		// Aqui você processa a linha do heredoc, por exemplo:
@@ -52,14 +54,18 @@ int	apply_heredoc(t_redir *redir)
 			close(pipefd[0]);
 			close(pipefd[1]);
 			write(STDOUT, "\n", 1);
+			setup_signals_executing();
 			return (ERROR);
 		}
 	}
 	free(line); // libera a última linha (que é igual ao delimitador)
 	close(pipefd[1]);//fecha o lado de escrita do pipe
-	dup2(pipefd[0], STDIN_FILENO); //prepara o stin para ler do pipe, para um eventual comando como o cat ler do heredoc
+	result = dup2(pipefd[0], STDIN_FILENO); //prepara o stin para ler do pipe, para um eventual comando como o cat ler do heredoc
 	close(pipefd[0]);
-	return 1;
+	setup_signals_executing();
+	if (result == -1)
+		return (ERROR);
+	return (SUCCESS);
 }
 int apply_redir_in(t_redir *redir)
 {
