@@ -22,7 +22,6 @@ static void	cleanup_heredoc_on_interrupt(int *pipefd)
 {
 	close(pipefd[0]);
 	close(pipefd[1]);
-	write(STDOUT, "\n", 1);
 	setup_signals_executing();
 }
 

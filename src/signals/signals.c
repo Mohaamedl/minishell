@@ -32,12 +32,14 @@ static void	handle_sigint(int sig)
 ** handle_sigint_heredoc - Handler for SIGINT (Ctrl+C) during heredoc input
 **
 ** Sets global flag and interrupts readline to return control.
-** Does not redisplay prompt - lets heredoc function handle cleanup.
+** Writes newline to move cursor and forces readline to return.
 */
 static void	handle_sigint_heredoc(int sig)
 {
 	(void)sig;
 	g_signal_received = SIGINT;
+	write(STDOUT, "\n", 1);
+	rl_replace_line("", 0);
 	rl_done = 1;
 }
 
