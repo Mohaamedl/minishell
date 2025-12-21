@@ -31,6 +31,8 @@
 # define SYNTAX_ERROR 2
 # define CMD_NOT_FOUND 127
 # define CMD_NOT_EXECUTABLE 126
+# define EXIT_SIGINT 130
+# define FILE_PERMS 0644
 
 # define STDIN 0
 # define STDOUT 1
@@ -71,9 +73,8 @@ extern volatile sig_atomic_t	g_signal_received;
 ** ============================================================================
 */
 
-void	setup_signals_interactive(void);
-void	setup_signals_executing(void);
-void	setup_signals_default(void);
+void		setup_signals_interactive(void);
+void		setup_signals_executing(void);
 
 /*
 ** ============================================================================

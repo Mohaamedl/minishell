@@ -12,6 +12,12 @@
 
 #include "minishell.h"
 
+/*
+** handle_sigint - Handler for SIGINT (Ctrl+C) in interactive mode
+**
+** Sets global flag, prints newline, and redisplays prompt.
+** The flag is checked in main loop to set exit status to 130.
+*/
 static void	handle_sigint(int sig)
 {
 	(void)sig;
@@ -22,11 +28,12 @@ static void	handle_sigint(int sig)
 	rl_redisplay();
 }
 
-static void	handle_sigquit(int sig)
-{
-	(void)sig;
-}
-
+/*
+** setup_signals_interactive - Configure signals for interactive prompt
+**
+** SIGINT (Ctrl+C): Custom handler to redisplay prompt
+** SIGQUIT (Ctrl+\): Ignored (SIG_IGN) - fixes issue #23
+*/
 void	setup_signals_interactive(void)
 {
 	struct sigaction	sa_int;
@@ -36,12 +43,17 @@ void	setup_signals_interactive(void)
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_int, NULL);
-	sa_quit.sa_handler = handle_sigquit;
+	sa_quit.sa_handler = SIG_IGN;
 	sigemptyset(&sa_quit.sa_mask);
-	sa_quit.sa_flags = SA_RESTART;
+	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
 }
 
+/*
+** setup_signals_executing - Configure signals during command execution
+**
+** Both SIGINT and SIGQUIT are ignored by parent during child execution.
+*/
 void	setup_signals_executing(void)
 {
 	struct sigaction	sa_int;
@@ -55,15 +67,4 @@ void	setup_signals_executing(void)
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = 0;
 	sigaction(SIGQUIT, &sa_quit, NULL);
-}
-
-void	setup_signals_default(void)
-{
-	struct sigaction	sa;
-
-	sa.sa_handler = SIG_DFL;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, NULL);
-	sigaction(SIGQUIT, &sa, NULL);
 }
