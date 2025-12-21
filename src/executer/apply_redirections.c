@@ -57,6 +57,15 @@ int	apply_heredoc(t_redir *redir)
 			setup_signals_executing();
 			return (ERROR);
 		}
+		// If Ctrl+D (EOF), we should complete the heredoc with what we have
+		// This is the standard bash behavior - heredoc completes on EOF
+		close(pipefd[1]);
+		result = dup2(pipefd[0], STDIN_FILENO);
+		close(pipefd[0]);
+		setup_signals_executing();
+		if (result == -1)
+			return (ERROR);
+		return (SUCCESS);
 	}
 	free(line); // libera a última linha (que é igual ao delimitador)
 	close(pipefd[1]);//fecha o lado de escrita do pipe
