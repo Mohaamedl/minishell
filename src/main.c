@@ -45,6 +45,11 @@ int	main(int argc, char **argv, char **envp)
 		if (interactive)
 		{
 			line = readline("minishell$ ");
+			if (g_signal_received == SIGINT)
+			{
+				shell.last_exit_status = EXIT_SIGINT;
+				g_signal_received = SUCCESS;
+			}
 		}
 		else
 		{
