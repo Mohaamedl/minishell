@@ -152,7 +152,13 @@ t_token	*tokenize(char* line)
 		else if(is_operator(&line[i]))
 			handle_ops_and_reds(&line[i],&i, &last_token, &head);
 		else
-			handle_word(&line[i],&i, &last_token, &head);
+		{
+			if(handle_word(&line[i],&i, &last_token, &head)==0)
+			{
+				free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
+				return (NULL);//erro ao tokenizar
+			}
+		}
 	}
 	return (head);
 }

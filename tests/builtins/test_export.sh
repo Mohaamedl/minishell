@@ -250,10 +250,130 @@ else
 fi
 echo
 
+echo -e "${BLUE}→ Quote Handling Tests${NC}"
+echo
+
+echo -e "${YELLOW}Test 17: Single quotes with inner double quotes${NC}"
+((TOTAL++))
+result=$(run_command_all $'export VAR=\'"ddd"\'\necho $VAR')
+expected='"ddd"'
+if [ "$result" = "$expected" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - Preserves inner double quotes: $expected"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Expected: $expected, Got: $result"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 18: Double quotes with inner single quotes${NC}"
+((TOTAL++))
+result=$(run_command_all $'export VAR="\'sss\'"\necho $VAR')
+expected="'sss'"
+if [ "$result" = "$expected" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - Preserves inner single quotes: $expected"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Expected: $expected, Got: $result"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 19: Triple double quotes (adjacent empty + value + empty)${NC}"
+((TOTAL++))
+result=$(run_command_all $'export VAR="""ddsd"""\necho $VAR')
+expected="ddsd"
+if [ "$result" = "$expected" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - Handles adjacent quotes: $expected"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Expected: $expected, Got: $result"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 20: Double empty quotes with unquoted middle${NC}"
+((TOTAL++))
+result=$(run_command_all $'export VAR=""ddsd""\necho $VAR')
+expected="ddsd"
+if [ "$result" = "$expected" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - Adjacent quotes concatenate: $expected"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Expected: $expected, Got: $result"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 21: Mixed double and single quotes (double-single-double)${NC}"
+((TOTAL++))
+result=$(run_command_all $'export VAR=""\'ddsdd\'""\necho $VAR')
+expected="ddsdd"
+if [ "$result" = "$expected" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - Complex quote mixing: $expected"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Expected: $expected, Got: $result"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 22: Single-single-single pattern${NC}"
+((TOTAL++))
+result=$(run_command_all $'export VAR=\'""\'ddsdd\'""\'\necho $VAR')
+expected='""ddsdd""'
+if [ "$result" = "$expected" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - Preserves nested quotes: $expected"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Expected: $expected, Got: $result"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 23: Unclosed quote detection (double quote)${NC}"
+((TOTAL++))
+result=$(run_command_with_errors 'export VAR="unclosed')
+if echo "$result" | grep -qi "syntax error\|unclosed"; then
+    echo -e "${GREEN}✓ PASS${NC} - Detects unclosed double quote"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Should detect unclosed quote"
+    echo "  Got: '$result'"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 24: Unclosed quote detection (single quote)${NC}"
+((TOTAL++))
+result=$(run_command_with_errors "export VAR='unclosed")
+if echo "$result" | grep -qi "syntax error\|unclosed"; then
+    echo -e "${GREEN}✓ PASS${NC} - Detects unclosed single quote"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Should detect unclosed quote"
+    echo "  Got: '$result'"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test 25: Mismatched quotes in assignment${NC}"
+((TOTAL++))
+result=$(run_command_with_errors 'export VAR="value'"'")
+if echo "$result" | grep -qi "syntax error\|unclosed"; then
+    echo -e "${GREEN}✓ PASS${NC} - Detects mismatched quotes"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Should detect mismatched quotes"
+    echo "  Got: '$result'"
+    ((FAILED++))
+fi
+echo
+
 echo -e "${BLUE}→ Edge Cases${NC}"
 echo
 
-echo -e "${YELLOW}Test 15: export without = (declare without value)${NC}"
+echo -e "${YELLOW}Test 26: export without = (declare without value)${NC}"
 ((TOTAL++))
 result=$(run_command_all $'export DECLARED\nenv')
 # This behavior varies - some shells export it, some don't
@@ -266,7 +386,7 @@ else
 fi
 echo
 
-echo -e "${YELLOW}Test 16: export with only = (invalid)${NC}"
+echo -e "${YELLOW}Test 27: export with only = (invalid)${NC}"
 ((TOTAL++))
 result=$(run_command_with_errors "export =value")
 if echo "$result" | grep -qi "error\|invalid\|not a valid identifier"; then

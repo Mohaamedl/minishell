@@ -174,7 +174,7 @@ void    handle_semicolon(char *line, int *i, t_token **last_token, t_token **hea
 
 /* ---------------- Funções principais ---------------- */
 int     handle_quote(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_word(char *line, int *i, t_token **last_token, t_token **head);
+int     handle_word(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
 void    skip_spaces(char *line, int *i);
 t_token *tokenize(char *line);

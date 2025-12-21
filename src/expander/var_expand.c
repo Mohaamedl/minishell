@@ -15,17 +15,18 @@
 /**
  * @brief Remove quotes from a string
  * 
- * Removes both single (') and double (") quotes from the string.
- * Example: q="hello world" → q=hello world
+ * Removes only the outermost layer of quotes, preserving nested quotes.
+ * Example: '"hello"' → "hello", "'world'" → world
  * 
  * @param str String potentially containing quotes
- * @return Newly allocated string without quotes
+ * @return Newly allocated string without outer quotes
  */
 static char	*remove_quotes(const char *str)
 {
 	char	*result;
 	int		i;
 	int		j;
+	char	in_quote;
 
 	if (!str)
 		return (NULL);
@@ -34,11 +35,22 @@ static char	*remove_quotes(const char *str)
 		return (NULL);
 	i = 0;
 	j = 0;
+	in_quote = 0;
 	while (str[i])
 	{
-		if (str[i] != '"' && str[i] != '\'')
-			result[j++] = str[i];
-		i++;
+		if (!in_quote && (str[i] == '"' || str[i] == '\''))
+		{
+			in_quote = str[i];
+			i++;
+			continue;
+		}
+		if (in_quote && str[i] == in_quote)
+		{
+			in_quote = 0;
+			i++;
+			continue;
+		}
+		result[j++] = str[i++];
 	}
 	result[j] = '\0';
 	return (result);
@@ -206,27 +218,29 @@ char	*expand_variables(char *str, t_shell *shell)
 void	expand_cmd_args(t_arg *args, t_shell *shell)
 {
 	t_arg	*current;
-	char	*expanded;
 	char	*without_quotes;
+	char	*expanded;
 
 	current = args;
 	while (current)
 	{
-		if (current->is_expandable && current->value)
+		if (current->value)
 		{
-			expanded = expand_variables(current->value, shell);
-			if (expanded)
-			{
-				without_quotes = remove_quotes(expanded);
-				free(expanded);
-				current->value = without_quotes;
-				current->was_expanded = 1;
-			}
-		}
-		else if (current->value)
-		{
+			// First remove quotes from the original token
 			without_quotes = remove_quotes(current->value);
-			if (without_quotes)
+			
+			// Then expand variables if expandable
+			if (current->is_expandable && without_quotes)
+			{
+				expanded = expand_variables(without_quotes, shell);
+				free(without_quotes);
+				if (expanded)
+				{
+					current->value = expanded;
+					current->was_expanded = 1;
+				}
+			}
+			else if (without_quotes)
 			{
 				current->value = without_quotes;
 				current->was_expanded = 1;
