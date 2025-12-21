@@ -75,6 +75,7 @@ extern volatile sig_atomic_t	g_signal_received;
 
 void		setup_signals_interactive(void);
 void		setup_signals_executing(void);
+void		setup_signals_heredoc(void);
 
 /*
 ** ============================================================================

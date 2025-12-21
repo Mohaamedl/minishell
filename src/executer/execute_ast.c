@@ -119,7 +119,12 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 		save_std_fds(saved_std_fds);
 		status = apply_redirections(node);//altera me os fds, depois de executar a funcao builtin devo restautar os fds para os originais, no caso de funcoes externas nao preciso de restaurar porque estao num fork
 		//so executa se apply redirections correu bem entao tenho que retornar o status dentro dessa funcao e ja definir o status code
-		if (status == SUCCESS)
+		if (status == ERROR && g_signal_received == SIGINT)
+		{
+			status = EXIT_SIGINT;
+			g_signal_received = SUCCESS;
+		}
+		else if (status == SUCCESS)
 			status = execute_builtin(args, shell);
 		restore_std_fds(saved_std_fds[0], saved_std_fds[1]);
 	}
@@ -140,7 +145,11 @@ static int	execute_command_node(t_ast *node, t_shell *shell)
 			
 			redir_status = apply_redirections(node);
 			if (redir_status == ERROR)
+			{
+				if (g_signal_received == SIGINT)
+					_exit(EXIT_SIGINT);
 				_exit(ERROR); // exit immediately if redirections fail
+			}
 			if (!cmd_name_is_redir(node->cmd->cmd_name))
 				exit_code = execute_external_cmd(args, shell);
 			else
@@ -202,7 +211,11 @@ static void	execute_in_child(t_ast *node, t_shell *shell)
 		if (!args)
 			_exit(ERROR);
 		if (apply_redirections(node) == ERROR)
+		{
+			if (g_signal_received == SIGINT)
+				_exit(EXIT_SIGINT);
 			_exit(ERROR); // exit immediately if redirections fail
+		}
 		if (is_builtin(args[0]))
 			_exit(execute_builtin(args, shell));
 		else if (!cmd_name_is_redir(node->cmd->cmd_name))
