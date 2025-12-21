@@ -27,21 +27,29 @@ test_tokenizer() {
     
     TOTAL=$((TOTAL + 1))
     
-    # Run the command and capture output
+    # Run the command and capture output and exit code
     output=$(echo "$input" | $MINISHELL 2>&1)
+    exit_code=$?
     
     # For now, we test if the command doesn't crash
-    # TODO: Add token counting when debug mode is available
-    if [ $? -eq 0 ] || [ $? -eq 130 ]; then
+    # Accept: 0 (success), 1 (command error), 130 (Ctrl+C), 2 (syntax error)
+    # Reject: 139 (segfault), 124 (timeout)
+    if [ $exit_code -eq 0 ] || [ $exit_code -eq 1 ] || [ $exit_code -eq 2 ] || [ $exit_code -eq 130 ]; then
         echo -e "${GREEN}✓${NC} Test $TOTAL: $test_name"
         PASSED=$((PASSED + 1))
     else
         echo -e "${RED}✗${NC} Test $TOTAL: $test_name"
         echo "  Input: $input"
-        echo "  Exit code: $?"
+        echo "  Exit code: $exit_code"
+        if [ $exit_code -eq 139 ]; then
+            echo "  ERROR: Segmentation fault!"
+        elif [ $exit_code -eq 124 ]; then
+            echo "  ERROR: Timeout!"
+        fi
         FAILED=$((FAILED + 1))
     fi
 }
+
 
 echo "========================================"
 echo "TOKENIZER TESTS"
