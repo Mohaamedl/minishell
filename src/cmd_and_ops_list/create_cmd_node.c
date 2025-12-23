@@ -24,8 +24,8 @@ void	handle_redirect_token(t_cmd *cmd,t_token **tmp_token, t_redir **redir_list_
 		return;
 	new_redir_node -> type = (*tmp_token) -> type;
 	new_redir_node -> file = (*tmp_token) -> next -> value; // o file name e o token a seguir ao token de redirect
-	new_redir_node -> file_name_is_expandable = (*tmp_token) -> next -> expandable;
-	new_redir_node -> file_was_expanded = 0; // Initially points to token value
+	new_redir_node -> file_name_is_expandable = (*tmp_token) -> next -> expandable; //in the case of heredoc its file_name (or in this case delimiter) never expands, this info will be used to know if the content variables will expand or not
+	new_redir_node -> file_was_expanded = 0; // Initially points to token value     
 	if(*redir_list_head == NULL)//ainda nao existe head, este sera o primeiro redir_node
 	{
 		*redir_list_head = new_redir_node;

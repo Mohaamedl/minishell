@@ -208,7 +208,7 @@ void	expand_redirection_files(t_redir *redirs, t_shell *shell)
 	current = redirs;
 	while (current)
 	{
-		if (current->file_name_is_expandable && current->file)
+		if (current->file_name_is_expandable && current->file && current -> type != HEREDOC) //i the case of HEREDOC file_name_is_expandable = 1 means its content variables expand, the filename(or delimiter in this case) never expands
 		{
 			expanded = expand_variables(current->file, shell);
 			if (expanded)
