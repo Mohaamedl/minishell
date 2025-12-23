@@ -91,7 +91,7 @@ void	execute_in_child(t_ast *node, t_shell *shell) //pipe fd can be the writing 
 		args = prepare_cmd_for_execution(node->cmd, shell);
 		if (!args)
 			_exit(ERROR);
-		heredoc_pipe_read_fd = handle_heredocs(node->cmd->redirs);//-1 if there is no heredocs
+		heredoc_pipe_read_fd = handle_heredocs(node->cmd->redirs, shell);//-1 if there is no heredocs
 		if (is_builtin(args[0]))
 			_exit(execute_builtin_command(args, shell, node, heredoc_pipe_read_fd));//execute_builtin() applies redirections
 		apply_redirections(node,heredoc_pipe_read_fd);
@@ -133,7 +133,7 @@ int	execute_command_node(t_ast *node, t_shell *shell)
 	save_std_fds(saved_std_fds);
 	if (!args)
 		return (ERROR);
-	heredoc_pipe_read_fd = handle_heredocs(node->cmd->redirs);//-1 if invalid
+	heredoc_pipe_read_fd = handle_heredocs(node->cmd->redirs,shell);//-1 if invalid
 	if (is_builtin(args[0]))
 		status = execute_builtin_command(args, shell, node, heredoc_pipe_read_fd);
 	else

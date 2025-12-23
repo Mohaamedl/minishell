@@ -28,12 +28,19 @@ int has_heredocs(t_redir *first_redir)
 }
 
 
-void	read_heredoc_to_pipe(int *pipefd,char *terminator)
+void	read_heredoc_to_pipe(int *pipefd,char *terminator,int content_expands,t_shell *shell)
 {
 	char *line;
+	char *tmp_line;
 	line = readline("heredoc> ");
 	while (line && ft_strcmp(line, terminator) != 0)
 	{
+		if(content_expands)
+		{
+			tmp_line = line;
+			line = expand_variables(line, shell);
+			free(tmp_line);
+		}	
 		write(pipefd[1], line, strlen(line));
 		write(pipefd[1], "\n", 1);
 		free(line);
@@ -54,7 +61,7 @@ void	read_heredoc_to_pipe(int *pipefd,char *terminator)
  *         or `-1` if no heredocs are present.
  */
 
-int handle_heredocs(t_redir *first_redir)
+int handle_heredocs(t_redir *first_redir,t_shell *shell)
 {
 	t_redir *curr_redir;
 	int heredoc_pipe_read_fd;
@@ -69,8 +76,8 @@ int handle_heredocs(t_redir *first_redir)
 		while (curr_redir != NULL)
 		{
 			if(curr_redir -> type == HEREDOC)
-				read_heredoc_to_pipe(pipefd, curr_redir->file);
-			curr_redir = curr_redir -> next;
+				read_heredoc_to_pipe(pipefd, curr_redir->file, curr_redir -> file_name_is_expandable, shell); //in the case of heredoc file_name_is_expandable = 1
+			curr_redir = curr_redir -> next;                                                         //means content variables expand
 		}
 		close(pipefd[1]); //close writing side after all heredocs wrote to the same pipe
 	}

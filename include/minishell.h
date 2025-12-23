@@ -303,7 +303,7 @@ int     cmd_name_is_redir(char *cmd_name);
 int     has_in_redirs(t_redir *redirs);
 int     has_out_redirs(t_redir *redirs);
 char    **prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
-int     handle_heredocs(t_redir *redirs);
+int handle_heredocs(t_redir *first_redir, t_shell *shell);
 int has_heredocs(t_redir *first_redir);
 int execute_ast_in_child(t_ast *node, t_shell *shell);
 int execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
