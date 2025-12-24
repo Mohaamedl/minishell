@@ -35,7 +35,7 @@ int cmd_name_is_redir(char *cmd_name)
  *
  * @param saved_std_fds Array to store the saved stdin and stdout.
  */
-void	save_std_fds(int *saved_std_fds)
+void	save_std_fds(int saved_std_fds[2])
 {
 	saved_std_fds[0] = dup(STDIN_FILENO);
 	saved_std_fds[1] = dup(STDOUT_FILENO);
