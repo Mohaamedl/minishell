@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 14:31:25 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/11/28 16:20:57 by framiran         ###   ########.fr       */
+/*   Updated: 2025/12/15 17:10:37 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,11 +123,11 @@ int	main(int argc, char **argv, char **envp)
 		build_sub_trees(&root_node);
 		// print_tree(root_node);
 		//print_tree_visual(root_node);
-		
+
 		// Setup signal handling for command execution
 		if (interactive)
 			setup_signals_executing();
-		
+
 		// Execute AST
 		execute_ast(root_node, &shell);
 

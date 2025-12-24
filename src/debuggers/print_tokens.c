@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 
-#include "minishell.h"
+#include "minishell.h" 
 
 const char *token_type_to_str(t_token_type type)
 {
@@ -36,6 +36,8 @@ const char *token_type_to_str(t_token_type type)
 	if (type == LPAREN)
 		return "LPAREN";
 	if (type == CMD)
+		return "CMD";
+	if (type == 11) //just because this was bugging
 		return "CMD";
 	return "UNKNOWN";
 }

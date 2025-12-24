@@ -13,7 +13,7 @@
 #include "minishell.h"
 
 
-int is_operator(char *line)
+int	is_operator(char *line)
 {
 	if (!line)
 	    return (0);
