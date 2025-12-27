@@ -53,6 +53,8 @@ void	handle_arg_token(t_cmd *cmd, t_token **tmp_token, t_arg **arg_list_head, t_
 		return;
 	new_arg_node -> value = (*tmp_token) ->value;
 	new_arg_node -> is_expandable = (*tmp_token) -> expandable;
+	// Wildcard expands only for unquoted tokens
+	new_arg_node -> is_wildcard_expandable = !((*tmp_token) -> is_quoted);
 	new_arg_node -> was_expanded = 0; // Initially points to token value
 
 	if(*arg_list_head == NULL)//ainda nao existe head, este sera o primeiro arg

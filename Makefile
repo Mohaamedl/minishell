@@ -58,6 +58,10 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/ast/ast_memory.c \
 			  $(SRC_DIR)/ast/ast_debuggers.c \
 			  $(SRC_DIR)/expander/var_expand.c \
+			  $(SRC_DIR)/expander/wildcard.c \
+			  $(SRC_DIR)/expander/wildcard_match.c \
+			  $(SRC_DIR)/expander/wildcard_expand.c \
+			  $(SRC_DIR)/expander/wildcard_args.c \
 			  $(SRC_DIR)/executer/execute_ast.c \
 			  $(SRC_DIR)/executer/apply_redirections.c \
 			  $(SRC_DIR)/executer/execute_cmd.c \

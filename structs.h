@@ -21,8 +21,9 @@ typedef enum e_token_type
 typedef struct s_token
 {
 	int is_operator;
-	int	expandable; //0 - does not expand ,1 - expands
-	char            *value;   // conteúdo do token \("cat", ">", etc.)
+	int	expandable; //0 - does not expand vars, 1 - expands vars
+	int is_quoted;  // 1 if token was inside quotes (single or double)
+	char            *value;   // token content ("cat", ">", etc.)
 	t_token_type    type;     // tipo \(WORD, PIPE, etc.)
 	struct s_token  *next;    // próximo token
 }	t_token;
@@ -47,9 +48,10 @@ typedef struct s_redir
 typedef struct s_arg
 {
 	char			*value;
-	int				is_expandable;
+	int				is_expandable;  // 1 for double quotes (var expand), 0 for single
+	int				is_wildcard_expandable; // 0 for all quoted, 1 for unquoted
 	int				was_expanded; // Flag to track if value was malloc'd by expansion
-	struct s_arg	*next; // Próximo argumento
+	struct s_arg	*next; // Next argument
 }	t_arg;
 
 //-------------------ESTRUTURA DO COMANDO----------------------------------------

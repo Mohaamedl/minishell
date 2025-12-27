@@ -35,7 +35,7 @@ int cmd_name_is_redir(char *cmd_name)
  *
  * @param saved_std_fds Array to store the saved stdin and stdout.
  */
-void	save_std_fds(int *saved_std_fds)
+void	save_std_fds(int saved_std_fds[2])
 {
 	saved_std_fds[0] = dup(STDIN_FILENO);
 	saved_std_fds[1] = dup(STDOUT_FILENO);
@@ -111,11 +111,21 @@ static char	**convert_args_to_array(t_cmd *cmd)
  */
 char **prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell)
 {
-	char **args;
+	char	**args;
+	t_arg	*expanded_args;
+
 	if (!cmd || !cmd->cmd_name)
-		return NULL;
+		return (NULL);
 	expand_cmd_args(cmd->args, shell);
-	expand_redirection_files(cmd->redirs, shell); //need to che how the heredoc expansion is being done
+	expand_redirection_files(cmd->redirs, shell);
+	expanded_args = expand_wildcards_in_args(cmd->args);
+	if (expanded_args)
+	{
+		free_args_list(cmd->args);
+		cmd->args = expanded_args;
+		if (cmd->args && cmd->args->value)
+			cmd->cmd_name = cmd->args->value;
+	}
 	args = convert_args_to_array(cmd);
-	return args;
+	return (args);
 }

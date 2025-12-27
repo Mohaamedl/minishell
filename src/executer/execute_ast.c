@@ -6,22 +6,17 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 20:40:00 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/15 18:14:47 by framiran         ###   ########.fr       */
+/*   Updated: 2025/11/28 16:13:21 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "../structs.h"
 
+/* Forward declarations */
+static int	execute_pipe_node(t_ast *node, t_shell *shell);
 
 
-/**
- * @brief Execute a pipe node (two-command pipeline)
- *
- * @param node The AST node with type PIPE
- * @param shell The shell state structure
- * @return Exit status of the last command in the pipeline
- */
 
 /**
  * @brief Execute a pipe node (two-command pipeline)
@@ -113,6 +108,3 @@ int	execute_ast(t_ast *node, t_shell *shell)
 	shell->last_exit_status = status;
 	return (status);
 }
-
-
-
