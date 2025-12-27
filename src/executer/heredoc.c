@@ -39,7 +39,10 @@ void	read_heredoc_to_pipe(int *pipefd,char *terminator,int content_expands,t_she
 		{
 			tmp_line = line;
 			line = expand_variables(line, shell);
-			free(tmp_line);
+			if (line != NULL)
+				free(tmp_line);
+			else
+				line = tmp_line;
 		}	
 		write(pipefd[1], line, strlen(line));
 		write(pipefd[1], "\n", 1);
