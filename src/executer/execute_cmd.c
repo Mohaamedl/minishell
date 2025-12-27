@@ -76,12 +76,10 @@ int handle_external_command(char **args, t_shell *shell, t_ast *node, int heredo
  * @param pipe_fd   Pipe file descriptor (read or write end).
  * @param pipe_type Pipe direction indicator.
  */
-void	execute_in_child(t_ast *node, t_shell *shell) //pipe fd can be the writing or reading end of the pipe(that comes from the "|" fork())
+void	execute_in_child(t_ast *node, t_shell *shell, int heredoc_pipe_read_fd) //pipe fd can be the writing or reading end of the pipe(that comes from the "|" fork())
 {
 	char	**args;
-	int		heredoc_pipe_read_fd;
 
-	heredoc_pipe_read_fd = -1;
 	if (!node)
 		_exit(ERROR);
 	if (node->type == CMD)
@@ -91,7 +89,6 @@ void	execute_in_child(t_ast *node, t_shell *shell) //pipe fd can be the writing 
 		args = prepare_cmd_for_execution(node->cmd, shell);
 		if (!args)
 			_exit(ERROR);
-		heredoc_pipe_read_fd = handle_heredocs(node->cmd->redirs);//-1 if there is no heredocs
 		if (is_builtin(args[0]))
 			_exit(execute_builtin_command(args, shell, node, heredoc_pipe_read_fd));//execute_builtin() applies redirections
 		apply_redirections(node,heredoc_pipe_read_fd);

@@ -14,48 +14,80 @@
 #include "../structs.h"
 
 /* Forward declarations */
-static int	execute_pipe_node(t_ast *node, t_shell *shell);
+static int	execute_pipeline(t_ast *node, t_shell *shell);
 
 
 
-/**
- * @brief Execute a pipe node (two-command pipeline)
- *
- * @param node The AST node with type PIPE
- * @param shell The shell state structure
- * @return Exit status of the last command in the pipeline
- */
-static int	execute_pipe_node(t_ast *node, t_shell *shell)
+
+static int execute_pipeline(t_ast *node, t_shell *shell)
 {
-	int		pipe_fds[2];
-	pid_t	pids[2];
+	t_ast	*cmds;
+	int		num_cmds;
+	int		*pipes;
+	pid_t	*pids;
+	int		i;
 	int		status;
+	int		last_status;
+	int		heredoc_pipe_read_fd:
+	t_ast	*curr_node;
 
-	if (!node || !node->left || !node->right)
+	cmds = get_cmds_from_pipeline(node, &num_cmds);
+	pipes = create_pipes(num_cmds);
+	pids = malloc(sizeof(pid_t) * num_cmds);
+	if (!pids)
 		return (ERROR);
-	if (pipe(pipe_fds) == -1)
-		return (perror("minishell: pipe"), ERROR);
-	pids[0] = create_process();
-	if (pids[0] == 0)
+	i = 0;
+	while (i < num_cmds)
 	{
-		close(pipe_fds[0]);
-		dup2(pipe_fds[1], STDOUT_FILENO);
-		close(pipe_fds[1]);
-		execute_in_child(node->left, shell);
+		curr_node = get_node_by_index(cmds,i);
+		heredoc_pipe_read_fd = handle_heredocs(curr_node->cmd->redirs);
+		pids[i] = fork();
+		if (pids[i] == -1)
+			return (perror("minishell: fork"), ERROR);
+
+		if (pids[i] == 0) // child
+		{
+			// configuro o stdin para ler do pipe que esta atras
+			if (i > 0) //se nao for o primeiro cmd, le do pipe atras
+				dup2(pipes[(i - 1) * 2], STDIN_FILENO);
+
+			// stdout
+			if (i < num_cmds - 1) //escreve para o pipe a frente
+				dup2(pipes[i * 2 + 1], STDOUT_FILENO);
+
+			// fechar todos os pipes no child
+			close_all_pipes(pipes, (num_cmds - 1));
+
+			// executar comando
+			execute_in_child(curr_node, shell, heredoc_pipe_read_fd);
+			_exit(ERROR);
+		}
+		i++;
 	}
-	pids[1] = create_process();
-	if (pids[1] == 0)
+
+	// 4️⃣ Fechar pipes no pai
+	close_all_pipes(pipes, (num_cmds - 1));
+
+	// 5️⃣ Esperar filhos
+	last_status = 0;
+	i = 0;
+	while (i < num_cmds)
 	{
-		close(pipe_fds[1]);
-		dup2(pipe_fds[0], STDIN_FILENO);
-		close(pipe_fds[0]);
-		execute_in_child(node->right, shell);
+		waitpid(pids[i], &status, 0);
+		if (i == num_cmds - 1)
+		{
+			if (WIFEXITED(status))
+				last_status = WEXITSTATUS(status);
+			else
+				last_status = ERROR;
+		}
+		i++;
 	}
-	close(pipe_fds[0]);
-	close(pipe_fds[1]);
-	status = wait_for_pipeline(pids, 2);
-	return (status);
+	free(pipes);
+	free(pids);
+	return (last_status);
 }
+
 
 /**
  * @brief Execute an AST node recursively
@@ -83,7 +115,7 @@ int	execute_ast(t_ast *node, t_shell *shell)
 	}
 	else if (node->type == PIPE)
 	{
-		status = execute_pipe_node(node, shell);
+		status = execute_pipeline(node, shell);
 	}
 	else if (node->type == AND)
 	{
