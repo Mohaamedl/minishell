@@ -31,6 +31,8 @@
 # define SYNTAX_ERROR 2
 # define CMD_NOT_FOUND 127
 # define CMD_NOT_EXECUTABLE 126
+# define EXIT_SIGINT 130
+# define FILE_PERMS 0644
 
 # define STDIN 0
 # define STDOUT 1
@@ -71,9 +73,8 @@ extern volatile sig_atomic_t	g_signal_received;
 ** ============================================================================
 */
 
-void	setup_signals_interactive(void);
-void	setup_signals_executing(void);
-void	setup_signals_default(void);
+void		setup_signals_interactive(void);
+void		setup_signals_executing(void);
 
 /*
 ** ============================================================================
@@ -174,7 +175,7 @@ void    handle_semicolon(char *line, int *i, t_token **last_token, t_token **hea
 
 /* ---------------- Funções principais ---------------- */
 int     handle_quote(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_word(char *line, int *i, t_token **last_token, t_token **head);
+int     handle_word(char *line, int *i, t_token **last_token, t_token **head);
 void    handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
 void    skip_spaces(char *line, int *i);
 t_token *tokenize(char *line);
@@ -254,6 +255,13 @@ int		validate_token_list(t_token *head);
 char	*expand_variables(char *str, t_shell *shell);
 void	expand_cmd_args(t_arg *args, t_shell *shell);
 void	expand_redirection_files(t_redir *redirs, t_shell *shell);
+
+/* wildcard.c */
+int		has_wildcard(const char *str);
+char	**expand_wildcard(const char *pattern);
+void	free_wildcard_matches(char **arr);
+char	*join_wildcard_matches(char **matches);
+t_arg	*expand_wildcards_in_args(t_arg *args);
 
 /*
 ** ============================================================================
