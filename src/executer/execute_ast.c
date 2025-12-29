@@ -17,75 +17,94 @@
 static int	execute_pipeline(t_ast *node, t_shell *shell);
 
 
+void configure_stds(int pipe_indice)
+{
+	if (pipe_indice > 0) 
+		dup2(pipes[(i - 1) * 2], STDIN_FILENO);
+
+	if (pipe_indice < num_cmds - 1) //escreve para o pipe a frente
+		dup2(pipes[i * 2 + 1], STDOUT_FILENO);
+}
 
 
+
+void handle_cmd(t_ast *curr_node, int *pipe, int pipe_indice)
+{
+	int		heredoc_pipe_read_fd;
+	int		pid;
+
+	heredoc_pipe_read_fd = handle_heredocs(curr_node->cmd->redirs);
+	pid = fork();
+	if (pid == -1)
+		return (perror("minishell: fork"), ERROR);
+
+	if (pid == 0) // child
+	{
+		configure_stds(pipe_indice, numb _of_pipes);//nmb_of_pipes is important to check the case of the last and first cmd of pipeline
+		// fechar todos os pipes no child          //(first cmd does not read from a pipe and last does not write to pipe)
+		close_all_pipes(pipes, (num_cmds - 1));
+		// executar comando
+		execute_in_child(curr_node, shell, heredoc_pipe_read_fd);
+		_exit(ERROR);
+	}
+}
+
+void handle_subshell()
+{
+	int		pid;
+	pid = fork();
+	if (pid == -1)
+		return (perror("minishell: fork"), ERROR);
+
+	if (pid == 0) // child
+	{
+		configure_stds(pipe_indice, numb _of_pipes);//nmb_of_pipes is important to check the case of the last and first cmd of pipeline
+		// fechar todos os pipes no child          //(first cmd does not read from a pipe and last does not write to pipe)
+		close_all_pipes(pipes, (num_cmds - 1));
+		// executar comando
+		execute_ast();
+		_exit(ERROR);
+	}
+}	
+
+
+void traverse_and_execute(t_ast *node, int *pipes, int *i, int num_pipes)//this runs always in a pipeline
+{
+    if (!node) return;
+
+    if (node->type == PIPE) {
+        // Primeiro vai à esquerda (pode haver outro PIPE ou um CMD)
+        traverse_and_execute(node->left, pipes, i, num_pipes);
+        // Depois vai à direita
+        traverse_and_execute(node->right, pipes, i, num_pipes);
+    } 
+    else {
+		if (node -> type == CMD)
+        	handle_cmd(node, pipes, *i, num_pipes);
+		else if(node -> type == AND || node -> type == OR)
+			handle_subshell(node, pipes, *i, num_pipes); //esta subshell pode ter pipelines proprias dentro
+        (*i)++; // Avança para o próximo comando no pipeline
+    }
+}	
+
+//1- contar todos os pipes da pipeline : "a | (b | c || d | e) | f"  tem apenas 2 pipes. 
+//2 - percorrer a pipeline, se for um comando dou setup para ler do pipe atras e escrever no da frente.
+//    se for uma expressao(and ou or chamo a funcao execute_ast() depois de setar os std fds),
+//  tudo os que esta entre && ou || e uma pipeline ou um comando simples. 
 static int execute_pipeline(t_ast *node, t_shell *shell)
 {
-	t_ast	*cmds;
-	int		num_cmds;
 	int		*pipes;
-	pid_t	*pids;
-	int		i;
+	int		numb_of_pipes;
 	int		status;
 	int		last_status;
-	int		heredoc_pipe_read_fd:
 	t_ast	*curr_node;
 
-	cmds = get_cmds_from_pipeline(node, &num_cmds);
-	pipes = create_pipes(num_cmds);
-	pids = malloc(sizeof(pid_t) * num_cmds);
-	if (!pids)
-		return (ERROR);
-	i = 0;
-	while (i < num_cmds)
-	{
-		curr_node = get_node_by_index(cmds,i);
-		heredoc_pipe_read_fd = handle_heredocs(curr_node->cmd->redirs);
-		pids[i] = fork();
-		if (pids[i] == -1)
-			return (perror("minishell: fork"), ERROR);
-
-		if (pids[i] == 0) // child
-		{
-			// configuro o stdin para ler do pipe que esta atras
-			if (i > 0) //se nao for o primeiro cmd, le do pipe atras
-				dup2(pipes[(i - 1) * 2], STDIN_FILENO);
-
-			// stdout
-			if (i < num_cmds - 1) //escreve para o pipe a frente
-				dup2(pipes[i * 2 + 1], STDOUT_FILENO);
-
-			// fechar todos os pipes no child
-			close_all_pipes(pipes, (num_cmds - 1));
-
-			// executar comando
-			execute_in_child(curr_node, shell, heredoc_pipe_read_fd);
-			_exit(ERROR);
-		}
-		i++;
-	}
-
-	// 4️⃣ Fechar pipes no pai
-	close_all_pipes(pipes, (num_cmds - 1));
-
-	// 5️⃣ Esperar filhos
-	last_status = 0;
-	i = 0;
-	while (i < num_cmds)
-	{
-		waitpid(pids[i], &status, 0);
-		if (i == num_cmds - 1)
-		{
-			if (WIFEXITED(status))
-				last_status = WEXITSTATUS(status);
-			else
-				last_status = ERROR;
-		}
-		i++;
-	}
-	free(pipes);
-	free(pids);
-	return (last_status);
+	numb_of_pipes = calc_nmb_pipes(node); //node em principio e um pipe, calcula o nmb of pipes desta pipeline.
+	pipes = create_pipes(numb_of_pipes);
+	//ao percorrer a tree envio o pipe e o indice do pipe;
+	transverse_tree_and_execute();
+	//fechar pipes
+	//retornar status 
 }
 
 

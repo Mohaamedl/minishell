@@ -122,7 +122,7 @@ int	main(int argc, char **argv, char **envp)
 		root_node = build_tree(first_node, end_node);
 		build_sub_trees(&root_node);
 		// print_tree(root_node);
-		//print_tree_visual(root_node);
+		print_tree_visual(root_node);
 
 		// Setup signal handling for command execution
 		if (interactive)
