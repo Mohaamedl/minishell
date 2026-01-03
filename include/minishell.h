@@ -283,7 +283,7 @@ pid_t	create_process(void);
 
 /* wait.c - KAN-55 */
 int		wait_for_process(pid_t pid);
-int		wait_for_pipeline(pid_t *pids, int count);
+//int		wait_for_pipeline(pid_t *pids, int count);
 
 /* exec.c - KAN-54 */
 char	*find_command_in_path(char *cmd, t_env *env);
@@ -315,4 +315,5 @@ int     handle_heredocs(t_redir *redirs);
 int has_heredocs(t_redir *first_redir);
 int execute_ast_in_child(t_ast *node, t_shell *shell);
 int execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
+int calc_numb_pipes(t_ast *node);
 #endif
