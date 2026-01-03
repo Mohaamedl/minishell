@@ -27,9 +27,10 @@ int has_heredocs(t_redir *first_redir)
 	return (0);
 }
 
-void	read_heredoc_to_pipe(int *pipefd, char *terminator)
+void	read_heredoc_to_pipe(int *pipefd, char *terminator, int content_expands, t_shell *shell)
 {
 	char	*line;
+	char	*tmp_line;
 	
 	setup_signals_heredoc();
 	line = readline("heredoc> ");
@@ -46,6 +47,15 @@ void	read_heredoc_to_pipe(int *pipefd, char *terminator)
 		{
 			free(line);
 			break ;
+		}
+		if (content_expands)
+		{
+			tmp_line = line;
+			line = expand_variables(line, shell);
+			if (line != NULL)
+				free(tmp_line);
+			else
+				line = tmp_line;
 		}
 		write(pipefd[1], line, strlen(line));
 		write(pipefd[1], "\n", 1);
@@ -75,7 +85,7 @@ void	read_heredoc_to_pipe(int *pipefd, char *terminator)
  *         or `-1` if no heredocs are present or if interrupted by signal.
  */
 
-int handle_heredocs(t_redir *first_redir)
+int handle_heredocs(t_redir *first_redir, t_shell *shell)
 {
 	t_redir *curr_redir;
 	int heredoc_pipe_read_fd;
@@ -91,7 +101,7 @@ int handle_heredocs(t_redir *first_redir)
 		{
 			if(curr_redir -> type == HEREDOC)
 			{
-				read_heredoc_to_pipe(pipefd, curr_redir->file);
+				read_heredoc_to_pipe(pipefd, curr_redir->file, curr_redir->file_name_is_expandable, shell);
 				if (g_signal_received == SIGINT)
 				{
 					close(pipefd[0]);
