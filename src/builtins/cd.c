@@ -13,6 +13,39 @@
 #include "minishell.h"
 
 /**
+ * @brief Expand tilde (~) in path to HOME directory
+ * 
+ * Expands tilde at the beginning of path:
+ * - "~" -> HOME
+ * - "~/path" -> HOME/path
+ * 
+ * @param path The path to expand
+ * @param env Environment list to get HOME
+ * @return Expanded path (must be freed), or NULL if HOME not set
+ */
+static char	*expand_tilde(const char *path, t_env *env)
+{
+	char	*home;
+	char	*expanded;
+
+	if (!path || path[0] != '~')
+		return (ft_strdup(path));
+	home = get_env_value(env, "HOME");
+	if (!home)
+	{
+		print_error("cd", NULL, "HOME not set");
+		return (NULL);
+	}
+	if (path[1] == '\0')
+		return (ft_strdup(home));
+	if (path[1] == '/')
+		expanded = ft_strjoin(home, path + 1);
+	else
+		return (ft_strdup(path));
+	return (expanded);
+}
+
+/**
  * @brief Update PWD and OLDPWD environment variables
  * 
  * After successfully changing directory, this function updates
@@ -44,15 +77,17 @@ static int	update_pwd_vars(t_env **env, const char *old_pwd)
  * 
  * Determines the target directory based on arguments:
  * - No argument: use HOME directory
+ * - "-" argument: use OLDPWD (previous directory)
  * - With argument: use provided path
  * 
  * @param args Command arguments
- * @param env Environment list to get HOME
- * @return Target directory path, or NULL if HOME not found
+ * @param env Environment list to get HOME/OLDPWD
+ * @return Target directory path, or NULL if HOME/OLDPWD not found
  */
 static char	*get_target_dir(char **args, t_env *env)
 {
 	char	*home;
+	char	*oldpwd;
 
 	if (!args[1])
 	{
@@ -63,6 +98,16 @@ static char	*get_target_dir(char **args, t_env *env)
 			return (NULL);
 		}
 		return (home);
+	}
+	if (ft_strncmp(args[1], "-", 2) == 0)
+	{
+		oldpwd = get_env_value(env, "OLDPWD");
+		if (!oldpwd || !*oldpwd)
+		{
+			print_error("cd", NULL, "OLDPWD not set");
+			return (NULL);
+		}
+		return (oldpwd);
 	}
 	return (args[1]);
 }
@@ -82,18 +127,23 @@ static char	*get_target_dir(char **args, t_env *env)
  * - cd /tmp              → Change to /tmp
  * - cd ..                → Go up one directory
  * - cd                   → Go to HOME directory
+ * - cd -                 → Change to previous directory (OLDPWD)
+ * - cd ~                 → Change to HOME directory
+ * - cd ~/Desktop         → Change to HOME/Desktop
  * - cd /nonexistent      → Error: No such file or directory
  * - cd /root             → Error: Permission denied
  * 
  * Features:
  * - Supports absolute and relative paths
+ * - Supports tilde expansion (~)
  * - Updates PWD and OLDPWD after successful change
  * - Proper error messages for different failure cases
+ * - Prints directory when using 'cd -' (bash behavior)
  * 
  * @note
  * - Only accepts one argument (the path)
- * - Does NOT support 'cd -' (this is not required by subject)
  * - PWD is updated using getcwd() to get canonical path
+ * - When 'cd -' is used, the new directory is printed to stdout
  * 
  * @example
  * $ pwd
@@ -101,13 +151,17 @@ static char	*get_target_dir(char **args, t_env *env)
  * $ cd /tmp
  * $ pwd
  * /tmp
- * $ echo $OLDPWD
+ * $ cd -
  * /home/user
+ * $ echo $OLDPWD
+ * /tmp
  */
 int	builtin_cd(char **args, t_env **env)
 {
 	char	*target;
+	char	*expanded;
 	char	*old_pwd;
+	int		print_dir;
 
 	if (args[1] && args[2])
 	{
@@ -117,14 +171,22 @@ int	builtin_cd(char **args, t_env **env)
 	target = get_target_dir(args, *env);
 	if (!target)
 		return (ERROR);
+	expanded = expand_tilde(target, *env);
+	if (!expanded)
+		return (ERROR);
+	print_dir = (args[1] && ft_strncmp(args[1], "-", 2) == 0);
 	old_pwd = getcwd(NULL, 0);
-	if (chdir(target) == -1)
+	if (chdir(expanded) == -1)
 	{
-		print_error("cd", target, strerror(errno));
+		print_error("cd", args[1], strerror(errno));
 		free(old_pwd);
+		free(expanded);
 		return (ERROR);
 	}
+	if (print_dir)
+		ft_putendl_fd(expanded, STDOUT_FILENO);
 	update_pwd_vars(env, old_pwd);
 	free(old_pwd);
+	free(expanded);
 	return (SUCCESS);
 }
