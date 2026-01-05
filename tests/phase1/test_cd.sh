@@ -127,6 +127,110 @@ fi
 ((TOTAL++))
 echo
 
+echo -e "${BLUE}→ cd - (Previous Directory) Tests${NC}"
+echo
+
+run_test "cd - switches to previous directory" $'cd /tmp\ncd /home\ncd -\npwd' "/tmp"
+run_test "cd - prints the directory" $'cd /tmp/cd_test\ncd /home\ncd -' "/tmp/cd_test"
+run_test "cd - multiple times toggles" $'cd /tmp\ncd /home\ncd -\ncd -\npwd' "/home"
+run_test "cd - after multiple cd" $'cd /tmp\ncd /home\ncd /var\ncd -\npwd' "/home"
+
+# Test cd - without OLDPWD
+echo -e "${YELLOW}Test $((TOTAL+1)): cd - without OLDPWD set${NC}"
+((TOTAL++))
+result=$(echo -e $'unset OLDPWD\ncd -\nexit' | ./minishell 2>&1)
+if echo "$result" | grep -q "OLDPWD not set"; then
+    echo -e "${GREEN}✓ PASS${NC} - Error shown when OLDPWD not set"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Should show OLDPWD not set error"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${BLUE}→ Tilde Expansion Tests${NC}"
+echo
+
+run_test "cd ~ goes to HOME" $'cd ~\npwd' "$HOME"
+run_test "cd ~/Desktop expands correctly" $'cd ~/Desktop\npwd' "$HOME/Desktop"
+
+# Test various tilde patterns
+echo -e "${YELLOW}Test $((TOTAL+1)): cd ~/ (with trailing slash)${NC}"
+((TOTAL++))
+result=$(run_command $'cd ~/\npwd')
+if [ "$result" = "$HOME" ]; then
+    echo -e "${GREEN}✓ PASS${NC}"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC}"
+    echo "  Expected: '$HOME'"
+    echo "  Got: '$result'"
+    ((FAILED++))
+fi
+echo
+
+# Test cd - with tilde
+echo -e "${YELLOW}Test $((TOTAL+1)): cd - after cd ~ works${NC}"
+((TOTAL++))
+result=$(run_command $'cd /tmp\ncd ~\ncd -\npwd')
+if [ "$result" = "/tmp" ]; then
+    echo -e "${GREEN}✓ PASS${NC}"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC}"
+    echo "  Expected: '/tmp'"
+    echo "  Got: '$result'"
+    ((FAILED++))
+fi
+echo
+
+# Test tilde with nonexistent path
+run_error_test "cd ~/nonexistent_dir_12345" "cd ~/nonexistent_dir_12345"
+
+# Test tilde without HOME
+echo -e "${YELLOW}Test $((TOTAL+1)): cd ~ without HOME set${NC}"
+((TOTAL++))
+result=$(echo -e $'unset HOME\ncd ~\nexit' | ./minishell 2>&1)
+if echo "$result" | grep -q "HOME not set"; then
+    echo -e "${GREEN}✓ PASS${NC} - Error shown when HOME not set"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC} - Should show HOME not set error"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${BLUE}→ OLDPWD Environment Variable Tests${NC}"
+echo
+
+echo -e "${YELLOW}Test $((TOTAL+1)): OLDPWD is updated after cd${NC}"
+((TOTAL++))
+result=$(echo -e $'cd /tmp\ncd /home\necho $OLDPWD\nexit' | ./minishell 2>&1 | grep -v "^minishell\$" | grep -v "^exit$" | tail -1)
+if [ "$result" = "/tmp" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - OLDPWD correctly updated"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC}"
+    echo "  Expected: '/tmp'"
+    echo "  Got: '$result'"
+    ((FAILED++))
+fi
+echo
+
+echo -e "${YELLOW}Test $((TOTAL+1)): OLDPWD persists across multiple cd${NC}"
+((TOTAL++))
+result=$(echo -e $'cd /tmp\ncd /home\ncd /var\necho $OLDPWD\nexit' | ./minishell 2>&1 | grep -v "^minishell\$" | grep -v "^exit$" | tail -1)
+if [ "$result" = "/home" ]; then
+    echo -e "${GREEN}✓ PASS${NC} - OLDPWD tracks previous directory"
+    ((PASSED++))
+else
+    echo -e "${RED}✗ FAIL${NC}"
+    echo "  Expected: '/home'"
+    echo "  Got: '$result'"
+    ((FAILED++))
+fi
+echo
+
 echo -e "${BLUE}→ Error Cases${NC}"
 echo
 
