@@ -130,7 +130,9 @@ int	execute_command_node(t_ast *node, t_shell *shell)
 	save_std_fds(saved_std_fds);
 	if (!args)
 		return (ERROR);
-	heredoc_pipe_read_fd = handle_heredocs(node->cmd->redirs);//-1 if invalid
+	heredoc_pipe_read_fd = handle_heredocs(node->cmd->redirs, shell);//-1 if invalid or interrupted
+	if (heredoc_pipe_read_fd == -1 && g_signal_received == SIGINT)
+		return (130); // Return 130 (128 + SIGINT) when heredoc interrupted
 	if (is_builtin(args[0]))
 		status = execute_builtin_command(args, shell, node, heredoc_pipe_read_fd);
 	else

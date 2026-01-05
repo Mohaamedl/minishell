@@ -91,7 +91,7 @@ valgrind-out.txt
 test_output/
 *.test
 test_results.txt
-
+*.out
 # Build directory (if using)
 build/
 obj/

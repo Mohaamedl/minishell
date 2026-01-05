@@ -60,7 +60,7 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
 	int		heredoc_pipe_read_fd;
 	int		pid;
 
-	heredoc_pipe_read_fd = handle_heredocs(curr_node->cmd->redirs);
+	heredoc_pipe_read_fd = handle_heredocs(curr_node->cmd->redirs, shell);
 	pid = fork();
 //	if (pid == -1)
 //		return (perror("minishell: fork"), ERROR);
