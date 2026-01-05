@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 14:31:25 by mhaddadi          #+#    #+#             */
-/*   Updated: 2026/01/03 15:03:57 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/05 13:57:47 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,8 @@ int	main(int argc, char **argv, char **envp)
 		root_node = build_tree(first_node, end_node);
 		build_sub_trees(&root_node);
 		// print_tree(root_node);
-		print_tree_visual(root_node);
-		printf("numb of pipes: %i\n", calc_numb_pipes(root_node));
+		//print_tree_visual(root_node);
+		//printf("numb of pipes: %i\n", calc_numb_pipes(root_node));
 		// Setup signal handling for command execution
 		if (interactive)
 			setup_signals_executing();
