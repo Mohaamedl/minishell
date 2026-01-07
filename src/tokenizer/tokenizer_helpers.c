@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_helpers.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:28:02 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/07 18:28:10 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/07 15:45:30 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
