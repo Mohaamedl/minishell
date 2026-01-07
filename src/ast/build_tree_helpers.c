@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_tree_helpers.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/13 14:15:51 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/17 14:18:45 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/07 16:20:13 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ t_ast	*skip_subtree_nodes(t_ast *tmp_node)
  * @param type The token type to search for
  * @return Pointer to the first matching operator node, or NULL if not found
  */
-t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node,
+t_ast	*get_op_node_based_on_type(t_ast *start_node, t_ast *end_node,
 		t_token_type type)
 {
 	t_ast	*tmp_node;
