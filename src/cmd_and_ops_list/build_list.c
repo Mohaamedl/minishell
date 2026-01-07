@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_list.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:21:40 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/07 18:21:51 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/07 16:11:31 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,4 +95,3 @@ t_ast	*build_cmds_and_ops_list(t_token *head)
 	}
 	return (first_node);
 }
-
