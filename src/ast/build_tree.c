@@ -12,36 +12,55 @@
 
 #include "minishell.h"
 
-//Quando ja tiver retornado a arvore principal(sem considerar as subtrees) e s'o me sobrarem "folhas"(nos isolados) sejam comandos ou subtrees
-//vou percorrer a arvore e se encontrar uma subtree chamo esta funcao para o conteudo que esta dentro de parentesis ou seja
-// start_node e o node imediatamente a frente de "("  e end node e o node que esta imediatamente atras de ")"
-//agora desta vez nao tenho parentesis na lista de nodes a analizar e get_OP_node_based_on_type() nao os vai pular e vai considerar
-//o que esta la dentro
-t_ast *build_tree(t_ast *start_node, t_ast *end_node)
+/**
+ * @brief Recursively builds an AST from a range of nodes
+ *
+ * Constructs an Abstract Syntax Tree by finding the split operator node
+ * (OR, AND, or PIPE) and recursively building left and right subtrees.
+ * When the main tree is returned (without considering subtrees), only
+ * isolated "leaves" remain (commands or subtrees). The split operator
+ * is found based on precedence (OR/AND first, then PIPE). If no operator
+ * is found, returns the start node (an isolated command or subtree).
+ *
+ * @param start_node Pointer to the first node in the range
+ * @param end_node Pointer to the last node in the range
+ * @return Pointer to the root of the constructed AST
+ */
+t_ast	*build_tree(t_ast *start_node, t_ast *end_node)
 {
-	t_ast *tmp_node;
-	t_ast *original_start_node;
-	t_ast *original_end_node;
+	t_ast	*tmp_node;
+	t_ast	*original_start_node;
+	t_ast	*original_end_node;
 
 	original_start_node = start_node;
 	original_end_node = end_node;
-	tmp_node = get_split_op_node(start_node, end_node);// esta funcao retorna um ponteiro para um OR ou AND ou PIPE ou NULL caso nao encontre avaliando sempre por esta ordem
-	if (tmp_node != NULL) //Esta funcao retorna um ponteiro para um node OR case encontre, caso contrario retorna NULL
+	tmp_node = get_split_op_node(start_node, end_node);
+	if (tmp_node != NULL)
 	{
-		end_node = tmp_node -> left;
-		end_node -> right = NULL; //para o  no anterior ao split node nao estar mais ligado a ele
-		tmp_node -> left = build_tree(original_start_node, end_node);
-		start_node = tmp_node -> right;
-		start_node -> left = NULL;  //para o no apos o split node nao estar mais ligado a ele
-		tmp_node ->right =  build_tree(start_node, original_end_node);
+		end_node = tmp_node->left;
+		end_node->right = NULL;
+		tmp_node->left = build_tree(original_start_node, end_node);
+		start_node = tmp_node->right;
+		start_node->left = NULL;
+		tmp_node->right = build_tree(start_node, original_end_node);
 		return (tmp_node);
 	}
-	else //cheguei a um comando isolado ou a uma subtree isolada
-		return start_node;
+	else
+		return (start_node);
 }
-//se o root node for uma subtree o pointer vai mudar ex. (a && b)
-//antes apontava para o primeiro parentesis, agora vai apontar para &&;
 
+/**
+ * @brief Recursively builds subtrees for parenthesized expressions
+ *
+ * Processes the AST to build subtrees for expressions within parentheses.
+ * When a parenthesis node is found, extracts the content between the
+ * parentheses and builds a subtree from it. The root pointer may change
+ * if the root is a subtree (e.g., (a && b) will point to && instead of
+ * the opening parenthesis). Recursively processes operator nodes to handle
+ * nested subtrees.
+ *
+ * @param root_node Double pointer to the root node (may be modified)
+ */
 void	build_sub_trees(t_ast **root_node)
 {
 	t_ast	*start_node;
@@ -60,11 +79,9 @@ void	build_sub_trees(t_ast **root_node)
 		end_node = end_node->left;
 		free_parentesis_nodes(start_node, end_node);
 		*root_node = build_tree(start_node, end_node);
-		// Recursively process the result in case it contains more subtrees
 		build_sub_trees(root_node);
 		return ;
 	}
-	// Process operator nodes
 	build_sub_trees(&((*root_node)->left));
 	build_sub_trees(&((*root_node)->right));
 }
