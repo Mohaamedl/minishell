@@ -10,9 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "minishell.h"
 
+/**
+ * @brief Frees all tokens in a linked list
+ * @param head Pointer to the first token in the list
+ *
+ * Iterates through the token list, freeing each token's value and the token
+ * structure itself. Handles NULL pointers safely.
+ */
 void	free_tokens(t_token *head)
 {
 	t_token	*tmp;
@@ -22,7 +28,7 @@ void	free_tokens(t_token *head)
 	while (tmp)
 	{
 		next_token = tmp->next;
-		free(tmp -> value);
+		free(tmp->value);
 		free(tmp);
 		tmp = next_token;
 	}
