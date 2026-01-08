@@ -187,6 +187,11 @@ void	free_tokens(t_token *head);
 void	print_tokens(t_token *tmp);
 const char *token_type_to_str(t_token_type type);
 void	print_tree_visual(t_ast *root);
+/*------------------Funcoes de validacao-------------------*/
+int		is_connector_operator(t_token *token);
+t_token	*find_left_token(t_token *head, t_token *op_token);
+int		check_balance(t_token *head);
+int		check_valid_content(t_token *head);
 
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS
