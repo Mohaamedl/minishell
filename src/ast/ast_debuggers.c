@@ -93,7 +93,7 @@ static void	print_tree_visual_helper(t_ast *root, char *prefix, int is_left)
  * Right children are printed before left children.
  *
  * @param root Pointer to the root of the AST to visualize
- */
+
 void	print_tree_visual(t_ast *root)
 {
 	char	*node_str;
@@ -116,3 +116,4 @@ void	print_tree_visual(t_ast *root)
 			print_tree_visual_helper(root->left, "", 0);
 	}
 }
+*/
