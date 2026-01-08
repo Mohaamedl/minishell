@@ -55,7 +55,7 @@ void	print_tree(t_ast *root)
  * @param root Pointer to current AST node
  * @param prefix String prefix for current indentation level
  * @param is_left Flag indicating if node is a left child (affects connector)
- */
+ 
 static void	print_tree_visual_helper(t_ast *root, char *prefix, int is_left)
 {
 	char	*node_str;
@@ -82,7 +82,7 @@ static void	print_tree_visual_helper(t_ast *root, char *prefix, int is_left)
 			print_tree_visual_helper(root->left, new_prefix, 0);
 	}
 	free(new_prefix);
-}
+}*/
 
 /**
  * @brief Prints the entire AST in a visual tree format
