@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd_node_helpers.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 16:07:19 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/21 13:56:58 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/07 16:20:17 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
