@@ -3,40 +3,54 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd_node_helpers.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 16:07:19 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/21 13:56:58 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/07 16:11:32 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// possible redirect types: < ,> ,>>, <<
+/**
+ * @brief Checks if a token represents a redirection operator
+ * 
+ * Tests if the token value matches any of the four possible redirect types:
+ * append (>>), heredoc (<<), output (>), or input (<).
+ * 
+ * @param tmp_token The token to check
+ * @return 1 if the token is a redirect operator, 0 otherwise
+ */
 int	is_redirect_token(t_token *tmp_token)
 {
-	if(ft_strncmp(tmp_token -> value, ">>", 2) == 0)
-		return 1;
-	if(ft_strncmp(tmp_token -> value, "<<", 2) == 0)
-		return 1;
-	if(ft_strncmp(tmp_token -> value, ">", 1) == 0)
-		return 1;
-	if(ft_strncmp(tmp_token -> value, "<", 1) == 0)
-		return 1;
-	return 0;
+	if (ft_strncmp(tmp_token->value, ">>", 2) == 0)
+		return (1);
+	if (ft_strncmp(tmp_token->value, "<<", 2) == 0)
+		return (1);
+	if (ft_strncmp(tmp_token->value, ">", 1) == 0)
+		return (1);
+	if (ft_strncmp(tmp_token->value, "<", 1) == 0)
+		return (1);
+	return (0);
 }
 
-
-void	update_token_to_eval(t_token **tmp_token) //esta funcao e chamada para atualizar o token a avaliar depois de criar um node comando (tenho de saltar redirects e argumantos a frente)
+/**
+ * @brief Updates the token pointer to the next operator or end of list
+ * 
+ * Called after creating a command node to skip past all tokens belonging
+ * to that command (arguments and redirections). Advances the token pointer
+ * until an operator is found or the end of the list is reached. When an
+ * operator is found, tmp_token is positioned at that operator. If no
+ * operator is found, tmp_token becomes NULL, indicating the end of list.
+ * 
+ * @param tmp_token Pointer to the current token pointer to update
+ */
+void	update_token_to_eval(t_token **tmp_token)
 {
-	while((*tmp_token))
+	while ((*tmp_token))
 	{
-		if((*tmp_token) ->is_operator) //se emcontrar um operador atualiza tmp_token para a posicao desse operador
-			return;
-		*tmp_token = (*tmp_token) -> next;
+		if ((*tmp_token)->is_operator)
+			return ;
+		*tmp_token = (*tmp_token)->next;
 	}
-	//se sair aqui, nao encontrou nenhum operador antes do fim entao acabou a construcao da lista (tmp_token = NULL)
 }
-
-
-
