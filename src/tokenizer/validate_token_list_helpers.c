@@ -83,6 +83,27 @@ int	check_balance(t_token *head)
 }
 
 /**
+ * @brief Prints a syntax error message for an unexpected token.
+ *
+ * This function displays a shell-like syntax error message. If a token
+ * is provided, it prints the token that caused the error. Otherwise,
+ * it reports an unexpected newline.
+ *
+ * @param token The unexpected token value, or NULL if the error is
+ *              caused by an unexpected newline.
+ *
+ * @return Always returns 0 to indicate a syntax error.
+ */
+static int	syntax_error(char *token)
+{
+	if (token)
+		printf("syntax error near unexpected token `%s'\n", token);
+	else
+		printf("syntax error near unexpected token `newline'\n");
+	return (0);
+}
+
+/**
  * @brief Validates content inside and around parentheses
  * @param head Pointer to the first token in the list
  * @return 1 if parentheses content is valid, 0 otherwise
@@ -101,39 +122,19 @@ int	check_valid_content(t_token *head)
 	{
 		if (tmp->type == LPAREN)
 		{
-			if (tmp->next != NULL)
-			{
-				if (tmp->next->type != WORD && tmp->next->type != LPAREN)
-				{
-					printf("syntax error near unexpected token `%s'\n",
-						tmp->value);
-					return (0);
-				}
-			}
-			else
-			{
-				printf("syntax error near unexpected token `newline'\n");
-				return (0);
-			}
+			if (!tmp->next)
+				return (syntax_error(NULL));
+			if (tmp->next->type != WORD && tmp->next->type != LPAREN)
+				return (syntax_error(tmp->value));
 		}
-		if (tmp->type == RPAREN)
+		else if (tmp->type == RPAREN)
 		{
 			token_before_rparen = find_left_token(head, tmp);
-			if (token_before_rparen != NULL)
-			{
-				if (token_before_rparen->type != WORD
-					&& token_before_rparen->type != RPAREN)
-				{
-					printf("syntax error near unexpected token `%s'\n",
-						tmp->value);
-					return (0);
-				}
-			}
-			else
-			{
-				printf("syntax error near unexpected token `newline'\n");
-				return (0);
-			}
+			if (!token_before_rparen)
+				return (syntax_error(NULL));
+			if (token_before_rparen->type != WORD
+				&& token_before_rparen->type != RPAREN)
+				return (syntax_error(tmp->value));
 		}
 		tmp = tmp->next;
 	}
