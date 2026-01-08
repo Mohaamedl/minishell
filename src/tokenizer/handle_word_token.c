@@ -122,4 +122,3 @@ int	handle_word(char *line, int *i, t_token **last_token, t_token **head)
 	*i += j;
 	return (1);
 }
-
