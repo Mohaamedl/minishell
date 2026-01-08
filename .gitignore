@@ -105,7 +105,6 @@ obj/
 tmp/
 temp/
 *.tmp
-file
 
 # Core dumps
 core

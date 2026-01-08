@@ -39,8 +39,8 @@ static int	check_has_equals(char *line, int *j)
 
 /**
  * @brief Handles variable assignment token parsing
- * @param line Pointer to the string to parse (starting after '=')
- * @param j Pointer to the current index in the string
+ * @param line Pointer to the string to parse
+ * @param j Pointer to the current index in the string (positioned after '=')
  * @return 1 if successfully parsed, 0 if unclosed quote found
  *
  * Processes the value part of a variable assignment, handling both quoted
