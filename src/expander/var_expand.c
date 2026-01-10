@@ -3,125 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   var_expand.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: francisco <francisco@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/13 12:53:32 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/13 12:54:13 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/10 12:19:52 by francisco        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/**
- * @brief Remove quotes from a string
- * 
- * Removes only the outermost layer of quotes, preserving nested quotes.
- * Example: '"hello"' → "hello", "'world'" → world
- * 
- * @param str String potentially containing quotes
- * @return Newly allocated string without outer quotes
- */
-static char	*remove_quotes(const char *str)
-{
-	char	*result;
-	int		i;
-	int		j;
-	char	in_quote;
-
-	if (!str)
-		return (NULL);
-	result = malloc(ft_strlen(str) + 1);
-	if (!result)
-		return (NULL);
-	i = 0;
-	j = 0;
-	in_quote = 0;
-	while (str[i])
-	{
-		if (!in_quote && (str[i] == '"' || str[i] == '\''))
-		{
-			in_quote = str[i];
-			i++;
-			continue;
-		}
-		if (in_quote && str[i] == in_quote)
-		{
-			in_quote = 0;
-			i++;
-			continue;
-		}
-		result[j++] = str[i++];
-	}
-	result[j] = '\0';
-	return (result);
-}
-
-/**
- * @brief Extract variable name from string starting with $
- * 
- * Extracts the variable name after $ until finding a non-alphanumeric char.
- * Handles special variables: $? (exit status), $$ (PID), $@ (args).
- * Special variables $$ and $@ are treated as expandable to empty string.
- * Examples: "$USER" → "USER", "$PATH_TO" → "PATH_TO", "$?" → "?"
- * 
- * @param str String starting with $ followed by variable name
- * @return Newly allocated string with variable name, NULL on error
- */
-static char	*extract_var_name(const char *str)
-{
-	size_t	len;
-	char	*var_name;
-
-	if (!str || *str != '$')
-		return (NULL);
-	str++;
-	if (*str == '?')
-		return (ft_strdup("?"));
-	if (*str == '$' || *str == '@')
-		return (ft_strdup(str[0] == '$' ? "$" : "@"));
-	len = 0;
-	if (str[len] && (ft_isalpha(str[len]) || str[len] == '_'))
-	{
-		len++;
-		while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
-			len++;
-	}
-	if (len == 0)
-		return (NULL);
-	var_name = malloc(len + 1);
-	if (!var_name)
-		return (NULL);
-	ft_memcpy(var_name, str, len);
-	var_name[len] = '\0';
-	return (var_name);
-}
-
-/**
- * @brief Get the value to replace a variable expansion
- * 
- * Returns the value of the variable or "$?" special case.
- * For "$?", returns the last exit status as a string.
- * Special variables $$ and $@ expand to empty string (not implemented).
- * 
- * @param var_name Variable name (without $)
- * @param shell Shell state containing env and exit status
- * @return Variable value or empty string if not found (not NULL)
- */
-static char	*get_var_value(const char *var_name, t_shell *shell)
-{
-	char	*value;
-
-	if (!var_name)
-		return (ft_strdup(""));
-	if (ft_strcmp(var_name, "?") == 0)
-		return (ft_itoa(shell->last_exit_status));
-	if (ft_strcmp(var_name, "$") == 0 || ft_strcmp(var_name, "@") == 0)
-		return (ft_strdup(""));
-	value = get_env_value(shell->env_list, var_name);
-	if (!value)
-		return (ft_strdup(""));
-	return (ft_strdup(value));
-}
 
 /**
  * @brief Expand a single $VAR in a string
@@ -199,7 +88,7 @@ char	*expand_variables(char *str, t_shell *shell)
 		if (!current)
 			return (ft_strdup(str));
 		if (skip_invalid)
-			break;
+			break ;
 	}
 	return (current);
 }
