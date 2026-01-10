@@ -60,6 +60,8 @@ static char	*remove_quotes(const char *str)
  * @brief Extract variable name from string starting with $
  * 
  * Extracts the variable name after $ until finding a non-alphanumeric char.
+ * Handles special variables: $? (exit status), $$ (PID), $@ (args).
+ * Special variables $$ and $@ are treated as expandable to empty string.
  * Examples: "$USER" → "USER", "$PATH_TO" → "PATH_TO", "$?" → "?"
  * 
  * @param str String starting with $ followed by variable name
@@ -75,15 +77,12 @@ static char	*extract_var_name(const char *str)
 	str++;
 	if (*str == '?')
 		return (ft_strdup("?"));
-	// Handle $$ (PID) and $@ - treat as special vars that expand to empty
 	if (*str == '$' || *str == '@')
 		return (ft_strdup(str[0] == '$' ? "$" : "@"));
 	len = 0;
-	// First character must be a letter or underscore
 	if (str[len] && (ft_isalpha(str[len]) || str[len] == '_'))
 	{
 		len++;
-		// Subsequent characters can be alphanumeric or underscore
 		while (str[len] && (ft_isalnum(str[len]) || str[len] == '_'))
 			len++;
 	}
@@ -102,6 +101,7 @@ static char	*extract_var_name(const char *str)
  * 
  * Returns the value of the variable or "$?" special case.
  * For "$?", returns the last exit status as a string.
+ * Special variables $$ and $@ expand to empty string (not implemented).
  * 
  * @param var_name Variable name (without $)
  * @param shell Shell state containing env and exit status
@@ -115,7 +115,6 @@ static char	*get_var_value(const char *var_name, t_shell *shell)
 		return (ft_strdup(""));
 	if (ft_strcmp(var_name, "?") == 0)
 		return (ft_itoa(shell->last_exit_status));
-	// Handle $$ and $@ - expand to empty string (not implemented)
 	if (ft_strcmp(var_name, "$") == 0 || ft_strcmp(var_name, "@") == 0)
 		return (ft_strdup(""));
 	value = get_env_value(shell->env_list, var_name);
@@ -211,6 +210,8 @@ char	*expand_variables(char *str, t_shell *shell)
  * Iterates through all arguments and expands those marked as expandable.
  * Also removes quotes from all arguments.
  * Replaces argument values with expanded versions and marks them as expanded.
+ * First removes quotes from original token, then expands variables if
+ * the argument is expandable.
  * 
  * @param args Linked list of arguments
  * @param shell Shell state
@@ -226,10 +227,7 @@ void	expand_cmd_args(t_arg *args, t_shell *shell)
 	{
 		if (current->value)
 		{
-			// First remove quotes from the original token
 			without_quotes = remove_quotes(current->value);
-			
-			// Then expand variables if expandable
 			if (current->is_expandable && without_quotes)
 			{
 				expanded = expand_variables(without_quotes, shell);
@@ -255,6 +253,8 @@ void	expand_cmd_args(t_arg *args, t_shell *shell)
  * 
  * Iterates through all redirections and expands file names marked as expandable.
  * Replaces file name values with expanded versions and marks them as expanded.
+ * For HEREDOC, file_name_is_expandable=1 means content variables expand, but
+ * the filename (delimiter) never expands.
  * 
  * @param redirs Linked list of redirections
  * @param shell Shell state
@@ -267,13 +267,14 @@ void	expand_redirection_files(t_redir *redirs, t_shell *shell)
 	current = redirs;
 	while (current)
 	{
-		if (current->file_name_is_expandable && current->file && current -> type != HEREDOC) //i the case of HEREDOC file_name_is_expandable = 1 means its content variables expand, the filename(or delimiter in this case) never expands
+		if (current->file_name_is_expandable && current->file
+			&& current->type != HEREDOC)
 		{
 			expanded = expand_variables(current->file, shell);
 			if (expanded)
 			{
 				current->file = expanded;
-				current->file_was_expanded = 1; // Mark for later freeing
+				current->file_was_expanded = 1;
 			}
 		}
 		current = current->next;

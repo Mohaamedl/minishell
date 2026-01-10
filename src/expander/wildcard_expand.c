@@ -15,6 +15,15 @@
 int		count_matches(const char *pattern);
 char	**get_matches(const char *pattern, int count);
 
+/**
+ * @brief Sort array of strings in lexicographic order
+ *
+ * Implements bubble sort to arrange matched filenames alphabetically.
+ * Used to ensure wildcard expansions are in predictable order.
+ *
+ * @param arr Array of strings to sort
+ * @param count Number of strings in array
+ */
 static void	sort_matches(char **arr, int count)
 {
 	int		i;
@@ -39,6 +48,15 @@ static void	sort_matches(char **arr, int count)
 	}
 }
 
+/**
+ * @brief Create a single-element result array containing the pattern
+ *
+ * Used when wildcard expansion finds no matches or pattern has no wildcards.
+ * Returns the original pattern as the only result.
+ *
+ * @param pattern Original pattern string to return
+ * @return Array with pattern as only element, NULL on allocation failure
+ */
 static char	**create_single_result(const char *pattern)
 {
 	char	**result;
@@ -51,6 +69,16 @@ static char	**create_single_result(const char *pattern)
 	return (result);
 }
 
+/**
+ * @brief Expand wildcard pattern to array of matching filenames
+ *
+ * If pattern contains wildcards, matches against current directory files.
+ * Returns sorted array of matches, or pattern itself if no matches found.
+ * If no wildcards present, returns pattern unchanged.
+ *
+ * @param pattern Wildcard pattern to expand
+ * @return Array of matched filenames, NULL-terminated
+ */
 char	**expand_wildcard(const char *pattern)
 {
 	int		count;
@@ -68,6 +96,13 @@ char	**expand_wildcard(const char *pattern)
 	return (matches);
 }
 
+/**
+ * @brief Free array of wildcard match strings
+ *
+ * Iterates through array freeing each string, then frees the array itself.
+ *
+ * @param arr Array of strings to free
+ */
 void	free_wildcard_matches(char **arr)
 {
 	int	i;
@@ -83,6 +118,15 @@ void	free_wildcard_matches(char **arr)
 	free(arr);
 }
 
+/**
+ * @brief Join array of wildcard matches into single space-separated string
+ *
+ * Concatenates all matched filenames with spaces between them.
+ * Used when converting matched files back to a single string representation.
+ *
+ * @param matches Array of matched filename strings
+ * @return Single string with all matches joined by spaces, NULL on error
+ */
 char	*join_wildcard_matches(char **matches)
 {
 	char	*result;
