@@ -12,6 +12,16 @@
 
 #include "minishell.h"
 
+/**
+ * @brief Calculate the length of a variable expression
+ *
+ * Determines the total length of a variable expression including the '$'
+ * character. For the special variable '?' it returns 2, otherwise returns
+ * the length of the variable name plus 1.
+ *
+ * @param var_name The variable name (without the '$' prefix)
+ * @return The total length of the variable expression (including '$')
+ */
 size_t	get_var_len(char *var_name)
 {
 	if (ft_strcmp(var_name, "?") == 0)
