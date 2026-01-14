@@ -84,7 +84,19 @@ void		setup_signals_heredoc(void);
 */
 
 t_shell	*init_shell(char **envp);
+void	init_shell_struct(t_shell *shell, char **envp);
 void	cleanup_shell(t_shell *shell);
+
+/*
+** ============================================================================
+** MAIN LOOP FUNCTIONS
+** ============================================================================
+*/
+
+void	shell_loop(t_shell *shell);
+char	*get_input_line(t_shell *shell);
+void	process_and_execute(char *line, t_shell *shell);
+char	*get_next_line_non_interactive(void);
 
 /*
 ** ============================================================================
@@ -226,6 +238,7 @@ int		is_empty_or_whitespace(const char *str);
 //----------------------------------------CRIACAO DA ARVORE BINARIA---------------------------------------------------
 
 t_ast	*build_tree(t_ast *start_node, t_ast *end_node);
+t_ast	*build_complete_ast(t_token *head);
 t_ast	*get_split_op_node(t_ast *start_node, t_ast *end_node);
 t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
 t_ast	*skip_subtree_nodes(t_ast *tmp_node);
