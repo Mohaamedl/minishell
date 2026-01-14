@@ -55,6 +55,7 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/debuggers/print_nodes.c \
 			  $(SRC_DIR)/ast/build_tree.c \
 			  $(SRC_DIR)/ast/build_tree_helpers.c \
+			  $(SRC_DIR)/ast/build_complete_ast.c \
 			  $(SRC_DIR)/ast/ast_memory.c \
 			  $(SRC_DIR)/ast/ast_debuggers.c \
 			  $(SRC_DIR)/expander/var_expand.c \
