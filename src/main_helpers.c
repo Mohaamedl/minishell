@@ -19,16 +19,25 @@ int	is_empty_or_whitespace(const char *str)
 	return (1);
 }
 
-//vai buscar o ultimo node da lista, preciso dele na funcao build_tree()
-t_ast *	get_last_node(t_ast *head)
+/**
+ * @brief Get the last node of the AST linked list
+ *
+ * Traverses the AST linked list through the right pointers to find the last
+ * node. This is needed for the build_tree() function.
+ *
+ * @param head Head of the AST linked list
+ * @return Pointer to the last node in the list, or NULL if list is empty
+ */
+t_ast	*get_last_node(t_ast *head)
 {
-	t_ast *tmp;
+	t_ast	*tmp;
+
 	tmp = head;
-	while(tmp)
+	while (tmp)
 	{
-		if(tmp ->right == NULL) //cheguei ao fim da lista
-			return tmp;
-		tmp = tmp ->right;
+		if (tmp->right == NULL)
+			return (tmp);
+		tmp = tmp->right;
 	}
-	return tmp;
+	return (tmp);
 }

@@ -12,6 +12,14 @@
 
 #include "minishell.h"
 
+/**
+ * @brief Increment the SHLVL environment variable
+ *
+ * Gets the current SHLVL value, increments it by 1, and updates the
+ * environment. If SHLVL doesn't exist, it starts from 0.
+ *
+ * @param env Pointer to the environment list
+ */
 static void	increment_shlvl(t_env **env)
 {
 	char	*shlvl_str;
@@ -32,6 +40,15 @@ static void	increment_shlvl(t_env **env)
 	}
 }
 
+/**
+ * @brief Initialize the shell structure
+ *
+ * Allocates and initializes a new shell structure with environment variables,
+ * exit status, running state, and signal handlers. Also increments SHLVL.
+ *
+ * @param envp Environment variables from main
+ * @return Pointer to initialized shell structure, or NULL on error
+ */
 t_shell	*init_shell(char **envp)
 {
 	t_shell	*shell;
