@@ -27,6 +27,7 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/environment/env_set.c \
 			  $(SRC_DIR)/environment/env_utils.c \
 			  $(SRC_DIR)/signals/signals.c \
+			  $(SRC_DIR)/signals/signals_heredoc.c \
 			  $(SRC_DIR)/builtins/echo.c \
 			  $(SRC_DIR)/builtins/cd.c \
 			  $(SRC_DIR)/builtins/pwd.c \
@@ -37,6 +38,7 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/builtins/builtin_utils.c \
 			  $(SRC_DIR)/utils/string_utils.c \
 			  $(SRC_DIR)/utils/string_utils2.c \
+			  $(SRC_DIR)/utils/char_utils.c \
 			  $(SRC_DIR)/utils/ft_split.c \
 			  $(SRC_DIR)/utils/memory_utils.c \
 			  $(SRC_DIR)/utils/number_utils.c \
