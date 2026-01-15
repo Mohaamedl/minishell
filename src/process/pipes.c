@@ -36,18 +36,20 @@ static int	*allocate_pipes(int num_pipes)
  * @param num_commands Number of commands in the pipeline
  * @return int* Array of pipe file descriptors (caller must free), NULL on error
  */
-int	*create_pipes(int numb_of_pipes)
+int	*create_pipes(int num_commands)
 {
 	int	*pipes;
 	int	i;
+	int	num_pipes;
 
-	if (numb_of_pipes < 1)
+	if (num_commands <= 1)
 		return (NULL);
-	pipes = allocate_pipes(numb_of_pipes);
+	num_pipes = num_commands - 1;
+	pipes = allocate_pipes(num_pipes);
 	if (!pipes)
 		return (NULL);
 	i = 0;
-	while (i < numb_of_pipes)
+	while (i < num_pipes)
 	{
 		if (pipe(&pipes[i * 2]) == -1)
 		{

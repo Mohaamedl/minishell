@@ -72,6 +72,7 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/execution/execute_cmd_helpers.c \
 			  $(SRC_DIR)/execution/handle_redirections.c \
 			  $(SRC_DIR)/execution/heredoc.c \
+			  $(SRC_DIR)/execution/heredoc_utils.c \
 			  $(SRC_DIR)/process/process.c \
 			  $(SRC_DIR)/process/wait.c \
 			  $(SRC_DIR)/process/exec.c \

@@ -284,11 +284,10 @@ pid_t	create_process(void);
 
 /* wait.c - KAN-55 */
 int		wait_for_process(pid_t pid);
-
+int		wait_for_pipeline(pid_t *pids, int count);
 /* Pipeline helpers */
 void	configure_stds(int *pipes, int pipe_indice, int numb_of_pipes);
 int		calc_numb_pipes(t_ast *node);
-int		wait_for_pipeline(int num_cmds);
 
 /* Pipeline execution */
 int		execute_pipeline(t_ast *node, t_shell *shell);
@@ -321,6 +320,8 @@ int     has_out_redirs(t_redir *redirs);
 char    **prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
 int handle_heredocs(t_redir *first_redir, t_shell *shell);
 int has_heredocs(t_redir *first_redir);
+char    *process_heredoc_line(char *line, int expand, t_shell *shell);
+void    write_heredoc_line(int fd, char *line);
 int execute_ast_in_child(t_ast *node, t_shell *shell);
 int execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
 

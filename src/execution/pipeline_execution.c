@@ -44,6 +44,8 @@ static void	handle_cmd(t_ast *curr_node, t_pipe_ctx *ctx)
 	}
 	if (heredoc_pipe_read_fd != -1)
 		close(heredoc_pipe_read_fd);
+	if (pid > 0)
+		ctx->pids[ctx->pipe_indice] = pid;
 }
 
 /**
@@ -72,6 +74,8 @@ static void	handle_subshell(t_ast *curr_node, t_pipe_ctx *ctx)
 		execute_ast(curr_node, ctx->shell);
 		_exit(ERROR);
 	}
+	else
+		ctx->pids[ctx->pipe_indice] = pid;
 }
 
 /**
@@ -125,16 +129,20 @@ static void	traverse_and_execute(t_ast *node, t_pipe_ctx *ctx)
  */
 int	execute_pipeline(t_ast *node, t_shell *shell)
 {
-	t_pipe_ctx	ctx;
 	int			final_status;
+	int			num_cmds;
+	t_pipe_ctx	ctx;
 
 	ctx.pipe_indice = 0;
 	ctx.numb_of_pipes = calc_numb_pipes(node);
-	ctx.pipes = create_pipes(ctx.numb_of_pipes);
+	num_cmds = ctx.numb_of_pipes + 1;
+	ctx.pipes = create_pipes(num_cmds);
+	ctx.pids = malloc(sizeof(pid_t) * num_cmds);
 	ctx.shell = shell;
 	traverse_and_execute(node, &ctx);
 	close_all_pipes(ctx.pipes, ctx.numb_of_pipes);
-	final_status = wait_for_pipeline(ctx.numb_of_pipes + 1);
+	final_status = wait_for_pipeline(ctx.pids, num_cmds);
 	free(ctx.pipes);
+	free(ctx.pids);
 	return (final_status);
 }

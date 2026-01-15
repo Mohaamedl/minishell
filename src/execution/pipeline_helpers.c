@@ -66,39 +66,3 @@ int	calc_numb_pipes(t_ast *node)
 	count = count + calc_numb_pipes(node->right);
 	return (count);
 }
-
-/**
- * @brief Synchronizes the shell by waiting for all pipeline processes.
- *
- * Iterates through the number of spawned commands, collecting their exit
- * statuses. It uses POSIX macros to decode the status:
- * - WIFEXITED: Captures normal exit codes.
- * - WIFSIGNALED: Handles processes killed by signals (e.g., Ctrl+C),
- *   offsetting by 128 per standard shell behavior.
- * wait() waits for any child process to terminate and captures the status.
- * POSIX macros are used to decode the exit status.
- *
- * @param num_cmds Total processes to wait for (numb_of_pipes + 1).
- * @return int The exit status of the last process collected.
- */
-int	wait_for_pipeline(int num_cmds)
-{
-	int	i;
-	int	status;
-	int	last_status;
-
-	i = 0;
-	last_status = 0;
-	while (i < num_cmds)
-	{
-		if (wait(&status) > 0)
-		{
-			if (WIFEXITED(status))
-				last_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-				last_status = 128 + WTERMSIG(status);
-		}
-		i++;
-	}
-	return (last_status);
-}

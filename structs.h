@@ -1,6 +1,8 @@
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+#include <sys/types.h>
+
 //---------------------------------------------------LISTA DE TOKENS--------------------------------------------------------
 typedef enum e_token_type
 {
@@ -82,9 +84,10 @@ typedef struct s_shell	t_shell;
 //-------------------PIPELINE CONTEXT STRUCTURE-----------------------------------
 typedef struct s_pipe_ctx
 {
-	int	*pipes;
-	int	pipe_indice;
-	int	numb_of_pipes;
+	int		*pipes;
+	pid_t		*pids;
+	int		pipe_indice;
+	int		numb_of_pipes;
 	t_shell	*shell;
 }	t_pipe_ctx;
 
