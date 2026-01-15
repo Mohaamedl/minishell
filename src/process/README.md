@@ -1,6 +1,6 @@
-# 🎯 Executor Module
+# 🎯 Process Module
 
-**Module**: Command Execution & Process Management  
+**Module**: Process Management & Low-Level Execution  
 **Issues**: KAN-52 to KAN-57  
 **Author**: minishell team  
 **Date**: December 6, 2025
@@ -9,14 +9,14 @@
 
 ## 📋 Overview
 
-This module handles all external command execution, process management, and pipeline operations for the minishell project.
+This module handles all low-level process operations including fork, exec, wait, and pipe management for the minishell project.
 
 ---
 
 ## 📁 Module Structure
 
 ```
-src/executor/
+src/process/
 ├── process.c          # KAN-53: Fork wrapper
 ├── exec.c             # KAN-54: execve + PATH search
 ├── wait.c             # KAN-55: waitpid wrapper

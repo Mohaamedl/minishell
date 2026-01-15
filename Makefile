@@ -64,17 +64,19 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/expander/wildcard_match.c \
 			  $(SRC_DIR)/expander/wildcard_expand.c \
 			  $(SRC_DIR)/expander/wildcard_args.c \
-			  $(SRC_DIR)/executer/execute_ast.c \
-			  $(SRC_DIR)/executer/apply_redirections.c \
-			  $(SRC_DIR)/executer/execute_cmd.c \
-			  $(SRC_DIR)/executer/execute_cmd_helpers.c \
-			  $(SRC_DIR)/executer/handle_redirections.c \
-			  $(SRC_DIR)/executer/heredoc.c \
-			  $(SRC_DIR)/executor/process.c \
-			  $(SRC_DIR)/executor/wait.c \
-			  $(SRC_DIR)/executor/exec.c \
-			  $(SRC_DIR)/executor/pipes.c \
-			  $(SRC_DIR)/executor/pipes_utils.c \
+			  $(SRC_DIR)/execution/execute_ast.c \
+			  $(SRC_DIR)/execution/pipeline_helpers.c \
+			  $(SRC_DIR)/execution/pipeline_execution.c \
+			  $(SRC_DIR)/execution/apply_redirections.c \
+			  $(SRC_DIR)/execution/execute_cmd.c \
+			  $(SRC_DIR)/execution/execute_cmd_helpers.c \
+			  $(SRC_DIR)/execution/handle_redirections.c \
+			  $(SRC_DIR)/execution/heredoc.c \
+			  $(SRC_DIR)/process/process.c \
+			  $(SRC_DIR)/process/wait.c \
+			  $(SRC_DIR)/process/exec.c \
+			  $(SRC_DIR)/process/pipes.c \
+			  $(SRC_DIR)/process/pipes_utils.c \
 
 # Object files
 OBJS        = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

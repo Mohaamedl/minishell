@@ -75,6 +75,19 @@ typedef struct s_ast
 	t_cmd *cmd;          // ponteiro para a estrutura do comando (se for um comando, caso seja um operador aponta para NULL)
 }	t_ast;
 //---------------------------------------------------------------------------------
+
+// Forward declaration for shell structure
+typedef struct s_shell	t_shell;
+
+//-------------------PIPELINE CONTEXT STRUCTURE-----------------------------------
+typedef struct s_pipe_ctx
+{
+	int	*pipes;
+	int	pipe_indice;
+	int	numb_of_pipes;
+	t_shell	*shell;
+}	t_pipe_ctx;
+
 #endif
 
 
