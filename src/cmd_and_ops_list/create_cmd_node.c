@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_cmd_node.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 16:07:32 by framiran          #+#    #+#             */
-/*   Updated: 2025/11/18 13:31:44 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/15 16:15:18 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 void	handle_redirect_token(t_cmd *cmd,t_token **tmp_token, t_redir **redir_list_head, t_redir **redir_list_last)
 {
 	t_redir	*new_redir_node;
-
-	new_redir_node = malloc(sizeof(t_redir));
 
 	new_redir_node = malloc(sizeof(t_redir));
 	if (!new_redir_node)
