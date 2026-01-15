@@ -13,30 +13,6 @@
 #include "minishell.h"
 
 /**
- * @brief Handles opening and closing quotes while parsing a string.
- *
- * This function updates the quote state and advances the index whenever
- * an opening or closing quote is found. Quote characters are skipped
- * and are not copied to the output string.
- *
- * @param str       The input string being parsed.
- * @param i         Pointer to the current index in the string.
- * @param in_quote  Pointer to the current quote state.
- *                  0 if not inside quotes, otherwise contains
- *                  the quote character (' or ").
- */
-static void	handle_quotes(const char *str, int *i, char *in_quote)
-{
-	if (!*in_quote && (str[*i] == '"' || str[*i] == '\''))
-		*in_quote = str[(*i)++];
-	else if (*in_quote && str[*i] == *in_quote)
-	{
-		*in_quote = 0;
-		(*i)++;
-	}
-}
-
-/**
  * @brief Removes only the outer single or double quotes from a string.
  *
  * This function removes matching outer quotes while preserving the
@@ -71,9 +47,19 @@ char	*remove_quotes(const char *str)
 	in_quote = 0;
 	while (str[i])
 	{
-		handle_quotes(str, &i, &in_quote);
-		if (str[i])
-			result[j++] = str[i++];
+		if (!in_quote && (str[i] == '"' || str[i] == '\''))
+		{
+			in_quote = str[i];
+			i++;
+			continue ;
+		}
+		if (in_quote && str[i] == in_quote)
+		{
+			in_quote = 0;
+			i++;
+			continue ;
+		}
+		result[j++] = str[i++];
 	}
 	result[j] = '\0';
 	return (result);
