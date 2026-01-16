@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:27:44 by mhaddadi          #+#    #+#             */
-/*   Updated: 2026/01/16 10:49:29 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/16 11:31:08 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,18 +80,18 @@ t_token	*tokenize(char* line)
 	while(line[i] != 0)
 	{
 		if(is_space(line[i]))
-			skip_spaces(&line[i], &i);
-		else if(is_quote(line[i]) && handle_quote(&line[i],&i, &last_token, &head)==0)
+			skip_spaces(&line[i], &i); // Agora o 'else' garante que só faz isto nesta volta
+		else if(is_quote(line[i]))
 		{
-			free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
-			return (NULL);//erro ao tokenizar
+			if(handle_quote(&line[i], &i, &last_token, &head) == 0)
+				return (free_tokens(head), NULL);
 		}
 		else if(is_operator(&line[i]))
-			handle_ops_and_reds(&line[i],&i, &last_token, &head);
-		else if(handle_word(&line[i],&i, &last_token, &head)==0)
+			handle_ops_and_reds(&line[i], &i, &last_token, &head);
+		else
 		{
-			free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
-			return (NULL);//erro ao tokenizar
+			if(handle_word(&line[i], &i, &last_token, &head) == 0)
+				return (free_tokens(head), NULL);
 		}
 	}
 	return (head);
