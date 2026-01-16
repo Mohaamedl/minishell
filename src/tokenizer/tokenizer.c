@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:27:44 by mhaddadi          #+#    #+#             */
-/*   Updated: 2026/01/07 15:45:31 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/16 10:49:29 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,31 +68,31 @@ void	handle_ops_and_reds(char *line, int *i, t_token **last_token,
  * according to shell tokenization rules. Returns NULL if unclosed quotes
  * are encountered or memory allocation fails.
  */
-t_token	*tokenize(char *line)
+t_token	*tokenize(char* line)
 {
-	int		i;
-	t_token	*last;
-	t_token	*head;
+	int	i;
+	t_token *last_token;
+	t_token *head;
 
-	i = 0;
-	last = NULL;
+	last_token = NULL;
 	head = NULL;
-	while (line[i])
+ 	i = 0;
+	while(line[i] != 0)
 	{
-		if (is_space(line[i]))
-		{
+		if(is_space(line[i]))
 			skip_spaces(&line[i], &i);
-			continue ;
-		}
-		if (is_quote(line[i]) && !handle_quote(&line[i], &i, &last, &head))
-			return (free_tokens(head), NULL);
-		if (is_operator(&line[i]))
+		else if(is_quote(line[i]) && handle_quote(&line[i],&i, &last_token, &head)==0)
 		{
-			handle_ops_and_reds(&line[i], &i, &last, &head);
-			continue ;
+			free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
+			return (NULL);//erro ao tokenizar
 		}
-		if (!handle_word(&line[i], &i, &last, &head))
-			return (free_tokens(head), NULL);
+		else if(is_operator(&line[i]))
+			handle_ops_and_reds(&line[i],&i, &last_token, &head);
+		else if(handle_word(&line[i],&i, &last_token, &head)==0)
+		{
+			free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
+			return (NULL);//erro ao tokenizar
+		}
 	}
 	return (head);
 }
