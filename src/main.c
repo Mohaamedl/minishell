@@ -98,7 +98,7 @@ int	main(int argc, char **argv, char **envp)
 
 		// Tokenize input
 		head = tokenize(line);
-		print_tokens(head);
+		//print_tokens(head);
 		if (!head)
 		{
 			fprintf(stderr, "syntax error: Unclosed quotes\n");
