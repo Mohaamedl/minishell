@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:23:51 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/07 18:24:02 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/03 14:07:05 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,20 +36,18 @@ static int	*allocate_pipes(int num_pipes)
  * @param num_commands Number of commands in the pipeline
  * @return int* Array of pipe file descriptors (caller must free), NULL on error
  */
-int	*create_pipes(int num_commands)
+int	*create_pipes(int numb_of_pipes)
 {
 	int	*pipes;
-	int	num_pipes;
 	int	i;
 
-	if (num_commands < 2)
+	if (numb_of_pipes < 1)
 		return (NULL);
-	num_pipes = num_commands - 1;
-	pipes = allocate_pipes(num_pipes);
+	pipes = allocate_pipes(numb_of_pipes);
 	if (!pipes)
 		return (NULL);
 	i = 0;
-	while (i < num_pipes)
+	while (i < numb_of_pipes)
 	{
 		if (pipe(&pipes[i * 2]) == -1)
 		{

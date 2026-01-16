@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wait.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:25:48 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/07 18:25:57 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/03 12:53:50 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,20 +55,20 @@ int	wait_for_process(pid_t pid)
  * @param count Number of processes
  * @return int Exit status of the last command
  */
-int	wait_for_pipeline(pid_t *pids, int count)
-{
-	int	i;
-	int	status;
-	int	last_status;
-
-	i = 0;
-	last_status = 0;
-	while (i < count)
-	{
-		status = wait_for_process(pids[i]);
-		if (i == count - 1)
-			last_status = status;
-		i++;
-	}
-	return (last_status);
-}
+//int	wait_for_pipeline(pid_t *pids, int count)
+//{
+//	int	i;
+//	int	status;
+//	int	last_status;
+//
+//	i = 0;
+//	last_status = 0;
+//	while (i < count)
+//	{
+//		status = wait_for_process(pids[i]);
+//		if (i == count - 1)
+//			last_status = status;
+//		i++;
+//	}
+//	return (last_status);
+//}

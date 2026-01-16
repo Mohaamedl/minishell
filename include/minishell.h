@@ -289,7 +289,7 @@ pid_t	create_process(void);
 
 /* wait.c - KAN-55 */
 int		wait_for_process(pid_t pid);
-int		wait_for_pipeline(pid_t *pids, int count);
+//int		wait_for_pipeline(pid_t *pids, int count);
 
 /* exec.c - KAN-54 */
 char	*find_command_in_path(char *cmd, t_env *env);
@@ -311,7 +311,7 @@ int	apply_redirections(t_ast *cmd_node, int heredoc_pipe_read_fd);
 
 void	save_std_fds(int saved_std_fds[2]);
 void	restore_std_fds(int saved_stdin, int saved_stdout);
-void	execute_in_child( t_ast *node, t_shell *shell);
+void	execute_in_child( t_ast *node, t_shell *shell, int heredoc_pipe_read_fd);
 int		execute_command_node(t_ast *node, t_shell *shell);
 int     cmd_name_is_redir(char *cmd_name);
 int     has_in_redirs(t_redir *redirs);
@@ -321,4 +321,5 @@ int handle_heredocs(t_redir *first_redir, t_shell *shell);
 int has_heredocs(t_redir *first_redir);
 int execute_ast_in_child(t_ast *node, t_shell *shell);
 int execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
+int calc_numb_pipes(t_ast *node);
 #endif
