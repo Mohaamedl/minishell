@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:24:20 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/07 18:24:24 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/03 14:07:12 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

@@ -54,8 +54,8 @@ LIBS="-L$PROJECT_ROOT -L$PROJECT_ROOT/Libft -lft"
 # Compile each test
 gcc $CFLAGS $INCLUDES -o "$TEST_DIR/test_process" \
     "$TEST_DIR/test_process.c" \
-    "$PROJECT_ROOT/src/executor/process.c" \
-    "$PROJECT_ROOT/src/executor/wait.c" \
+    "$PROJECT_ROOT/src/process/process.c" \
+    "$PROJECT_ROOT/src/process/wait.c" \
     $LIBS || {
     echo -e "${RED}✗ Failed to compile test_process${NC}"
     exit 1
@@ -63,7 +63,8 @@ gcc $CFLAGS $INCLUDES -o "$TEST_DIR/test_process" \
 
 gcc $CFLAGS $INCLUDES -o "$TEST_DIR/test_wait" \
     "$TEST_DIR/test_wait.c" \
-    "$PROJECT_ROOT/src/executor/wait.c" \
+    "$PROJECT_ROOT/src/process/wait.c" \
+    "$PROJECT_ROOT/src/execution/pipeline_helpers.c" \
     $LIBS || {
     echo -e "${RED}✗ Failed to compile test_wait${NC}"
     exit 1
@@ -71,7 +72,7 @@ gcc $CFLAGS $INCLUDES -o "$TEST_DIR/test_wait" \
 
 gcc $CFLAGS $INCLUDES -o "$TEST_DIR/test_exec" \
     "$TEST_DIR/test_exec.c" \
-    "$PROJECT_ROOT/src/executor/exec.c" \
+    "$PROJECT_ROOT/src/process/exec.c" \
     "$PROJECT_ROOT/src/environment/env_init.c" \
     "$PROJECT_ROOT/src/environment/env_get.c" \
     "$PROJECT_ROOT/src/environment/env_set.c" \
@@ -85,8 +86,8 @@ gcc $CFLAGS $INCLUDES -o "$TEST_DIR/test_exec" \
 
 gcc $CFLAGS $INCLUDES -o "$TEST_DIR/test_pipes" \
     "$TEST_DIR/test_pipes.c" \
-    "$PROJECT_ROOT/src/executor/pipes.c" \
-    "$PROJECT_ROOT/src/executor/pipes_utils.c" \
+    "$PROJECT_ROOT/src/process/pipes.c" \
+    "$PROJECT_ROOT/src/process/pipes_utils.c" \
     $LIBS || {
     echo -e "${RED}✗ Failed to compile test_pipes${NC}"
     exit 1
