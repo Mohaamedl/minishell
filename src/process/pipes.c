@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipes.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:23:51 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/07 18:24:02 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/03 14:07:05 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ static int	*allocate_pipes(int num_pipes)
 int	*create_pipes(int num_commands)
 {
 	int	*pipes;
-	int	num_pipes;
 	int	i;
+	int	num_pipes;
 
-	if (num_commands < 2)
+	if (num_commands <= 1)
 		return (NULL);
 	num_pipes = num_commands - 1;
 	pipes = allocate_pipes(num_pipes);

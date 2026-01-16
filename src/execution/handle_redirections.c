@@ -12,29 +12,44 @@
 
 #include <minishell.h>
 
-int has_out_redirs(t_redir *first_redir)
+/**
+ * @brief Check if redirection list has output redirections
+ * 
+ * @param first_redir First redirection in list
+ * @return 1 if has output/append redirections, 0 otherwise
+ */
+int	has_out_redirs(t_redir *first_redir)
 {
-	t_redir *curr_redir = first_redir;
+	t_redir	*curr_redir;
+
+	curr_redir = first_redir;
 	while (curr_redir != NULL)
 	{
-		if (curr_redir->type == REDIR_OUT || curr_redir->type == APPEND) // > ou >>
-			return 1;
+		if (curr_redir->type == REDIR_OUT || curr_redir->type == APPEND)
+			return (1);
 		curr_redir = curr_redir->next;
 	}
-	return 0;
+	return (0);
 }
 
-
-int has_in_redirs(t_redir *first_redir)
+/**
+ * @brief Check if redirection list has input redirections
+ * 
+ * @param first_redir First redirection in list
+ * @return 1 if has input redirections or heredocs, 0 otherwise
+ */
+int	has_in_redirs(t_redir *first_redir)
 {
-	t_redir *curr_redir = first_redir;
+	t_redir	*curr_redir;
+
+	curr_redir = first_redir;
 	while (curr_redir != NULL)
 	{
 		if (curr_redir->type == REDIR_IN)
-			return 1;
+			return (1);
 		curr_redir = curr_redir->next;
 	}
 	if (has_heredocs(first_redir))
-		return 1;
-	return 0;
+		return (1);
+	return (0);
 }
