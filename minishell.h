@@ -297,7 +297,7 @@ int	apply_redirections(t_ast *cmd_node, int heredoc_pipe_read_fd);
 
 void	save_std_fds(int saved_std_fds[2]);
 void	restore_std_fds(int saved_stdin, int saved_stdout);
-void	execute_in_child( t_ast *node, t_shell *shell);
+void	execute_in_child(t_ast *node, t_shell *shell, int heredoc_pipe_read_fd);
 int		execute_command_node(t_ast *node, t_shell *shell);
 int     cmd_name_is_redir(char *cmd_name);
 int     has_in_redirs(t_redir *redirs);
