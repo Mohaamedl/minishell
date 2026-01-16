@@ -3,14 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   get_var_value.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/10 12:12:01 by francisco         #+#    #+#             */
-/*   Updated: 2026/01/12 12:19:35 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/16 10:33:56 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+/**
+ * @brief Iterates through the source string and copies
+ * characters to the result buffer,
+ * skipping the first matching pair of outer quotes.
+ *
+ * @param str    The source string to process.
+ * @param i      The starting index for the source string (usually 0).
+ * @param j      The starting index for the result buffer (usually 0).
+ * @param result The allocated memory buffer where
+ * the processed string will be stored.
+ *
+ * @return A pointer to the 'result' string, null-terminated.
+ */
+static char	*process_quotes(const char *str, int i, int j, char *result)
+{
+	char	in_quote;
+
+	in_quote = 0;
+	while (str[i])
+	{
+		if (!in_quote && (str[i] == '"' || str[i] == '\''))
+		{
+			in_quote = str[i];
+			i++;
+			continue ;
+		}
+		if (in_quote && str[i] == in_quote)
+		{
+			in_quote = 0;
+			i++;
+			continue ;
+		}
+		result[j++] = str[i++];
+	}
+	result[j] = '\0';
+	return (result);
+}
 
 /**
  * @brief Removes only the outer single or double quotes from a string.
@@ -35,7 +73,6 @@ char	*remove_quotes(const char *str)
 	char	*result;
 	int		i;
 	int		j;
-	char	in_quote;
 
 	if (!str)
 		return (NULL);
@@ -44,24 +81,7 @@ char	*remove_quotes(const char *str)
 		return (NULL);
 	i = 0;
 	j = 0;
-	in_quote = 0;
-	while (str[i])
-	{
-		if (!in_quote && (str[i] == '"' || str[i] == '\''))
-		{
-			in_quote = str[i];
-			i++;
-			continue ;
-		}
-		if (in_quote && str[i] == in_quote)
-		{
-			in_quote = 0;
-			i++;
-			continue ;
-		}
-		result[j++] = str[i++];
-	}
-	result[j] = '\0';
+	result = process_quotes(str, i, j, result);
 	return (result);
 }
 
@@ -144,11 +164,11 @@ char	*extract_var_name(const char *str)
 
 /**
  * @brief Get the value to replace a variable expansion
- * 
+ *
  * Returns the value of the variable or "$?" special case.
  * For "$?", returns the last exit status as a string.
  * Special variables $$ and $@ expand to empty string (not implemented).
- * 
+ *
  * @param var_name Variable name (without $)
  * @param shell Shell state containing env and exit status
  * @return Variable value or empty string if not found (not NULL)
