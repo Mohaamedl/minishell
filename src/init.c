@@ -20,22 +20,3 @@
  *
  * @param env Pointer to the environment list
  */
-void	increment_shlvl(t_env **env)
-{
-	char	*shlvl_str;
-	int		shlvl;
-	char	*new_shlvl;
-
-	shlvl_str = get_env_value(*env, "SHLVL");
-	if (shlvl_str)
-		shlvl = ft_atoi(shlvl_str);
-	else
-		shlvl = 0;
-	shlvl++;
-	new_shlvl = ft_itoa(shlvl);
-	if (new_shlvl)
-	{
-		set_env_value(env, "SHLVL", new_shlvl);
-		free(new_shlvl);
-	}
-}

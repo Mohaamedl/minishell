@@ -10,43 +10,42 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
 
-#include "minishell.h" 
-
-const char *token_type_to_str(t_token_type type)
+const char	*token_type_to_str(t_token_type type)
 {
 	if (type == WORD)
-		return "WORD";
+		return ("WORD");
 	if (type == REDIR_IN)
-		return "REDIR_IN";
+		return ("REDIR_IN");
 	if (type == REDIR_OUT)
-		return "REDIR_OUT";
+		return ("REDIR_OUT");
 	if (type == APPEND)
-		return "APPEND";
+		return ("APPEND");
 	if (type == HEREDOC)
-		return "HEREDOC";
+		return ("HEREDOC");
 	if (type == PIPE)
-		return "PIPE";
+		return ("PIPE");
 	if (type == OR)
-		return "OR";
+		return ("OR");
 	if (type == AND)
-		return "AND";
+		return ("AND");
 	if (type == RPAREN)
-		return "RPAREN";
+		return ("RPAREN");
 	if (type == LPAREN)
-		return "LPAREN";
+		return ("LPAREN");
 	if (type == CMD)
-		return "CMD";
-	if (type == 11) //just because this was bugging
-		return "CMD";
-	return "UNKNOWN";
+		return ("CMD");
+	return ("UNKNOWN");
 }
 
 void	print_tokens(t_token *tmp)
 {
-	while(tmp)
+	while (tmp)
 	{
-		printf("Token: \"%s\"| type: %s | Expandable: %d | is operator: %d \n", tmp->value,  token_type_to_str(tmp->type), tmp ->expandable, tmp->is_operator);
+		printf("Token: \"%s\"| type: %s | Expandable: %d | is operator: %d\n",
+			tmp->value, token_type_to_str(tmp->type), tmp->expandable,
+			tmp->is_operator);
 		tmp = tmp->next;
 	}
 }
