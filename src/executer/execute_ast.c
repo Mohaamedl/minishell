@@ -43,13 +43,17 @@ void configure_stds(int *pipes, int pipe_indice, int numb_of_pipes)
 
 /**
  * @brief Spawns a child process to execute a single command within a pipeline.
- * * This function manages the lifecycle of a command node:
- * 1. Handles heredocs to obtain a reading FD before forking.
- * 2. Forks a child process:
- * - Child: Connects to pipes (via configure_stds), cleans up the pipe
- * array, and executes the command logic.
- * - Parent: Closes the heredoc FD immediately to prevent resource leaks.
- * * @param curr_node The AST node containing command and redirection data.
+ *
+ * This function manages the lifecycle of a command node:
+ * 1. Sets up heredoc signal handlers (for Ctrl+C during input).
+ * 2. Handles heredocs to obtain reading FD.
+ * 3. Checks if Ctrl+C was pressed; skips execution if so.
+ * 4. Restores normal signal handlers.
+ * 5. Forks a child process:
+ * - Child: Connects to pipes, executes.
+ * - Parent: Closes the heredoc FD immediately.
+ *
+ * @param curr_node The AST node containing command and redirection data.
  * @param pipes Array of pipeline file descriptors.
  * @param pipe_indice The command's position in the pipeline.
  * @param numb_of_pipes Total pipes in the current pipeline.
@@ -60,17 +64,23 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
 	int		heredoc_pipe_read_fd;
 	int		pid;
 
+	setup_signals_heredoc();
 	heredoc_pipe_read_fd = handle_heredocs(curr_node->cmd->redirs, shell);
+	if (g_signal_received == SIGINT)
+	{
+		if (heredoc_pipe_read_fd != -1)
+			close(heredoc_pipe_read_fd);
+		return ;
+	}
+	setup_signals_executing();
 	pid = fork();
 //	if (pid == -1)
 //		return (perror("minishell: fork"), ERROR);
 
 	if (pid == 0) // child
 	{
-		configure_stds(pipes, pipe_indice, numb_of_pipes);//nmb_of_pipes is important to check the case of the last and first cmd of pipeline
-		// fechar todos os pipes no child          //(first cmd does not read from a pipe and last does not write to pipe)
+		configure_stds(pipes, pipe_indice, numb_of_pipes);
 		close_all_pipes(pipes, numb_of_pipes);
-		// executar comando
 		execute_in_child(curr_node, shell, heredoc_pipe_read_fd);
 		_exit(ERROR);
 	}
