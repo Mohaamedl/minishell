@@ -88,6 +88,7 @@ typedef struct s_pipe_ctx
 	pid_t		*pids;
 	int		pipe_indice;
 	int		numb_of_pipes;
+	int		spawned;
 	t_shell	*shell;
 }	t_pipe_ctx;
 

@@ -67,6 +67,7 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/execution/execute_ast.c \
 			  $(SRC_DIR)/execution/pipeline_helpers.c \
 			  $(SRC_DIR)/execution/pipeline_execution.c \
+			  $(SRC_DIR)/execution/pipeline_traversal.c \
 			  $(SRC_DIR)/execution/apply_redirections.c \
 			  $(SRC_DIR)/execution/execute_cmd.c \
 			  $(SRC_DIR)/execution/execute_cmd_helpers.c \
