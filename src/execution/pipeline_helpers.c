@@ -66,3 +66,31 @@ int	calc_numb_pipes(t_ast *node)
 	count = count + calc_numb_pipes(node->right);
 	return (count);
 }
+
+/**
+ * @brief Safely closes a file descriptor if valid.
+ *
+ * @param fd The file descriptor to close.
+ */
+void	close_fd_safe(int fd)
+{
+	if (fd != -1)
+		close(fd);
+}
+
+/**
+ * @brief Registers a spawned child process in the pipeline context.
+ *
+ * Updates the process ID array and increments the spawned counter.
+ *
+ * @param pid The process ID of the spawned child.
+ * @param ctx Pipeline context to update.
+ */
+void	register_child_process(pid_t pid, t_pipe_ctx *ctx)
+{
+	if (pid > 0)
+	{
+		ctx->pids[ctx->pipe_indice] = pid;
+		ctx->spawned++;
+	}
+}

@@ -6,78 +6,113 @@
 /*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/10 16:07:32 by framiran          #+#    #+#             */
-/*   Updated: 2026/01/07 16:20:11 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/07 16:11:34 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "minishell.h"
 
-void	handle_redirect_token(t_cmd *cmd,t_token **tmp_token, t_redir **redir_list_head, t_redir **redir_list_last)
+/**
+ * @brief Handles a redirection token and adds it to the redirect list
+ * 
+ * Creates a new redirection node from the current token and appends it to
+ * the command's redirection list. The file name is taken from the next token.
+ * For heredoc, the delimiter never expands, but this information is stored
+ * to determine if content variables will expand. Updates the token pointer
+ * by skipping both the redirect token and the filename/delimiter token.
+ * 
+ * @param cmd The command structure to add the redirection to
+ * @param tmp_token Pointer to the current token pointer
+ * @param redir_list_head Pointer to the head of the redirection list
+ * @param redir_list_last Pointer to the last node in the redirection list
+ */
+void	handle_redirect_token(t_cmd *cmd, t_token **tmp_token,
+		t_redir **redir_list_head, t_redir **redir_list_last)
 {
 	t_redir	*new_redir_node;
 
 	new_redir_node = malloc(sizeof(t_redir));
-
-	new_redir_node = malloc(sizeof(t_redir));
 	if (!new_redir_node)
-		return;
-	new_redir_node -> type = (*tmp_token) -> type;
-	new_redir_node -> file = (*tmp_token) -> next -> value; // o file name e o token a seguir ao token de redirect
-	new_redir_node -> file_name_is_expandable = (*tmp_token) -> next -> expandable; //in the case of heredoc its file_name (or in this case delimiter) never expands, this info will be used to know if the content variables will expand or not
-	new_redir_node -> file_was_expanded = 0; // Initially points to token value     
-	if(*redir_list_head == NULL)//ainda nao existe head, este sera o primeiro redir_node
+		return ;
+	new_redir_node->type = (*tmp_token)->type;
+	new_redir_node->file = (*tmp_token)->next->value;
+	new_redir_node->file_name_is_expandable = (*tmp_token)->next->expandable;
+	new_redir_node->file_was_expanded = 0;
+	if (*redir_list_head == NULL)
 	{
 		*redir_list_head = new_redir_node;
 		*redir_list_last = new_redir_node;
-		(*redir_list_last) -> next = NULL;
-		cmd -> redirs = *redir_list_head; //ligo o cmd ao primeiro redirect emcontrado
+		(*redir_list_last)->next = NULL;
+		cmd->redirs = *redir_list_head;
 	}
 	else
 	{
-		(*redir_list_last) -> next = new_redir_node;
+		(*redir_list_last)->next = new_redir_node;
 		(*redir_list_last) = new_redir_node;
-		(*redir_list_last) ->next = NULL;
+		(*redir_list_last)->next = NULL;
 	}
-	//atualizo o token a avaliar (salto 2 tokens, o token do redir e o filename/end of file no caso do heredoc)
-	(*tmp_token) = (*tmp_token) -> next;
-	(*tmp_token) = (*tmp_token) -> next;
+	(*tmp_token) = (*tmp_token)->next;
+	(*tmp_token) = (*tmp_token)->next;
 }
 
-void	handle_arg_token(t_cmd *cmd, t_token **tmp_token, t_arg **arg_list_head, t_arg **arg_list_last)
+/**
+ * @brief Handles an argument token and adds it to the argument list
+ * 
+ * Creates a new argument node from the current token and appends it to
+ * the command's argument list. Wildcard expansion is only enabled for
+ * unquoted tokens. The value initially points to the token value and
+ * may be replaced if expansion occurs. Updates the token pointer to
+ * the next token.
+ * 
+ * @param cmd The command structure to add the argument to
+ * @param tmp_token Pointer to the current token pointer
+ * @param arg_list_head Pointer to the head of the argument list
+ * @param arg_list_last Pointer to the last node in the argument list
+ */
+void	handle_arg_token(t_cmd *cmd, t_token **tmp_token,
+		t_arg **arg_list_head, t_arg **arg_list_last)
 {
 	t_arg	*new_arg_node;
 
 	new_arg_node = malloc(sizeof(t_arg));
 	if (!new_arg_node)
-		return;
-	new_arg_node -> value = (*tmp_token) ->value;
-	new_arg_node -> is_expandable = (*tmp_token) -> expandable;
-	// Wildcard expands only for unquoted tokens
-	new_arg_node -> is_wildcard_expandable = !((*tmp_token) -> is_quoted);
-	new_arg_node -> was_expanded = 0; // Initially points to token value
-
-	if(*arg_list_head == NULL)//ainda nao existe head, este sera o primeiro arg
+		return ;
+	new_arg_node->value = (*tmp_token)->value;
+	new_arg_node->is_expandable = (*tmp_token)->expandable;
+	new_arg_node->is_wildcard_expandable = !((*tmp_token)->is_quoted);
+	new_arg_node->was_expanded = 0;
+	if (*arg_list_head == NULL)
 	{
 		*arg_list_head = new_arg_node;
 		*arg_list_last = new_arg_node;
-		(*arg_list_last) ->next = NULL;
-		cmd -> args = *arg_list_head; //ligo o cmd ao primeiro arg emcontrado
+		(*arg_list_last)->next = NULL;
+		cmd->args = *arg_list_head;
 	}
 	else
 	{
-		(*arg_list_last) -> next = new_arg_node;
+		(*arg_list_last)->next = new_arg_node;
 		(*arg_list_last) = new_arg_node;
-		(*arg_list_last) ->next = NULL;
+		(*arg_list_last)->next = NULL;
 	}
-	//atualizo o token a avaliar
-	(*tmp_token) = (*tmp_token) -> next;
+	(*tmp_token) = (*tmp_token)->next;
 }
 
+/**
+ * @brief Creates a command structure from tokens
+ * 
+ * Parses tokens to build a complete command with its arguments and
+ * redirections. The command name is always the first token and is also
+ * stored in the arguments list. Continues processing tokens until an
+ * operator is found or the token list ends. Updates the token pointer
+ * internally, skipping 2 tokens for redirects or 1 token for arguments.
+ * 
+ * @param tmp_token The first token of the command
+ * @return Pointer to the newly created command structure
+ */
 t_cmd	*create_cmd(t_token *tmp_token)
 {
 	t_cmd	*cmd;
-	t_redir	*redir_list_head; //ponderar fazer uma estrutura que engloba o head e o last das listas por ser um padrao recorrente e poupar linhas de codigo
+	t_redir	*redir_list_head;
 	t_redir	*redir_list_last;
 	t_arg	*arg_list_head;
 	t_arg	*arg_list_last;
@@ -86,39 +121,53 @@ t_cmd	*create_cmd(t_token *tmp_token)
 	redir_list_last = NULL;
 	arg_list_head = NULL;
 	arg_list_last = NULL;
-
 	cmd = malloc(sizeof(t_cmd));
-	cmd -> cmd_name = tmp_token ->value; //o cmd name e sempre o primeiro token, nao passo um token para a frente porque o cmd name tambem e guardado nos args
-	cmd -> args = NULL;
-	cmd -> redirs = NULL;
-	while(tmp_token && tmp_token->is_operator == 0)//aqui vou guardar os args e os redirects; atualizo o token a analizar dentro destas funcoes, se for redirect salto 2 tokens, no caso s ser arg salto 1
+	cmd->cmd_name = tmp_token->value;
+	cmd->args = NULL;
+	cmd->redirs = NULL;
+	while (tmp_token && tmp_token->is_operator == 0)
 	{
-		if(is_redirect_token(tmp_token))//se encontrar um token de redirect
-			handle_redirect_token(cmd,&tmp_token, &redir_list_head, &redir_list_last);//vou adicionar a redirecao encontrada a lista de redirecoes
-		else // e um argumento
-			handle_arg_token(cmd,&tmp_token,&arg_list_head, &arg_list_last);//guardo esse argumento na lista de argumentos
+		if (is_redirect_token(tmp_token))
+			handle_redirect_token(cmd, &tmp_token, &redir_list_head,
+				&redir_list_last);
+		else
+			handle_arg_token(cmd, &tmp_token, &arg_list_head, &arg_list_last);
 	}
-	//chegamos ao fim dos tokens ou a um operador, retorno o comando criado
-	return cmd;
+	return (cmd);
 }
 
-void	create_cmd_node(t_token **tmp_token,t_token *head, t_ast **first_node, t_ast **last_node) // o inicio da node list sera sempre o primeiro comando que recebe, tenho que atualizar este pointer apenas uma vez quando encontro o primeiro comando(primeiro token)
+/**
+ * @brief Creates a command node and adds it to the AST list
+ * 
+ * Creates a complete command structure and wraps it in an AST node. If this
+ * is the first node (token equals head), initializes both first_node and
+ * last_node. Otherwise, appends the new node to the end of the list. Updates
+ * the token pointer to skip all tokens belonging to this command (arguments
+ * and redirections) by calling update_token_to_eval.
+ * 
+ * @param tmp_token Pointer to the current token pointer
+ * @param head The head of the token list (used to check if first node)
+ * @param first_node Pointer to the first node in the AST list
+ * @param last_node Pointer to the last node in the AST list
+ */
+void	create_cmd_node(t_token **tmp_token, t_token *head,
+		t_ast **first_node, t_ast **last_node)
 {
-	t_cmd *cmd;
-	t_ast *new_node;
+	t_cmd	*cmd;
+	t_ast	*new_node;
 
 	cmd = create_cmd(*tmp_token);
-	new_node  = create_node(*tmp_token, cmd);
-	if(*tmp_token == head) // no caso de ser o primeiro node:
+	new_node = create_node(*tmp_token, cmd);
+	if (*tmp_token == head)
 	{
 		*first_node = new_node;
 		*last_node = new_node;
-		(*last_node) -> right = NULL;
+		(*last_node)->right = NULL;
 	}
 	else
 	{
-		append_node(new_node,*last_node);//ligo estes dois nodes e atualizo last_node
-		*last_node = new_node; // agora last_node aponta para o novo node que foi adicionado ao fim da lista
+		append_node(new_node, *last_node);
+		*last_node = new_node;
 	}
-	update_token_to_eval(tmp_token); //atualizar o proximo token a avaliar, (tenho de passar todos os tokens que pertencem a este CMD),
+	update_token_to_eval(tmp_token);
 }
