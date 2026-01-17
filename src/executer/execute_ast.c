@@ -59,7 +59,8 @@ void configure_stds(int *pipes, int pipe_indice, int numb_of_pipes)
  * @param numb_of_pipes Total pipes in the current pipeline.
  * @param shell Pointer to the shell state.
  */
-void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes ,t_shell *shell)
+void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes,
+		 t_shell *shell, int *spawned)
 {
 	int		heredoc_pipe_read_fd;
 	int		pid;
@@ -74,8 +75,13 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
 	}
 	setup_signals_executing();
 	pid = fork();
-//	if (pid == -1)
-//		return (perror("minishell: fork"), ERROR);
+	if (pid == -1)
+	{
+		perror("minishell: fork");
+		if (heredoc_pipe_read_fd != -1)
+			close(heredoc_pipe_read_fd);
+		return ;
+	}
 
 	if (pid == 0) // child
 	{
@@ -84,8 +90,10 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
 		execute_in_child(curr_node, shell, heredoc_pipe_read_fd);
 		_exit(ERROR);
 	}
+	// Parent: increment only after successful fork
 	if (heredoc_pipe_read_fd != -1)
 		close(heredoc_pipe_read_fd);
+	(*spawned)++;
 }
 /**
  * @brief Spawns a child process to execute a subshell within a pipeline.
@@ -101,21 +109,27 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
  * @param pipe_indice The subshell's position in the pipeline.
  * @param numb_of_pipes Total pipes in the current pipeline.
  */
-void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes, t_shell *shell)
+void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice,
+	int numb_of_pipes, t_shell *shell, int *spawned)
 {
 	int		pid;
+
 	pid = fork();
-//	if (pid == -1)
-//		return (perror("minishell: fork"), ERROR);
+	if (pid == -1)
+	{
+		perror("minishell: fork");
+		return ;
+	}
 
 	if (pid == 0) // child
 	{
-		configure_stds(pipes, pipe_indice, numb_of_pipes);//nmb_of_pipes is important to check the case of the last and first cmd of pipeline
-		// fechar todos os pipes no child          //(first cmd does not read from a pipe and last does not write to pipe)
+		configure_stds(pipes, pipe_indice, numb_of_pipes);
 		close_all_pipes(pipes, numb_of_pipes);
 		execute_ast(curr_node, shell);
 		_exit(ERROR);
 	}
+	// Parent: increment only after successful fork
+	(*spawned)++;
 }
 
 /**
@@ -130,24 +144,29 @@ void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_
  * Note: Subshells (AND/OR) are treated as single units, preserving their
  * internal logic while maintaining their position in the parent pipeline.
  */
-void traverse_and_execute(t_ast *node, int *pipes, int *pipe_indice, int num_pipes, t_shell *shell)//this runs always in a pipeline
+void traverse_and_execute(t_ast *node, int *pipes, int *pipe_indice,
+	int num_pipes, t_shell *shell, int *spawned)//this runs always in a pipeline
 {
     if (!node)
+		return;
+	if (g_signal_received == SIGINT)
 		return;
 
 	if (node->type == PIPE) {
 		// Primeiro vai à esquerda (pode haver outro PIPE ou um CMD)
-		traverse_and_execute(node->left, pipes, pipe_indice, num_pipes, shell);
+		traverse_and_execute(node->left, pipes, pipe_indice, num_pipes, shell, spawned);
+		if (g_signal_received == SIGINT)
+			return;
 		//depois de executar o comando da esquerda do pipe, atualizo o pipe index, para o comando da direita do pipe escrever para o pipe da frente (pipe indice e sempre o pipe a escrever)
 		(*pipe_indice)++;
 		// Depois vai à direita
-		traverse_and_execute(node->right, pipes, pipe_indice, num_pipes,shell);
+		traverse_and_execute(node->right, pipes, pipe_indice, num_pipes, shell, spawned);
 	}
 	else {
 		if (node -> type == CMD)
-			handle_cmd(node, pipes, *pipe_indice, num_pipes, shell);
+			handle_cmd(node, pipes, *pipe_indice, num_pipes, shell, spawned);
 		else if(node -> type == AND || node -> type == OR) //configurar os stds aqui, e tratar a subshell como um processo child, com os seus proprios stds configurados internamente mas que lem e escrevem nos stds do processo pai
-			handle_subshell(node, pipes, *pipe_indice, num_pipes, shell); //esta subshell pode ter pipelines proprias dentro
+			handle_subshell(node, pipes, *pipe_indice, num_pipes, shell, spawned); //esta subshell pode ter pipelines proprias dentro
 	}
 }
 
@@ -229,18 +248,22 @@ static int execute_pipeline(t_ast *node, t_shell *shell)
 	int		*pipes;
 	int		numb_of_pipes;
 	int		pipe_indice;
+	int		spawned;
 	int		final_status;
 
 	pipe_indice = 0;
+	spawned = 0;
 	numb_of_pipes = calc_numb_pipes(node); //calcula o nmb of pipes desta pipeline.
 	pipes = create_pipes(numb_of_pipes);
 	//ao percorrer a tree envio o pipe e o indice do pipe;
-	traverse_and_execute(node,pipes,&pipe_indice,numb_of_pipes,shell);
+	traverse_and_execute(node, pipes, &pipe_indice, numb_of_pipes, shell, &spawned);
 	// CRUCIAL: Fechar os pipes no PAI antes de esperar
 	// Se o pai mantiver os pipes abertos, os filhos nunca recebem EOF
 	close_all_pipes(pipes, numb_of_pipes);
 	// Espera pelos filhos e limpa a memória
-	final_status = wait_for_pipeline(numb_of_pipes + 1);
+	final_status = wait_for_pipeline(spawned);
+	if (g_signal_received == SIGINT)
+		final_status = 130;
 	free(pipes);
     return (final_status);
 }
