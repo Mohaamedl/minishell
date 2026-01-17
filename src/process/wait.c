@@ -55,20 +55,20 @@ int	wait_for_process(pid_t pid)
  * @param count Number of processes
  * @return int Exit status of the last command
  */
-//int	wait_for_pipeline(pid_t *pids, int count)
-//{
-//	int	i;
-//	int	status;
-//	int	last_status;
-//
-//	i = 0;
-//	last_status = 0;
-//	while (i < count)
-//	{
-//		status = wait_for_process(pids[i]);
-//		if (i == count - 1)
-//			last_status = status;
-//		i++;
-//	}
-//	return (last_status);
-//}
+int	wait_for_pipeline(pid_t *pids, int count)
+{
+	int	i;
+	int	status;
+	int	last_status;
+
+	i = 0;
+	last_status = 0;
+	while (i < count)
+	{
+		status = wait_for_process(pids[i]);
+		if (i == count - 1)
+			last_status = status;
+		i++;
+	}
+	return (last_status);
+}

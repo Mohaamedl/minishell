@@ -3,161 +3,95 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mhaddadi <mhaddadi@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 18:27:44 by mhaddadi          #+#    #+#             */
-/*   Updated: 2025/12/07 18:27:55 by mhaddadi         ###   ########.fr       */
+/*   Updated: 2026/01/16 14:15:29 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	get_quoted_size(char *line, char quote)
+/**
+ * @brief Skips whitespace characters in a string
+ * @param line Pointer to the string to process
+ * @param i Pointer to the current index in the string
+ *
+ * Advances the index past all consecutive whitespace characters
+ * (space, tab, vertical tab, form feed, carriage return).
+ */
+void	skip_spaces(char *line, int *i)
 {
-	int size;
+	int	j;
 
-	size = 0;
-	line++; //para passar a prmeira aspa a frente (so quero o conteudo)
-	while(*line != quote && *line != '\0')
-	{
-		size++;
-		line++;
-	}
-	if(*line == '\0') //chegou ao fim se fechar
-		return (-1);
-	return(size);
-}
-t_token *create_token(char* value, t_token_type type, int is_expandable, int is_op)
-{
-	t_token *token = malloc(sizeof(t_token));
-	if (!token)
-		return NULL;
-	token->is_operator = is_op;
-	token->type = type;
-	token->value = value;
-	token->expandable = is_expandable;
-	token->is_quoted = 0; // Default: not quoted
-	token->next = NULL;
-	return token;
-}
-
-char *get_quoted_text(char *line,char quote)
-{
-	int size;
-	char *str;
-	size = get_quoted_size(line,quote);//este size e´ -1 se a quote nao fechar
-	if (size == -1)
-		return (NULL);
-	else
-	{
-		str = malloc((size + 1)*sizeof(char));
-		ft_memcpy(str, ++line, size); //ando line um char para a frente para nao copiar a aspa inicial
-		str[size] = '\0';
-		return str;
-	}
-}
-
-void	append_token(t_token **head, t_token **last_token, t_token *new_token)
-{
-	if (!new_token)
-		return;
-
-	if (*head == NULL) //sefor o primeiro node a ser criado, head aponta para ele
-		*head = new_token;
-	else
-		(*last_token)->next = new_token;
-	*last_token = new_token;
-}
-//Aspas simples '...' e duplas "..." formam um único token mesmo com espaços ou operadores,
-//mas enquanto "..." permite expansão de variáveis e escapes, '...' é totalmente literal.
-int	create_quoted_token(t_token **last_token, t_token **head, char *line, char quote)
-{
-	char	*str;
-	t_token	*token;
-	int is_expandable;
-	int is_op;
-	is_op = 0;
-
-	is_expandable = 1;
-	if(is_single_quote(*line))
-		is_expandable = 0;
-	if (last_token && *last_token) //Caso especifico do HEREDOC, se o end of file estiver em aspas (single or double quote) o conteudo nao espande
-	{
-		if ((*last_token) -> type == HEREDOC)
-			is_expandable = 0;
-	}
-	str = get_quoted_text(line,quote);
-	if (str == NULL) //as aspas nao fecharam
-		return 0;//failed
-	else
-	{
-		token = create_token(str, WORD, is_expandable, is_op);
-		token->is_quoted = 1; // Mark as quoted (no wildcard expansion)
-		append_token(head,last_token,token);
-	}
-	return 1;//sucess
-}
-// Not interpret unclosed quotes or special characters which are not required by the
-//subject such as \ (backslash) or ; (semicolon)
-
-void	skip_spaces(char *line,int *i)
-{
-	int j;
 	j = 0;
-	while(is_space(line[j]))
+	while (is_space(line[j]))
 		j++;
 	*i = *i + j;
 }
 
-
-void handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head)
+/**
+ * @brief Routes operator/redirection handling to appropriate handler
+ * @param line Pointer to string starting at an operator character
+ * @param i Pointer to the current index in the string
+ * @param last_token Pointer to pointer of the last token in the list
+ * @param head Pointer to pointer of the first token in the list
+ *
+ * Dispatches to specific handler functions based on the operator type:
+ * pipe/OR (|), AND (&&), input redirection/heredoc (<),
+ * output redirection/append (>), parentheses, or semicolon.
+ */
+void	handle_ops_and_reds(char *line, int *i, t_token **last_token,
+		t_token **head)
 {
 	if (*line == '|')
-		handle_pipe_or_or(line,i,last_token,head);  // função que vai criar token PIPE ou OR (||)
+		handle_pipe_or_or(line, i, last_token, head);
 	else if (*line == '&')
-		handle_and(line, i,last_token,head);         // função que cria token AND (&&)
+		handle_and(line, i, last_token, head);
 	else if (*line == '<')
-		handle_redin_or_heredoc(line,i,last_token,head);       // função que cria token REDIR_INPUT (<) ou ou HEREDOC (<<)
+		handle_redin_or_heredoc(line, i, last_token, head);
 	else if (*line == '>')
-		handle_redap_or_redout(line,i,last_token,head); // função que cria token REDIR_OUTPUT (>) ou REDIR_APPEND (>>)
+		handle_redap_or_redout(line, i, last_token, head);
 	else if (*line == '(' || *line == ')')
-		handle_parentesis(line,i,last_token,head);
+		handle_parentesis(line, i, last_token, head);
 	else if (*line == ';')
-		handle_semicolon(line,i,last_token,head);
+		handle_semicolon(line, i, last_token, head);
 }
 
-//por agora o trata espacos e aspas;
-t_token	*tokenize(char* line)
+/**
+ * @brief Tokenizes a command line string into a linked list of tokens
+ * @param line The command line string to tokenize
+ * @return Pointer to the first token, or NULL on error
+ *
+ * Parses the input string and creates tokens for words, operators,
+ * redirections, and quoted strings. Handles spaces, quotes, and operators
+ * according to shell tokenization rules. Returns NULL if unclosed quotes
+ * are encountered or memory allocation fails.
+ */
+t_token	*tokenize(char *line)
 {
-	int	i;
-	t_token *last_token;
-	t_token *head;
+	int		i;
+	t_token	*last_token;
+	t_token	*head;
 
 	last_token = NULL;
 	head = NULL;
- 	i = 0;
-	//convem manter esta hierarquia de operacoes exemplo  grep &ola ,quero tratar &ola como palavra e nao separar em tokens
-	while(line[i] != 0)
+	i = 0;
+	while (line[i] != 0)
 	{
-		if(is_space(line[i]))
+		if (is_space(line[i]))
 			skip_spaces(&line[i], &i);
-		else if(is_quote(line[i]))
+		else if (is_quote(line[i]))
 		{
-			if(handle_quote(&line[i],&i, &last_token, &head)==0)
-			{
-				free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
-				return (NULL);//erro ao tokenizar
-			}
+			if (handle_quote(&line[i], &i, &last_token, &head) == 0)
+				return (free_tokens(head), NULL);
 		}
-		else if(is_operator(&line[i]))
-			handle_ops_and_reds(&line[i],&i, &last_token, &head);
+		else if (is_operator(&line[i]))
+			handle_ops_and_reds(&line[i], &i, &last_token, &head);
 		else
 		{
-			if(handle_word(&line[i],&i, &last_token, &head)==0)
-			{
-				free_tokens(head);//dou free aos tokens que posso eventualmente ter criado ate aqui
-				return (NULL);//erro ao tokenizar
-			}
+			if (handle_word(&line[i], &i, &last_token, &head) == 0)
+				return (free_tokens(head), NULL);
 		}
 	}
 	return (head);

@@ -10,28 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
 
-#include <minishell.h>
-
-int has_heredocs(t_redir *first_redir)
-{
-	t_redir *curr_redir;
-
-	curr_redir = first_redir;
-	while (curr_redir != NULL)
-	{
-		if(curr_redir -> type == HEREDOC)
-			return (1);
-		curr_redir = curr_redir -> next;
-	}
-	return (0);
-}
-
-void	read_heredoc_to_pipe(int *pipefd, char *terminator, int content_expands, t_shell *shell)
+void	read_heredoc_to_pipe(int *pipefd, char *terminator,
+		int content_expands, t_shell *shell)
 {
 	char	*line;
-	char	*tmp_line;
-	
+
 	setup_signals_heredoc();
 	line = readline("heredoc> ");
 	while (line)
@@ -39,33 +24,69 @@ void	read_heredoc_to_pipe(int *pipefd, char *terminator, int content_expands, t_
 		if (g_signal_received == SIGINT)
 		{
 			free(line);
-			rl_event_hook = NULL;
-			setup_signals_interactive();
-			return ;
+			break ;
 		}
 		if (ft_strcmp(line, terminator) == 0)
 		{
 			free(line);
 			break ;
 		}
-		if (content_expands)
-		{
-			tmp_line = line;
-			line = expand_variables(line, shell);
-			if (line != NULL)
-				free(tmp_line);
-			else
-				line = tmp_line;
-		}
-		write(pipefd[1], line, strlen(line));
-		write(pipefd[1], "\n", 1);
+		line = process_heredoc_line(line, content_expands, shell);
+		write_heredoc_line(pipefd[1], line);
 		free(line);
 		line = readline("heredoc> ");
 	}
 	rl_event_hook = NULL;
 	setup_signals_interactive();
-	if (!line && g_signal_received == SIGINT)
-		return ;
+}
+
+/**
+ * @brief Process a single heredoc redirection.
+ *
+ * Reads heredoc input and writes to pipe. Returns -1 if interrupted by signal.
+ *
+ * @param pipefd The pipe file descriptors.
+ * @param redir The heredoc redirection structure.
+ * @param shell The shell state.
+ * @return 0 on success, -1 if interrupted.
+ */
+static int	process_heredoc(int pipefd[2], t_redir *redir, t_shell *shell)
+{
+	read_heredoc_to_pipe(pipefd, redir->file,
+		redir->file_name_is_expandable, shell);
+	if (g_signal_received == SIGINT)
+	{
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return (-1);
+	}
+	return (0);
+}
+
+static int	init_heredoc_pipe(int pipefd[2], int *read_fd)
+{
+	if (pipe(pipefd) == -1)
+		return (-1);
+	*read_fd = pipefd[0];
+	return (0);
+}
+
+static int	process_all_heredocs(t_redir *first_redir, int pipefd[2],
+			t_shell *shell)
+{
+	t_redir	*curr_redir;
+
+	curr_redir = first_redir;
+	while (curr_redir != NULL)
+	{
+		if (curr_redir->type == HEREDOC)
+		{
+			if (process_heredoc(pipefd, curr_redir, shell) == -1)
+				return (-1);
+		}
+		curr_redir = curr_redir->next;
+	}
+	return (0);
 }
 
 /**
@@ -81,37 +102,25 @@ void	read_heredoc_to_pipe(int *pipefd, char *terminator, int content_expands, t_
  * - Return -1 to signal interruption
  * - The caller should check g_signal_received and set exit status to 130
  *
- * @return The file descriptor of the read end of the pipe containing all heredoc data,
- *         or `-1` if no heredocs are present or if interrupted by signal.
+ * @return The file descriptor of the read end of the pipe containing all
+ *         heredoc data, or `-1` if no heredocs or if interrupted by signal.
  */
 
-int handle_heredocs(t_redir *first_redir, t_shell *shell)
+int	handle_heredocs(t_redir *first_redir, t_shell *shell)
 {
-	t_redir *curr_redir;
-	int heredoc_pipe_read_fd;
-	int pipefd[2];
+	int	pipefd[2];
+	int	read_fd;
 
-	heredoc_pipe_read_fd = -1;
-	curr_redir = first_redir;
-	if(has_heredocs(first_redir))
+	if (!has_heredocs(first_redir))
+		return (-1);
+	if (init_heredoc_pipe(pipefd, &read_fd) == -1)
+		return (-1);
+	if (process_all_heredocs(first_redir, pipefd, shell) == -1)
 	{
-		pipe(pipefd);
-		heredoc_pipe_read_fd =  pipefd[0];
-		while (curr_redir != NULL)
-		{
-			if(curr_redir -> type == HEREDOC)
-			{
-				read_heredoc_to_pipe(pipefd, curr_redir->file, curr_redir->file_name_is_expandable, shell);
-				if (g_signal_received == SIGINT)
-				{
-					close(pipefd[0]);
-					close(pipefd[1]);
-					return (-1);
-				}
-			}
-			curr_redir = curr_redir -> next;
-		}
-		close(pipefd[1]); //close writing side after all heredocs wrote to the same pipe
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return (-1);
 	}
-	return (heredoc_pipe_read_fd);
+	close(pipefd[1]);
+	return (read_fd);
 }

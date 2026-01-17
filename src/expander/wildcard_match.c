@@ -15,6 +15,16 @@
 
 int	match_pattern(const char *pattern, const char *str);
 
+/**
+ * @brief Fill matches array with duplicate of directory entry name
+ *
+ * Duplicates the entry name and stores it in the matches array at index i.
+ *
+ * @param matches Array to store matched filenames
+ * @param entry Directory entry to duplicate
+ * @param i Index in matches array
+ * @return 1 on success, 0 on allocation failure
+ */
 static int	fill_match(char **matches, struct dirent *entry, int i)
 {
 	matches[i] = ft_strdup(entry->d_name);
@@ -23,6 +33,16 @@ static int	fill_match(char **matches, struct dirent *entry, int i)
 	return (1);
 }
 
+/**
+ * @brief Clean up matches array and close directory on error
+ *
+ * Frees all previously allocated strings in matches array up to index i,
+ * then frees the array itself and closes the directory.
+ *
+ * @param matches Array of allocated strings to free
+ * @param i Number of strings to free
+ * @param dir Directory handle to close
+ */
 static void	cleanup_matches(char **matches, int i, DIR *dir)
 {
 	while (--i >= 0)
@@ -31,6 +51,16 @@ static void	cleanup_matches(char **matches, int i, DIR *dir)
 	closedir(dir);
 }
 
+/**
+ * @brief Initialize matches array and open current directory
+ *
+ * Allocates array for storing matched filenames and opens current directory
+ * for reading. On failure, cleans up allocated resources.
+ *
+ * @param count Number of matches expected (array size)
+ * @param dir Pointer to store opened directory handle
+ * @return Allocated matches array, NULL on failure
+ */
 static char	**init_matches(int count, DIR **dir)
 {
 	char	**matches;
@@ -47,6 +77,17 @@ static char	**init_matches(int count, DIR **dir)
 	return (matches);
 }
 
+/**
+ * @brief Get array of filenames matching the pattern
+ *
+ * Reads current directory and collects all entries that match the pattern.
+ * Skips hidden files unless pattern starts with dot. Returns NULL-terminated
+ * array of matched filenames. Caller must free returned array and strings.
+ *
+ * @param pattern Wildcard pattern to match
+ * @param count Expected number of matches (array size)
+ * @return Array of matched filename strings, NULL on error
+ */
 char	**get_matches(const char *pattern, int count)
 {
 	DIR				*dir;

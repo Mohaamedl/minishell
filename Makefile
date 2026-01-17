@@ -27,6 +27,7 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/environment/env_set.c \
 			  $(SRC_DIR)/environment/env_utils.c \
 			  $(SRC_DIR)/signals/signals.c \
+			  $(SRC_DIR)/signals/signals_heredoc.c \
 			  $(SRC_DIR)/builtins/echo.c \
 			  $(SRC_DIR)/builtins/cd.c \
 			  $(SRC_DIR)/builtins/pwd.c \
@@ -37,15 +38,22 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/builtins/builtin_utils.c \
 			  $(SRC_DIR)/utils/string_utils.c \
 			  $(SRC_DIR)/utils/string_utils2.c \
+			  $(SRC_DIR)/utils/char_utils.c \
 			  $(SRC_DIR)/utils/ft_split.c \
 			  $(SRC_DIR)/utils/memory_utils.c \
 			  $(SRC_DIR)/utils/number_utils.c \
 			  $(SRC_DIR)/utils/error.c \
 			  $(SRC_DIR)/tokenizer/tokenizer.c \
+			  $(SRC_DIR)/tokenizer/create_token.c \
+			  $(SRC_DIR)/tokenizer/create_token_helpers.c \
 			  $(SRC_DIR)/tokenizer/tokenizer_helpers.c \
 			  $(SRC_DIR)/tokenizer/token_memory.c \
-			  $(SRC_DIR)/tokenizer/type_handlers.c \
+			  $(SRC_DIR)/tokenizer/handle_word_token.c \
+			  $(SRC_DIR)/tokenizer/handle_redirection_token.c \
+			  $(SRC_DIR)/tokenizer/handle_operator_token.c \
+			  $(SRC_DIR)/tokenizer/handle_special_token.c \
 			  $(SRC_DIR)/tokenizer/validate_token_list.c \
+			  $(SRC_DIR)/tokenizer/validate_token_list_helpers.c \
 			  $(SRC_DIR)/cmd_and_ops_list/build_list.c \
 			  $(SRC_DIR)/cmd_and_ops_list/create_cmd_node.c \
 			  $(SRC_DIR)/cmd_and_ops_list/create_cmd_node_helpers.c \
@@ -59,21 +67,27 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/ast/ast_memory.c \
 			  $(SRC_DIR)/ast/ast_debuggers.c \
 			  $(SRC_DIR)/expander/var_expand.c \
+			  $(SRC_DIR)/expander/get_var_value.c \
+			  $(SRC_DIR)/expander/one_var_expand_helpers.c \
 			  $(SRC_DIR)/expander/wildcard.c \
 			  $(SRC_DIR)/expander/wildcard_match.c \
 			  $(SRC_DIR)/expander/wildcard_expand.c \
 			  $(SRC_DIR)/expander/wildcard_args.c \
-			  $(SRC_DIR)/executer/execute_ast.c \
-			  $(SRC_DIR)/executer/apply_redirections.c \
-			  $(SRC_DIR)/executer/execute_cmd.c \
-			  $(SRC_DIR)/executer/execute_cmd_helpers.c \
-			  $(SRC_DIR)/executer/handle_redirections.c \
-			  $(SRC_DIR)/executer/heredoc.c \
-			  $(SRC_DIR)/executor/process.c \
-			  $(SRC_DIR)/executor/wait.c \
-			  $(SRC_DIR)/executor/exec.c \
-			  $(SRC_DIR)/executor/pipes.c \
-			  $(SRC_DIR)/executor/pipes_utils.c \
+			  $(SRC_DIR)/execution/execute_ast.c \
+			  $(SRC_DIR)/execution/pipeline_helpers.c \
+			  $(SRC_DIR)/execution/pipeline_execution.c \
+			  $(SRC_DIR)/execution/pipeline_traversal.c \
+			  $(SRC_DIR)/execution/apply_redirections.c \
+			  $(SRC_DIR)/execution/execute_cmd.c \
+			  $(SRC_DIR)/execution/execute_cmd_helpers.c \
+			  $(SRC_DIR)/execution/handle_redirections.c \
+			  $(SRC_DIR)/execution/heredoc.c \
+			  $(SRC_DIR)/execution/heredoc_utils.c \
+			  $(SRC_DIR)/process/process.c \
+			  $(SRC_DIR)/process/wait.c \
+			  $(SRC_DIR)/process/exec.c \
+			  $(SRC_DIR)/process/pipes.c \
+			  $(SRC_DIR)/process/pipes_utils.c \
 
 # Object files
 OBJS        = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)

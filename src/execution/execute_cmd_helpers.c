@@ -10,28 +10,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
 
-#include <minishell.h>
-
-int cmd_name_is_redir(char *cmd_name)
+int	cmd_name_is_redir(char *cmd_name)
 {
 	if (ft_strcmp(cmd_name, ">>") == 0)
-		return 1;
+		return (1);
 	if (ft_strcmp(cmd_name, "<<") == 0)
-		return 1;
+		return (1);
 	if (ft_strcmp(cmd_name, ">") == 0)
-		return 1;
+		return (1);
 	if (ft_strcmp(cmd_name, "<") == 0)
-		return 1;
-	return 0;
+		return (1);
+	return (0);
 }
-
 
 /**
  * @brief Save the current standard input and output file descriptors.
  *
- * Duplicates the standard input (STDIN_FILENO) and output (STDOUT_FILENO)
- * file descriptors and stores them in the provided array for later restoration.
+ * Duplicates STDIN_FILENO and STDOUT_FILENO and stores them in the provided
+ * array for later restoration.
  *
  * @param saved_std_fds Array to store the saved stdin and stdout.
  */
@@ -42,15 +40,15 @@ void	save_std_fds(int saved_std_fds[2])
 }
 
 /**
- * @brief Restore the standard input and output file descriptors from saved values.
+ * @brief Restore stdin and stdout from saved values.
  *
- * Restores the standard input and output streams using the saved file descriptors
- * and closes the saved descriptors to release resources.
+ * Restores stdin and stdout using the saved file descriptors.
+ * Closes the saved descriptors to release resources.
  *
  * @param saved_stdin The saved standard input file descriptor.
  * @param saved_stdout The saved standard output file descriptor.
  */
-void restore_std_fds(int saved_stdin, int saved_stdout)
+void	restore_std_fds(int saved_stdin, int saved_stdout)
 {
 	dup2(saved_stdin, STDIN_FILENO);
 	close(saved_stdin);
@@ -70,31 +68,25 @@ void restore_std_fds(int saved_stdin, int saved_stdout)
 static char	**convert_args_to_array(t_cmd *cmd)
 {
 	char	**args;
-	t_arg	*current;
+	t_arg	*cur;
 	int		count;
 	int		i;
 
 	if (!cmd || !cmd->cmd_name)
 		return (NULL);
-	// Count arguments (cmd->args includes cmd_name as first element)
 	count = 0;
-	current = cmd->args;
-	while (current)
-	{
-		count++;
-		current = current->next;
-	}
-	// Allocate array
+	cur = cmd->args;
+	while (cur && ++count)
+		cur = cur->next;
 	args = malloc(sizeof(char *) * (count + 1));
 	if (!args)
 		return (NULL);
-	// Fill array directly from args list (which includes cmd_name)
 	i = 0;
-	current = cmd->args;
-	while (current)
+	cur = cmd->args;
+	while (cur)
 	{
-		args[i++] = current->value;
-		current = current->next;
+		args[i++] = cur->value;
+		cur = cur->next;
 	}
 	args[i] = NULL;
 	return (args);
@@ -105,11 +97,14 @@ static char	**convert_args_to_array(t_cmd *cmd)
  *
  * Expands the arguments and redirection files for the command. This includes
  * handling any environment variable expansion or other necessary processing.
- * It returns the arguments in the form of a `char**` array ready for execution.
-
- * @return A `char**` array of command arguments, or `NULL` if the command is invalid.
+ * It returns the arguments in the form of a `char**` array ready for
+ * execution.
+ *
+ * @param cmd The command structure.
+ * @param shell The shell state.
+ * @return A `char**` array of command arguments, or `NULL` if invalid.
  */
-char **prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell)
+char	**prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell)
 {
 	char	**args;
 	t_arg	*expanded_args;
