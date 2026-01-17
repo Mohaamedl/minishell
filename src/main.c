@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 14:31:25 by mhaddadi          #+#    #+#             */
-/*   Updated: 2026/01/16 12:22:53 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/14 15:55:32 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,138 +14,114 @@
 
 volatile sig_atomic_t	g_signal_received = 0;
 
+/**
+ * @brief Orchestrates the parsing, tree building, and execution.
+ * * This function handles the full pipeline:
+ * 1. Tokenization of the raw string.
+ * 2. Token validation (syntax check).
+ * 3. AST (Abstract Syntax Tree) construction.
+ * 4. Signal setup for child processes.
+ * 5. Execution and subsequent memory cleanup.
+ * * @param line The raw input string to process.
+ * @param shell Pointer to the shell state structure.
+ */
+void	process_and_execute(char *line, t_shell *shell)
+{
+	t_token	*head;
+	t_ast	*root;	
+
+	head = tokenize(line);
+	if (!head || validate_token_list(head) != 1)
+	{
+		if (!head)
+			fprintf(stderr, "syntax error: Unclosed quotes\n");
+		shell->last_exit_status = SYNTAX_ERROR;
+		return (free_tokens(head));
+	}
+	root = build_complete_ast(head);
+	if (shell->is_interactive)
+		setup_signals_executing();
+	execute_ast(root, shell);
+	free_tree(root);
+	free_tokens(head);
+}
+
+/**
+ * @brief Fetches a line of input from the user or script.
+ * * Depending on the shell mode, it uses readline for interactive 
+ * terminals or a non-interactive method (like get_next_line) for pipes.
+ * Also handles the SIGINT signal state to update exit status.
+ * * @param shell Pointer to the shell structure for status updates.
+ * @return char* The input string, or NULL if EOF is reached.
+ */
+char	*get_input_line(t_shell *shell)
+{
+	char	*line;
+
+	if (shell->is_interactive)
+	{
+		line = readline("minishell$ ");
+		if (g_signal_received == SIGINT)
+		{
+			shell->last_exit_status = EXIT_SIGINT;
+			g_signal_received = SUCCESS;
+		}
+	}
+	else
+		line = get_next_line_non_interactive();
+	return (line);
+}
+
+/**
+ * @brief The REPL (Read-Eval-Print Loop) of the shell.
+ * * Continuously prompts the user for input, manages signal configurations 
+ * for interactive mode, and directs the input to the processing engine.
+ * Handles EOF (Ctrl+D) to exit the loop.
+ * * @param shell Pointer to the main shell state structure.
+ */
+void	shell_loop(t_shell *shell)
+{
+	char	*line;
+
+	while (shell->running)
+	{
+		if (shell->is_interactive)
+			setup_signals_interactive();
+		line = get_input_line(shell);
+		if (!line)
+		{
+			if (shell->is_interactive)
+				printf("exit\n");
+			break ;
+		}
+		if (!is_empty_or_whitespace(line))
+		{
+			if (shell->is_interactive)
+				add_history(line);
+			process_and_execute(line, shell);
+		}
+		free(line);
+	}
+}
+
+/**
+ * @brief Main entry point of the minishell.
+ * * Initializes the shell structure, enters the main command loop, 
+ * and performs final cleanup before exiting with the last recorded 
+ * exit status.
+ * * @param argc Argument count (unused).
+ * @param argv Argument vector (unused).
+ * @param envp Environment variables from the system.
+ * @return int The last command's exit status.
+ */
 int	main(int argc, char **argv, char **envp)
 {
-	char		*line;
-	t_token		*head;
-	t_ast		*first_node;
-	t_ast		*end_node;
-	t_ast		*root_node;
-	t_shell		shell;
-	int			interactive;
+	t_shell	shell;
 
 	(void)argc;
 	(void)argv;
-
-	// Initialize shell
-	shell.env_list = init_env(envp);
-	shell.last_exit_status = 0;
-	shell.running = 1;
-	shell.is_interactive = isatty(STDIN_FILENO);
-
-	// Check if stdin is a terminal (interactive mode)
-	interactive = shell.is_interactive;
-
-	// Setup signal handlers for interactive mode
-	if (interactive)
-		setup_signals_interactive();
-
-	while (shell.running)
-	{
-		if (interactive)
-		{
-			line = readline("minishell$ ");
-			if (g_signal_received == SIGINT)
-			{
-				shell.last_exit_status = EXIT_SIGINT;
-				g_signal_received = SUCCESS;
-			}
-		}
-		else
-		{
-			// Non-interactive mode: use getline instead of readline
-			char	*buffer;
-			size_t	bufsize;
-			ssize_t	len;
-
-			buffer = NULL;
-			bufsize = 0;
-			len = getline(&buffer, &bufsize, stdin);
-			if (len == -1)
-			{
-				free(buffer);
-				line = NULL;
-			}
-			else
-			{
-				// Remove trailing newline
-				if (buffer[len - 1] == '\n')
-					buffer[len - 1] = '\0';
-				line = buffer;
-			}
-		}
-		if (!line)
-		{
-			// Ctrl+D (EOF) handling
-			if (interactive)
-			{
-				printf("exit\n");
-				shell.running = 0;
-			}
-			break ;
-		}
-
-		// Empty line check - skip whitespace-only lines
-		if (is_empty_or_whitespace(line))
-		{
-			free(line);
-			continue ;
-		}
-
-		// Add to history (only for interactive mode and non-empty lines)
-		if (interactive)
-			add_history(line);
-
-		// Tokenize input
-		head = tokenize(line);
-		//print_tokens(head);
-		if (!head)
-		{
-			fprintf(stderr, "syntax error: Unclosed quotes\n");
-			shell.last_exit_status = SYNTAX_ERROR;
-			free(line);
-			continue;
-		}
-
-		// Validate token list (from KAN-73)
-		if (validate_token_list(head) != 1)
-		{
-			shell.last_exit_status = SYNTAX_ERROR;
-			free_tokens(head);
-			free(line);
-			continue;
-		}
-		//print_tokens(head);
-		// Build and execute AST
-		first_node = build_cmds_and_ops_list(head);
-		//print_nodes(first_node);
-		end_node = get_last_node(first_node);
-		root_node = build_tree(first_node, end_node);
-		build_sub_trees(&root_node);
-		// print_tree(root_node);
-		//print_tree_visual(root_node);
-		//printf("numb of pipes: %i\n", calc_numb_pipes(root_node));
-		// Setup signal handling for command execution
-		if (interactive)
-			setup_signals_executing();
-
-		// Execute AST
-		execute_ast(root_node, &shell);
-
-		// Restore interactive signal handling
-		if (interactive)
-			setup_signals_interactive();
-
-		// Optional: Print tree for debugging (can be removed/commented)
-
-
-		// Cleanup
-		free_tree(root_node);
-		free_tokens(head);
-		free(line);
-	}
-
-	// Cleanup shell
+	init_shell_struct(&shell, envp);
+	shell_loop(&shell);
 	free_env(shell.env_list);
 	return (shell.last_exit_status);
 }

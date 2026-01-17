@@ -12,6 +12,14 @@
 
 #include "minishell.h"
 
+/**
+ * @brief Clean up and free all shell resources
+ *
+ * Frees all allocated memory associated with the shell structure including
+ * environment variables and readline history.
+ *
+ * @param shell Pointer to the shell structure to clean up
+ */
 void	cleanup_shell(t_shell *shell)
 {
 	if (!shell)

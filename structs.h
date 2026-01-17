@@ -93,5 +93,3 @@ typedef struct s_pipe_ctx
 }	t_pipe_ctx;
 
 #endif
-
-
