@@ -61,6 +61,8 @@ void configure_stds(int *pipes, int pipe_indice, int numb_of_pipes)
  */
 void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes,
 		 t_shell *shell, int *spawned)
+void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes,
+		 t_shell *shell, int *spawned)
 {
 	int		heredoc_pipe_read_fd;
 	int		pid;
@@ -88,6 +90,7 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
 	if (heredoc_pipe_read_fd != -1)
 		close(heredoc_pipe_read_fd);
 	(*spawned)++;
+	(*spawned)++;
 }
 /**
  * @brief Spawns a child process to execute a subshell within a pipeline.
@@ -105,6 +108,8 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
  */
 void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice,
 	int numb_of_pipes, t_shell *shell, int *spawned)
+void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice,
+	int numb_of_pipes, t_shell *shell, int *spawned)
 {
 	int		pid;
 	pid = fork();
@@ -119,6 +124,7 @@ void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice,
 		execute_ast(curr_node, shell);
 		_exit(ERROR);
 	}
+	(*spawned)++;
 	(*spawned)++;
 }
 
@@ -136,8 +142,12 @@ void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice,
  */
 void traverse_and_execute(t_ast *node, int *pipes, int *pipe_indice,
 	int num_pipes, t_shell *shell, int *spawned)//this runs always in a pipeline
+void traverse_and_execute(t_ast *node, int *pipes, int *pipe_indice,
+	int num_pipes, t_shell *shell, int *spawned)//this runs always in a pipeline
 {
     if (!node)
+		return;
+	if (g_signal_received == SIGINT)
 		return;
 	if (g_signal_received == SIGINT)
 		return;
