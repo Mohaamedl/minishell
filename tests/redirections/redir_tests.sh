@@ -1,5 +1,5 @@
 #!/bin/bash
-MSH="../../minishell"
+MSH="/workspaces/minishell/minishell"
 # Cores
 GREEN="\e[32m"
 RED="\e[31m"

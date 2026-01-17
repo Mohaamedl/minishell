@@ -13,104 +13,7 @@
 #include "minishell.h"
 #include "../structs.h"
 
-/**
- * @brief Spawns a child process to execute a single command within a pipeline.
- *
- * This function manages the lifecycle of a command node:
- * 1. Handles heredocs to obtain a reading FD before forking.
- * 2. Forks a child process:
- * - Child: Connects to pipes (via configure_stds), cleans up the pipe array,
- *   and executes the command logic.
- * - Parent: Closes the heredoc FD immediately to prevent resource leaks.
- * The child process configures its standard streams, closes all pipes,
- * and executes the command. The parent closes the heredoc FD if opened.
- *
- * @param curr_node The AST node containing command and redirection data.
- * @param ctx Pipeline context containing pipes, indices, and shell state.
- */
-static void	handle_cmd(t_ast *curr_node, t_pipe_ctx *ctx)
-{
-	int	heredoc_pipe_read_fd;
-	int	pid;
-
-	heredoc_pipe_read_fd = handle_heredocs(curr_node->cmd->redirs, ctx->shell);
-	pid = fork();
-	if (pid == 0)
-	{
-		configure_stds(ctx->pipes, ctx->pipe_indice, ctx->numb_of_pipes);
-		close_all_pipes(ctx->pipes, ctx->numb_of_pipes);
-		execute_in_child(curr_node, ctx->shell, heredoc_pipe_read_fd);
-		_exit(ERROR);
-	}
-	if (heredoc_pipe_read_fd != -1)
-		close(heredoc_pipe_read_fd);
-	if (pid > 0)
-		ctx->pids[ctx->pipe_indice] = pid;
-}
-
-/**
- * @brief Spawns a child process to execute a subshell within a pipeline.
- *
- * Treats a logic block (AND/OR) as a single stage in the pipeline:
- * 1. Forks a child process.
- * 2. Inside the child:
- * - Connects the subshell's standard streams to the parent's pipeline.
- * - Closes parent pipe FDs to ensure EOF propagation.
- * - Re-enters the main AST executor (execute_ast) to handle internal logic.
- * This allows complex commands like `a | (b && c) | d` to function correctly.
- *
- * @param curr_node The AST node representing the subshell (AND/OR).
- * @param ctx Pipeline context containing pipes, indices, and shell state.
- */
-static void	handle_subshell(t_ast *curr_node, t_pipe_ctx *ctx)
-{
-	int	pid;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		configure_stds(ctx->pipes, ctx->pipe_indice, ctx->numb_of_pipes);
-		close_all_pipes(ctx->pipes, ctx->numb_of_pipes);
-		execute_ast(curr_node, ctx->shell);
-		_exit(ERROR);
-	}
-	else
-		ctx->pids[ctx->pipe_indice] = pid;
-}
-
-/**
- * @brief Linearly traverses the AST to spawn pipeline stages.
- *
- * Flattens the pipe hierarchy by visiting all nodes at the current level.
- * - For PIPE nodes: Recursively visits left/right branches and increments
- *   the pipe index to move data forward through the array.
- * - For CMD/Subshells: Acts as a leaf. Spawns a process (via handle_cmd
- *   or handle_subshell) that uses the current pipe_indice for its FDs.
- * Subshells (AND/OR) are treated as single units, preserving their
- * internal logic while maintaining their position in the parent pipeline.
- * After executing left side, pipe_indice is incremented for right side.
- *
- * @param node The current AST node.
- * @param ctx Pipeline context containing pipes, indices, and shell state.
- */
-static void	traverse_and_execute(t_ast *node, t_pipe_ctx *ctx)
-{
-	if (!node)
-		return ;
-	if (node->type == PIPE)
-	{
-		traverse_and_execute(node->left, ctx);
-		ctx->pipe_indice++;
-		traverse_and_execute(node->right, ctx);
-	}
-	else
-	{
-		if (node->type == CMD)
-			handle_cmd(node, ctx);
-		else if (node->type == AND || node->type == OR)
-			handle_subshell(node, ctx);
-	}
-}
+extern void	traverse_and_execute(t_ast *node, t_pipe_ctx *ctx);
 
 /**
  * @brief Orchestrates the execution of a multi-stage pipeline.
@@ -134,6 +37,7 @@ int	execute_pipeline(t_ast *node, t_shell *shell)
 	t_pipe_ctx	ctx;
 
 	ctx.pipe_indice = 0;
+	ctx.spawned = 0;
 	ctx.numb_of_pipes = calc_numb_pipes(node);
 	num_cmds = ctx.numb_of_pipes + 1;
 	ctx.pipes = create_pipes(num_cmds);
@@ -141,7 +45,10 @@ int	execute_pipeline(t_ast *node, t_shell *shell)
 	ctx.shell = shell;
 	traverse_and_execute(node, &ctx);
 	close_all_pipes(ctx.pipes, ctx.numb_of_pipes);
-	final_status = wait_for_pipeline(ctx.pids, num_cmds);
+	if (g_signal_received == SIGINT)
+		final_status = 130;
+	else
+		final_status = wait_for_pipeline(ctx.pids, ctx.spawned);
 	free(ctx.pipes);
 	free(ctx.pids);
 	return (final_status);
