@@ -75,8 +75,13 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
 	}
 	setup_signals_executing();
 	pid = fork();
-//	if (pid == -1)
-//		return (perror("minishell: fork"), ERROR);
+	if (pid == -1)
+	{
+		perror("minishell: fork");
+		if (heredoc_pipe_read_fd != -1)
+			close(heredoc_pipe_read_fd);
+		return ;
+	}
 
 	if (pid == 0) // child
 	{
@@ -85,6 +90,7 @@ void handle_cmd(t_ast *curr_node, int *pipes, int pipe_indice, int numb_of_pipes
 		execute_in_child(curr_node, shell, heredoc_pipe_read_fd);
 		_exit(ERROR);
 	}
+	// Parent: increment only after successful fork
 	if (heredoc_pipe_read_fd != -1)
 		close(heredoc_pipe_read_fd);
 	(*spawned)++;
@@ -107,18 +113,22 @@ void handle_subshell(t_ast *curr_node, int *pipes, int pipe_indice,
 	int numb_of_pipes, t_shell *shell, int *spawned)
 {
 	int		pid;
+
 	pid = fork();
-//	if (pid == -1)
-//		return (perror("minishell: fork"), ERROR);
+	if (pid == -1)
+	{
+		perror("minishell: fork");
+		return ;
+	}
 
 	if (pid == 0) // child
 	{
-		configure_stds(pipes, pipe_indice, numb_of_pipes);//nmb_of_pipes is important to check the case of the last and first cmd of pipeline
-		// fechar todos os pipes no child          //(first cmd does not read from a pipe and last does not write to pipe)
+		configure_stds(pipes, pipe_indice, numb_of_pipes);
 		close_all_pipes(pipes, numb_of_pipes);
 		execute_ast(curr_node, shell);
 		_exit(ERROR);
 	}
+	// Parent: increment only after successful fork
 	(*spawned)++;
 }
 
