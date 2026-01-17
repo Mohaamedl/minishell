@@ -129,6 +129,60 @@ if [ -f "tests/builtins/test_exit.sh" ]; then
     run_suite "tests/builtins/test_exit.sh" "Exit Builtin Tests"
 fi
 
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}EXECUTOR & PROCESS TESTS${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Executor tests
+if [ -f "tests/executor/run_executor_tests.sh" ]; then
+    run_suite "tests/executor/run_executor_tests.sh" "Executor Tests"
+fi
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}INTEGRATION TESTS${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Integration tests
+if [ -f "tests/integration/test_pipes_integration.sh" ]; then
+    run_suite "tests/integration/test_pipes_integration.sh" "Pipes Integration Tests"
+fi
+
+if [ -f "tests/integration/test_repl_improvements.sh" ]; then
+    run_suite "tests/integration/test_repl_improvements.sh" "REPL Improvements Tests"
+fi
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}REDIRECTION TESTS${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Redirection tests
+if [ -f "tests/redirections/redir_tests.sh" ]; then
+    run_suite "tests/redirections/redir_tests.sh" "Redirection Tests"
+fi
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}EXPANSION & WILDCARD TESTS${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Wildcard tests
+if [ -f "tests/expander/test_wildcard.sh" ]; then
+    run_suite "tests/expander/test_wildcard.sh" "Wildcard Expansion Tests"
+fi
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}BONUS TESTS${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+# Bonus tests (logical operators)
+if [ -f "tests/bonus/test_logical_operators.sh" ]; then
+    run_suite "tests/bonus/test_logical_operators.sh" "Logical Operators Tests"
+fi
+
 # Final Summary
 echo ""
 echo ""
