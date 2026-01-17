@@ -232,7 +232,7 @@ int		is_empty_or_whitespace(const char *str);
 
 t_ast	*build_tree(t_ast *start_node, t_ast *end_node);
 t_ast	*get_split_op_node(t_ast *start_node, t_ast *end_node);
-t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
+t_ast	*get_op_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
 t_ast	*skip_subtree_nodes(t_ast *tmp_node);
 void	build_sub_trees (t_ast **root_node);
 //DEBUGGERS
