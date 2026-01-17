@@ -21,7 +21,6 @@ SRCS        = $(SRC_DIR)/main.c \
 			  $(SRC_DIR)/main_helpers.c \
 			  $(SRC_DIR)/init.c \
 			  $(SRC_DIR)/cleanup.c \
-			  $(SRC_DIR)/parser_simple.c \
 			  $(SRC_DIR)/environment/env_init.c \
 			  $(SRC_DIR)/environment/env_get.c \
 			  $(SRC_DIR)/environment/env_set.c \

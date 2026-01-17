@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "../structs.h"
 
 /**
  * @brief Execute an AST node recursively

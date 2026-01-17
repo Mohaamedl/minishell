@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "../structs.h"
 
 /**
  * @brief Redirects STDIN/STDOUT to the appropriate pipes in the pipeline.

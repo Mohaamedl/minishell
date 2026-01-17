@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "../structs.h"
 
 extern void	close_fd_safe(int fd);
 extern void	register_child_process(pid_t pid, t_pipe_ctx *ctx);
