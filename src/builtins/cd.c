@@ -112,6 +112,27 @@ static char	*get_target_dir(char **args, t_env *env)
 	return (args[1]);
 }
 
+static int	change_directory(char **args, t_env **env,
+		char *expanded, int print_dir)
+{
+	char	*old_pwd;
+
+	old_pwd = getcwd(NULL, 0);
+	if (chdir(expanded) == -1)
+	{
+		print_error("cd", args[1], strerror(errno));
+		free(old_pwd);
+		free(expanded);
+		return (ERROR);
+	}
+	if (print_dir)
+		ft_putendl_fd(expanded, STDOUT_FILENO);
+	update_pwd_vars(env, old_pwd);
+	free(old_pwd);
+	free(expanded);
+	return (SUCCESS);
+}
+
 /**
  * @brief Implement cd built-in command
  * 
@@ -160,7 +181,6 @@ int	builtin_cd(char **args, t_env **env)
 {
 	char	*target;
 	char	*expanded;
-	char	*old_pwd;
 	int		print_dir;
 
 	if (args[1] && args[2])
@@ -175,18 +195,5 @@ int	builtin_cd(char **args, t_env **env)
 	if (!expanded)
 		return (ERROR);
 	print_dir = (args[1] && ft_strncmp(args[1], "-", 2) == 0);
-	old_pwd = getcwd(NULL, 0);
-	if (chdir(expanded) == -1)
-	{
-		print_error("cd", args[1], strerror(errno));
-		free(old_pwd);
-		free(expanded);
-		return (ERROR);
-	}
-	if (print_dir)
-		ft_putendl_fd(expanded, STDOUT_FILENO);
-	update_pwd_vars(env, old_pwd);
-	free(old_pwd);
-	free(expanded);
-	return (SUCCESS);
+	return (change_directory(args, env, expanded, print_dir));
 }

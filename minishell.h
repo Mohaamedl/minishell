@@ -225,7 +225,7 @@ int		is_empty_or_whitespace(const char *str);
 
 t_ast	*build_tree(t_ast *start_node, t_ast *end_node);
 t_ast	*get_split_op_node(t_ast *start_node, t_ast *end_node);
-t_ast	*get_OP_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
+t_ast	*get_op_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
 t_ast	*skip_subtree_nodes(t_ast *tmp_node);
 void	build_sub_trees (t_ast **root_node);
 //DEBUGGERS
@@ -304,6 +304,9 @@ int     has_in_redirs(t_redir *redirs);
 int     has_out_redirs(t_redir *redirs);
 char    **prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
 int handle_heredocs(t_redir *first_redir, t_shell *shell);
+int has_heredocs(t_redir *first_redir);
+char    *process_heredoc_line(char *line, int expand, t_shell *shell);
+void    write_heredoc_line(int fd, char *line);
 int execute_ast_in_child(t_ast *node, t_shell *shell);
 int execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
 

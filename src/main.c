@@ -6,7 +6,7 @@
 /*   By: framiran <framiran@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/08 14:31:25 by mhaddadi          #+#    #+#             */
-/*   Updated: 2026/01/05 13:57:47 by framiran         ###   ########.fr       */
+/*   Updated: 2026/01/16 12:22:53 by framiran         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ int	main(int argc, char **argv, char **envp)
 
 		// Tokenize input
 		head = tokenize(line);
+		//print_tokens(head);
 		if (!head)
 		{
 			fprintf(stderr, "syntax error: Unclosed quotes\n");
