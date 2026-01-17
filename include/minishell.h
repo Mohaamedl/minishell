@@ -261,6 +261,12 @@ int		validate_token_list(t_token *head);
 char	*expand_variables(char *str, t_shell *shell);
 void	expand_cmd_args(t_arg *args, t_shell *shell);
 void	expand_redirection_files(t_redir *redirs, t_shell *shell);
+char	*extract_var_name(const char *str);
+char	*get_var_value(const char *var_name, t_shell *shell);
+char	*remove_quotes(const char *str);
+char	*build_expanded(char *str, char *value, char *dollar, size_t len);
+size_t	get_var_len(char *var_name);
+
 
 /* wildcard.c */
 int		has_wildcard(const char *str);

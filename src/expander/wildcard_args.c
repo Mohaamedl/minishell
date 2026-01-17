@@ -12,6 +12,15 @@
 
 #include "minishell.h"
 
+/**
+ * @brief Create a new argument node
+ *
+ * Allocates and initializes a new t_arg node with the given value.
+ * Sets expansion flags to indicate the argument has been processed.
+ *
+ * @param value String value for the argument
+ * @return Pointer to new argument node, NULL on allocation failure
+ */
 static t_arg	*create_arg_node(char *value)
 {
 	t_arg	*new_arg;
@@ -27,6 +36,16 @@ static t_arg	*create_arg_node(char *value)
 	return (new_arg);
 }
 
+/**
+ * @brief Append a new argument node to the linked list
+ *
+ * Adds the new argument to the end of the list, updating head if empty
+ * and tail pointer to maintain the end of the list.
+ *
+ * @param head Pointer to head of argument list
+ * @param tail Pointer to tail of argument list
+ * @param new_arg New argument node to append
+ */
 static void	append_arg(t_arg **head, t_arg **tail, t_arg *new_arg)
 {
 	if (!*head)
@@ -41,6 +60,17 @@ static void	append_arg(t_arg **head, t_arg **tail, t_arg *new_arg)
 	}
 }
 
+/**
+ * @brief Expand matched wildcard filenames into argument nodes
+ *
+ * Creates argument nodes from array of matched filenames and appends them
+ * to the list. Frees the matches array after processing. On failure during
+ * node creation, frees all matches and returns early.
+ *
+ * @param matches Array of matched filename strings
+ * @param head Pointer to head of argument list
+ * @param tail Pointer to tail of argument list
+ */
 static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 {
 	t_arg	*new_arg;
@@ -69,6 +99,17 @@ static void	expand_matched_args(char **matches, t_arg **head, t_arg **tail)
 	free(matches);
 }
 
+/**
+ * @brief Copy an argument node to a new list
+ *
+ * Duplicates the value of the current argument and creates a new node
+ * with the copied value, appending it to the list. On allocation failure
+ * the duplicated value is freed.
+ *
+ * @param current Argument node to copy
+ * @param head Pointer to head of new argument list
+ * @param tail Pointer to tail of new argument list
+ */
 static void	copy_arg(t_arg *current, t_arg **head, t_arg **tail)
 {
 	t_arg	*new_arg;
@@ -82,6 +123,16 @@ static void	copy_arg(t_arg *current, t_arg **head, t_arg **tail)
 		free(dup_value);
 }
 
+/**
+ * @brief Expand wildcards in argument list to matching filenames
+ *
+ * Processes each argument in the list. If argument is wildcard-expandable
+ * and contains wildcards, expands it to matching files. Otherwise copies
+ * the argument as-is. Returns a new argument list with expansions applied.
+ *
+ * @param args Original argument list
+ * @return New argument list with wildcards expanded
+ */
 t_arg	*expand_wildcards_in_args(t_arg *args)
 {
 	t_arg	*current;
