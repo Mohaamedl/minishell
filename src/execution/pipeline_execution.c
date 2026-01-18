@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "../structs.h"
 
 extern void	traverse_and_execute(t_ast *node, t_pipe_ctx *ctx);
 
