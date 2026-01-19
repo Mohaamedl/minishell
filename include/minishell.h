@@ -159,39 +159,38 @@ int		is_numeric_string(const char *str);
 void	print_error(const char *cmd, const char *arg, const char *msg);
 void	print_error_prefix(const char *cmd);
 
-
 //----------------------------------------------------TOKENIZER-----------------------------------------------------------------------------
 
 /* ---------------- Funções auxiliares ---------------- */
-int     is_space(char c);
-int     is_quote(char c);
-int     is_single_quote(char c);
-int     is_double_quote(char c);
-int     is_operator(char *line);
+int		is_space(char c);
+int		is_quote(char c);
+int		is_single_quote(char c);
+int		is_double_quote(char c);
+int		is_operator(char *line);
 
 /* ---------------- Funções de criação e manipulação de tokens ---------------- */
-t_token *create_token(char *value, t_token_type type, int is_expandable, int is_op);
-void    append_token(t_token **head, t_token **last_token, t_token *new_token);
+t_token	*create_token(char *value, t_token_type type, int is_expandable, int is_op);
+void	append_token(t_token **head, t_token **last_token, t_token *new_token);
 
 /* ---------------- Funções para lidar com aspas ---------------- */
-int     get_quoted_size(char *line, char quote);
-char    *get_quoted_text(char *line, char quote);
-int     create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
+int		get_quoted_size(char *line, char quote);
+char	*get_quoted_text(char *line, char quote);
+int		create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
 
 /* ---------------- Funções para operadores ---------------- */
-void    handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_and(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_semicolon(char *line, int *i, t_token **last_token, t_token **head);
+void	handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);
+void	handle_and(char *line, int *i, t_token **last_token, t_token **head);
+void	handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **head);
+void	handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_token **head);
+void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
+void	handle_semicolon(char *line, int *i, t_token **last_token, t_token **head);
 
 /* ---------------- Funções principais ---------------- */
-int     handle_quote(char *line, int *i, t_token **last_token, t_token **head);
-int     handle_word(char *line, int *i, t_token **last_token, t_token **head);
-void    handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
-void    skip_spaces(char *line, int *i);
-t_token *tokenize(char *line);
+int		handle_quote(char *line, int *i, t_token **last_token, t_token **head);
+int		handle_word(char *line, int *i, t_token **last_token, t_token **head);
+void	handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
+void	skip_spaces(char *line, int *i);
+t_token	*tokenize(char *line);
 
 /* ---------------- Funções de Memoria---------------- */
 void	free_tokens(t_token *head);
@@ -208,14 +207,14 @@ int		check_valid_content(t_token *head);
 //-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
 //GERAIS
 t_ast	*build_cmds_and_ops_list(t_token *head);
-t_ast	*create_node(t_token *token, t_cmd* cmd);
-void	append_node(t_ast *new_node,t_ast *last_node);
+t_ast	*create_node(t_token *token, t_cmd *cmd);
+void	append_node(t_ast *new_node, t_ast *last_node);
 
 //ESPECIFICAS DO NODE COMANDO
-void	create_cmd_node(t_token **tmp_token,t_token *head, t_ast **first_node, t_ast **last_node);
+void	create_cmd_node(t_token **tmp_token, t_token *head, t_ast **first_node, t_ast **last_node);
 t_cmd	*create_cmd(t_token *tmp_token);
 void	handle_arg_token(t_cmd *cmd, t_token **tmp_token, t_arg **arg_list_head, t_arg **arg_list_last);
-void	handle_redirect_token(t_cmd *cmd,t_token **tmp_token, t_redir **redir_list_head, t_redir **redir_list_last);
+void	handle_redirect_token(t_cmd *cmd, t_token **tmp_token, t_redir **redir_list_head, t_redir **redir_list_last);
 void	update_token_to_eval(t_token **tmp_token);
 int		calculate_numb_of_args(t_token *tmp_token);
 int		is_redirect_token(t_token *tmp_token);
@@ -233,12 +232,9 @@ void	free_redirects_list(t_redir *head);
 void	free_args_list(t_arg *head);
 void	free_cmd(t_cmd *cmd);
 void	free_node(t_ast *node);
-void	free_node_list(t_ast *head); //esta funcao serve apenas para dar free a uma lista de comandos e operadores,
-									//e uma funcao temporaria, no futuro terei que a alterar para dar free a arvore
-
-t_ast	*get_last_node(t_ast *head); //vai buscar o ultimo node da lista, preciso dele na funcao build_tree()
+void	free_node_list(t_ast *head);
+t_ast	*get_last_node(t_ast *head);
 int		is_empty_or_whitespace(const char *str);
-
 
 //----------------------------------------CRIACAO DA ARVORE BINARIA---------------------------------------------------
 
@@ -247,13 +243,13 @@ t_ast	*build_complete_ast(t_token *head);
 t_ast	*get_split_op_node(t_ast *start_node, t_ast *end_node);
 t_ast	*get_op_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
 t_ast	*skip_subtree_nodes(t_ast *tmp_node);
-void	build_sub_trees (t_ast **root_node);
+void	build_sub_trees(t_ast **root_node);
 //DEBUGGERS
 void	print_tree_node(t_ast *node);
 void	print_tree(t_ast *root);
 //MEMORY
 void	free_tree(t_ast *root);
-void	free_parentesis_nodes(t_ast *start_node,t_ast *left_node);
+void	free_parentesis_nodes(t_ast *start_node, t_ast *left_node);
 
 /*
 ** ============================================================================
@@ -279,7 +275,6 @@ char	*get_var_value(const char *var_name, t_shell *shell);
 char	*remove_quotes(const char *str);
 char	*build_expanded(char *str, char *value, char *dollar, size_t len);
 size_t	get_var_len(char *var_name);
-
 
 /* wildcard.c */
 int		has_wildcard(const char *str);
@@ -332,21 +327,21 @@ void	close_all_pipes(int *pipes, int num_pipes);
 */
 
 //-----------------------------------------EXECUTER--------------------------------------------------
-int	apply_redirections(t_ast *cmd_node, int heredoc_pipe_read_fd);
+int		apply_redirections(t_ast *cmd_node, int heredoc_pipe_read_fd);
 
 void	save_std_fds(int saved_std_fds[2]);
 void	restore_std_fds(int saved_stdin, int saved_stdout);
-void	execute_in_child( t_ast *node, t_shell *shell, int heredoc_pipe_read_fd);
+void	execute_in_child(t_ast *node, t_shell *shell, int heredoc_pipe_read_fd);
 int		execute_command_node(t_ast *node, t_shell *shell);
-int     cmd_name_is_redir(char *cmd_name);
-int     has_in_redirs(t_redir *redirs);
-int     has_out_redirs(t_redir *redirs);
-char    **prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
-int handle_heredocs(t_redir *first_redir, t_shell *shell);
-int has_heredocs(t_redir *first_redir);
-char    *process_heredoc_line(char *line, int expand, t_shell *shell);
-void    write_heredoc_line(int fd, char *line);
-int execute_ast_in_child(t_ast *node, t_shell *shell);
-int execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
+int		cmd_name_is_redir(char *cmd_name);
+int		has_in_redirs(t_redir *redirs);
+int		has_out_redirs(t_redir *redirs);
+char	**prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
+int		handle_heredocs(t_redir *first_redir, t_shell *shell);
+int		has_heredocs(t_redir *first_redir);
+char	*process_heredoc_line(char *line, int expand, t_shell *shell);
+void	write_heredoc_line(int fd, char *line);
+int		execute_ast_in_child(t_ast *node, t_shell *shell);
+int		execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
 
 #endif
