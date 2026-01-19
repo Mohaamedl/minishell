@@ -6,43 +6,42 @@
 //---------------------------------------------------LISTA DE TOKENS--------------------------------------------------------
 typedef enum e_token_type
 {
-	WORD,        // texto normal: comando, argumento, nome de arquivo
-	PIPE,        // |
-	REDIR_IN,    // <
-	REDIR_OUT,   // >
-	APPEND,      // >>
-	HEREDOC,      // <<
+	WORD,
+	PIPE,
+	REDIR_IN,
+	REDIR_OUT,
+	APPEND,
+	HEREDOC,
 	OR,
 	AND,
-	LPAREN,      // (
-	RPAREN,      // )
-	SEMICOLON,   // ; (not supported)
-	CMD, //este token_type e apenas utilizado em nodes, ate la todos os tokens que nao sao operadores nem redirecionamentos sao WORD
+	LPAREN,
+	RPAREN,
+	SEMICOLON,
+	CMD,
 }	t_token_type;
 
 typedef struct s_token
 {
-	int is_operator;
-	int	expandable; //0 - does not expand vars, 1 - expands vars
-	int is_quoted;  // 1 if token was inside quotes (single or double)
-	char            *value;   // token content ("cat", ">", etc.)
-	t_token_type    type;     // tipo \(WORD, PIPE, etc.)
-	struct s_token  *next;    // próximo token
+	int				is_operator;
+	int				expandable;
+	int				is_quoted;
+	char			*value;
+	t_token_type	type;
+	struct s_token	*next;
 }	t_token;
 //--------------------------------------------------------------------------------------------------------------------------
 
 //--------------------------------------------------------LISTA DE NODES-------------------------------------------------
-// os nodes serao utilizados para criar a AST, um node tanto pode ser um comando como um operador(&&, |, ||)
 
 // -------------------ESTRUTURA DA LISTA DE REDIRECTS-----------------------
 
 typedef struct s_redir
 {
-	t_token_type	type; // Tipo de redireção , e do tipo token_type mas so vai assumir valores de redirecoes
-	char			*file;   // Nome do arquivo ou delimitador \(no caso de heredoc)
+	t_token_type	type;
+	char			*file;
 	int				file_name_is_expandable;
-	int				file_was_expanded; // Flag to track if file was malloc'd by expansion
-	struct s_redir	*next; // Próxima redireção
+	int				file_was_expanded;
+	struct s_redir	*next;
 }	t_redir;
 
 //------------------ESTRUTURA DA LISTA DE ARGUMENTOS---------------------
@@ -50,46 +49,43 @@ typedef struct s_redir
 typedef struct s_arg
 {
 	char			*value;
-	int				is_expandable;  // 1 for double quotes (var expand), 0 for single
-	int				is_wildcard_expandable; // 0 for all quoted, 1 for unquoted
-	int				was_expanded; // Flag to track if value was malloc'd by expansion
-	struct s_arg	*next; // Next argument
+	int				is_expandable;
+	int				is_wildcard_expandable;
+	int				was_expanded;
+	struct s_arg	*next;
 }	t_arg;
 
 //-------------------ESTRUTURA DO COMANDO----------------------------------------
 typedef struct s_cmd
 {
-	char        *cmd_name;   // "ls"
-	t_arg        *args;      // e' uma linked list para poder conter a informacao se e expandivel ou nao,
-							//depois de passar pela expansao de variaveis e antes de entrar no execve e'tranformado num array de args ["ls", "-l", NULL]
-	t_redir     *redirs;     // lista ligada de redireções
+	char	*cmd_name;
+	t_arg	*args;
+	t_redir	*redirs;
 }	t_cmd;
 
 //-------------------ESTRUTURA DO NODE--------------------------------------------
 
 typedef struct s_ast
 {
-	t_token_type type;    // tipo do nó \(comando, pipe, etc) usa o enum t_token_type mas apenas assume valores de operadores (e nao de redirecionamentos)
-	struct s_ast *left;
-	struct s_ast *right;
-	int is_expandable;
-
-	t_cmd *cmd;          // ponteiro para a estrutura do comando (se for um comando, caso seja um operador aponta para NULL)
+	t_token_type	type;
+	struct s_ast	*left;
+	struct s_ast	*right;
+	int				is_expandable;
+	t_cmd			*cmd;
 }	t_ast;
 //---------------------------------------------------------------------------------
 
-// Forward declaration for shell structure
 typedef struct s_shell	t_shell;
 
 //-------------------PIPELINE CONTEXT STRUCTURE-----------------------------------
 typedef struct s_pipe_ctx
 {
-	int		*pipes;
+	int			*pipes;
 	pid_t		*pids;
-	int		pipe_indice;
-	int		numb_of_pipes;
-	int		spawned;
-	t_shell	*shell;
+	int			pipe_indice;
+	int			numb_of_pipes;
+	int			spawned;
+	t_shell		*shell;
 }	t_pipe_ctx;
 
 #endif
