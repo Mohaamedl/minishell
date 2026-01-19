@@ -1,24 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/19 11:19:14 by framiran          #+#    #+#             */
+/*   Updated: 2026/01/19 11:46:09 by framiran         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
-#define MINISHELL_H
-
-#include "structs.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <sys/param.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <limits.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include "../Libft/libft.h"
+# define MINISHELL_H
+# include "structs.h"
+# include <stdio.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <string.h>
+# include <errno.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <sys/stat.h>
+# include <sys/param.h>
+# include <fcntl.h>
+# include <signal.h>
+# include <stdbool.h>
+# include <limits.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include "../Libft/libft.h"
 
 /*
 ** ============================================================================
@@ -83,9 +93,9 @@ void		setup_signals_heredoc(void);
 ** ============================================================================
 */
 
-t_shell	*init_shell(char **envp);
-void	init_shell_struct(t_shell *shell, char **envp);
-void	cleanup_shell(t_shell *shell);
+t_shell		*init_shell(char **envp);
+void		init_shell_struct(t_shell *shell, char **envp);
+void		cleanup_shell(t_shell *shell);
 
 /*
 ** ============================================================================
@@ -93,10 +103,10 @@ void	cleanup_shell(t_shell *shell);
 ** ============================================================================
 */
 
-void	shell_loop(t_shell *shell);
-char	*get_input_line(t_shell *shell);
-void	process_and_execute(char *line, t_shell *shell);
-char	*get_next_line_non_interactive(void);
+void		shell_loop(t_shell *shell);
+char		*get_input_line(t_shell *shell);
+void		process_and_execute(char *line, t_shell *shell);
+char		*get_next_line_non_interactive(void);
 
 /*
 ** ============================================================================
@@ -104,16 +114,16 @@ char	*get_next_line_non_interactive(void);
 ** ============================================================================
 */
 
-t_env	*init_env(char **envp);
-void	free_env(t_env *env);
-char	*get_env_value(t_env *env, const char *key);
-t_env	*find_env_node(t_env *env, const char *key);
-int		set_env_value(t_env **env, const char *key, const char *value);
-int		unset_env_value(t_env **env, const char *key);
-char	**env_list_to_array(t_env *env);
-void	free_env_array(char **env_array);
-int		env_list_size(t_env *env);
-void	print_env_list(t_env *env);
+t_env		*init_env(char **envp);
+void		free_env(t_env *env);
+char		*get_env_value(t_env *env, const char *key);
+t_env		*find_env_node(t_env *env, const char *key);
+int			set_env_value(t_env **env, const char *key, const char *value);
+int			unset_env_value(t_env **env, const char *key);
+char		**env_list_to_array(t_env *env);
+void		free_env_array(char **env_array);
+int			env_list_size(t_env *env);
+void		print_env_list(t_env *env);
 
 /*
 ** ============================================================================
@@ -121,17 +131,17 @@ void	print_env_list(t_env *env);
 ** ============================================================================
 */
 
-int		builtin_echo(char **args);
-int		builtin_cd(char **args, t_env **env);
-int		builtin_pwd(void);
-int		builtin_export(char **args, t_env **env);
-int		builtin_unset(char **args, t_env **env);
-int		builtin_env(t_env *env);
-int		builtin_exit(char **args, int last_exit_status, t_shell *shell);
-int		is_builtin(const char *cmd);
-int		execute_builtin(char **args, t_shell *shell);
-int		is_valid_identifier(const char *str);
-int		count_args(char **args);
+int			builtin_echo(char **args);
+int			builtin_cd(char **args, t_env **env);
+int			builtin_pwd(void);
+int			builtin_export(char **args, t_env **env);
+int			builtin_unset(char **args, t_env **env);
+int			builtin_env(t_env *env);
+int			builtin_exit(char **args, int last_exit_status, t_shell *shell);
+int			is_builtin(const char *cmd);
+int			execute_builtin(char **args, t_shell *shell);
+int			is_valid_identifier(const char *str);
+int			count_args(char **args);
 
 /*
 ** ============================================================================
@@ -139,117 +149,134 @@ int		count_args(char **args);
 ** ============================================================================
 */
 
-char	*ft_strdup(const char *s);
-char	*ft_strjoin(const char *s1, const char *s2);
-int		ft_strcmp(const char *s1, const char *s2);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
-char	**ft_split(const char *s, char c);
-size_t	ft_strlen(const char *s);
-char	*ft_strchr(const char *s, int c);
-char	*ft_substr(const char *s, unsigned int start, size_t len);
-int		ft_isdigit(int c);
-int		ft_isalpha(int c);
-int		ft_isalnum(int c);
-void	*ft_calloc(size_t count, size_t size);
-void	*ft_memset(void *b, int c, size_t len);
-void	free_array(char **arr);
-int		ft_atoi(const char *str);
-char	*ft_itoa(int n);
-int		is_numeric_string(const char *str);
-void	print_error(const char *cmd, const char *arg, const char *msg);
-void	print_error_prefix(const char *cmd);
+char		*ft_strdup(const char *s);
+char		*ft_strjoin(const char *s1, const char *s2);
+int			ft_strcmp(const char *s1, const char *s2);
+int			ft_strncmp(const char *s1, const char *s2, size_t n);
+char		**ft_split(const char *s, char c);
+size_t		ft_strlen(const char *s);
+char		*ft_strchr(const char *s, int c);
+char		*ft_substr(const char *s, unsigned int start, size_t len);
+int			ft_isdigit(int c);
+int			ft_isalpha(int c);
+int			ft_isalnum(int c);
+void		*ft_calloc(size_t count, size_t size);
+void		*ft_memset(void *b, int c, size_t len);
+void		free_array(char **arr);
+int			ft_atoi(const char *str);
+char		*ft_itoa(int n);
+int			is_numeric_string(const char *str);
+void		print_error(const char *cmd, const char *arg, const char *msg);
+void		print_error_prefix(const char *cmd);
 
-//----------------------------------------------------TOKENIZER-----------------------------------------------------------------------------
+//----------------TOKENIZER-----------------------------------
 
 /* ---------------- Funções auxiliares ---------------- */
-int		is_space(char c);
-int		is_quote(char c);
-int		is_single_quote(char c);
-int		is_double_quote(char c);
-int		is_operator(char *line);
+int			is_space(char c);
+int			is_quote(char c);
+int			is_single_quote(char c);
+int			is_double_quote(char c);
+int			is_operator(char *line);
 
-/* ---------------- Funções de criação e manipulação de tokens ---------------- */
-t_token	*create_token(char *value, t_token_type type, int is_expandable, int is_op);
-void	append_token(t_token **head, t_token **last_token, t_token *new_token);
+/* -------- Funções de criação e manipulação de tokens --- */
+t_token		*create_token(char *value, t_token_type type,
+				int is_expandable, int is_op);
+void		append_token(t_token **head,
+				t_token **last_token, t_token *new_token);
 
 /* ---------------- Funções para lidar com aspas ---------------- */
-int		get_quoted_size(char *line, char quote);
-char	*get_quoted_text(char *line, char quote);
-int		create_quoted_token(t_token **last_token, t_token **head, char *line, char quote);
+int			get_quoted_size(char *line, char quote);
+char		*get_quoted_text(char *line, char quote);
+int			create_quoted_token(t_token **last_token,
+				t_token **head, char *line, char quote);
 
 /* ---------------- Funções para operadores ---------------- */
-void	handle_pipe_or_or(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_and(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_redap_or_redout(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_redin_or_heredoc(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_parentesis(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_semicolon(char *line, int *i, t_token **last_token, t_token **head);
+void		handle_pipe_or_or(char *line, int *i,
+				t_token **last_token, t_token **head);
+void		handle_and(char *line, int *i,
+				t_token **last_token, t_token **head);
+void		handle_redap_or_redout(char *line, int *i,
+				t_token **last_token, t_token **head);
+void		handle_redin_or_heredoc(char *line, int *i,
+				t_token **last_token, t_token **head);
+void		handle_parentesis(char *line, int *i,
+				t_token **last_token, t_token **head);
+void		handle_semicolon(char *line, int *i,
+				t_token **last_token, t_token **head);
 
 /* ---------------- Funções principais ---------------- */
-int		handle_quote(char *line, int *i, t_token **last_token, t_token **head);
-int		handle_word(char *line, int *i, t_token **last_token, t_token **head);
-void	handle_ops_and_reds(char *line, int *i, t_token **last_token, t_token **head);
-void	skip_spaces(char *line, int *i);
-t_token	*tokenize(char *line);
+int			handle_quote(char *line, int *i,
+				t_token **last_token, t_token **head);
+int			handle_word(char *line, int *i,
+				t_token **last_token, t_token **head);
+void		handle_ops_and_reds(char *line,
+				int *i, t_token **last_token, t_token **head);
+void		skip_spaces(char *line, int *i);
+t_token		*tokenize(char *line);
 
 /* ---------------- Funções de Memoria---------------- */
-void	free_tokens(t_token *head);
+void		free_tokens(t_token *head);
 /*------------------Funcoes Debug-------------------*/
-void	print_tokens(t_token *tmp);
-const char *token_type_to_str(t_token_type type);
-void	print_tree_visual(t_ast *root);
+void		print_tokens(t_token *tmp);
+const char	*token_type_to_str(t_token_type type);
+void		print_tree_visual(t_ast *root);
 /*------------------Funcoes de validacao-------------------*/
-int		is_connector_operator(t_token *token);
-t_token	*find_left_token(t_token *head, t_token *op_token);
-int		check_balance(t_token *head);
-int		check_valid_content(t_token *head);
+int			is_connector_operator(t_token *token);
+t_token		*find_left_token(t_token *head, t_token *op_token);
+int			check_balance(t_token *head);
+int			check_valid_content(t_token *head);
 
-//-----------------------------------------------------------CRIACAO DA LISTA DE COMANDOS E OPERADORES---------------------------------------------------
+//---------CRIACAO DA LISTA DE COMANDOS E OPERADORES------
 //GERAIS
-t_ast	*build_cmds_and_ops_list(t_token *head);
-t_ast	*create_node(t_token *token, t_cmd *cmd);
-void	append_node(t_ast *new_node, t_ast *last_node);
+t_ast		*build_cmds_and_ops_list(t_token *head);
+t_ast		*create_node(t_token *token, t_cmd *cmd);
+void		append_node(t_ast *new_node, t_ast *last_node);
 
 //ESPECIFICAS DO NODE COMANDO
-void	create_cmd_node(t_token **tmp_token, t_token *head, t_ast **first_node, t_ast **last_node);
-t_cmd	*create_cmd(t_token *tmp_token);
-void	handle_arg_token(t_cmd *cmd, t_token **tmp_token, t_arg **arg_list_head, t_arg **arg_list_last);
-void	handle_redirect_token(t_cmd *cmd, t_token **tmp_token, t_redir **redir_list_head, t_redir **redir_list_last);
-void	update_token_to_eval(t_token **tmp_token);
-int		calculate_numb_of_args(t_token *tmp_token);
-int		is_redirect_token(t_token *tmp_token);
+void		create_cmd_node(t_token **tmp_token, t_token *head,
+				t_ast **first_node, t_ast **last_node);
+t_cmd		*create_cmd(t_token *tmp_token);
+void		handle_arg_token(t_cmd *cmd, t_token **tmp_token,
+				t_arg **arg_list_head, t_arg **arg_list_last);
+void		handle_redirect_token(t_cmd *cmd, t_token **tmp_token,
+				t_redir **redir_list_head, t_redir **redir_list_last);
+void		update_token_to_eval(t_token **tmp_token);
+int			calculate_numb_of_args(t_token *tmp_token);
+int			is_redirect_token(t_token *tmp_token);
 
 //ESPECIFICAS NODE OPERADOR
-void	create_op_node(t_token **tmp_token, t_token *head, t_ast **first_node, t_ast **last_node);
+void		create_op_node(t_token **tmp_token,
+				t_token *head, t_ast **first_node, t_ast **last_node);
 
 //DEBUG
-void	print_nodes(t_ast *node);
-void	print_cmd(t_cmd *cmd);
-void	print_redirs(t_redir *redir);
-void	print_args(t_arg *arg);
+void		print_nodes(t_ast *node);
+void		print_cmd(t_cmd *cmd);
+void		print_redirs(t_redir *redir);
+void		print_args(t_arg *arg);
 //FUNCOES DE MEMORIA
-void	free_redirects_list(t_redir *head);
-void	free_args_list(t_arg *head);
-void	free_cmd(t_cmd *cmd);
-void	free_node(t_ast *node);
-void	free_node_list(t_ast *head);
-t_ast	*get_last_node(t_ast *head);
-int		is_empty_or_whitespace(const char *str);
+void		free_redirects_list(t_redir *head);
+void		free_args_list(t_arg *head);
+void		free_cmd(t_cmd *cmd);
+void		free_node(t_ast *node);
+void		free_node_list(t_ast *head);
+t_ast		*get_last_node(t_ast *head);
+int			is_empty_or_whitespace(const char *str);
 
-//----------------------------------------CRIACAO DA ARVORE BINARIA---------------------------------------------------
+//---------------------CRIACAO DA ARVORE BINARIA--------------------------
 
-t_ast	*build_tree(t_ast *start_node, t_ast *end_node);
-t_ast	*build_complete_ast(t_token *head);
-t_ast	*get_split_op_node(t_ast *start_node, t_ast *end_node);
-t_ast	*get_op_node_based_on_type(t_ast *start_node, t_ast *end_node, t_token_type type);
-t_ast	*skip_subtree_nodes(t_ast *tmp_node);
-void	build_sub_trees(t_ast **root_node);
+t_ast		*build_tree(t_ast *start_node, t_ast *end_node);
+t_ast		*build_complete_ast(t_token *head);
+t_ast		*get_split_op_node(t_ast *start_node, t_ast *end_node);
+t_ast		*get_op_node_based_on_type(t_ast *start_node,
+				t_ast *end_node, t_token_type type);
+t_ast		*skip_subtree_nodes(t_ast *tmp_node);
+void		build_sub_trees(t_ast **root_node);
 //DEBUGGERS
-void	print_tree_node(t_ast *node);
-void	print_tree(t_ast *root);
+void		print_tree_node(t_ast *node);
+void		print_tree(t_ast *root);
 //MEMORY
-void	free_tree(t_ast *root);
-void	free_parentesis_nodes(t_ast *start_node, t_ast *left_node);
+void		free_tree(t_ast *root);
+void		free_parentesis_nodes(t_ast *start_node, t_ast *left_node);
 
 /*
 ** ============================================================================
@@ -258,7 +285,7 @@ void	free_parentesis_nodes(t_ast *start_node, t_ast *left_node);
 */
 
 /* validate_token_list.c */
-int		validate_token_list(t_token *head);
+int			validate_token_list(t_token *head);
 
 /*
 ** ============================================================================
@@ -267,21 +294,21 @@ int		validate_token_list(t_token *head);
 */
 
 /* var_expand.c */
-char	*expand_variables(char *str, t_shell *shell);
-void	expand_cmd_args(t_arg *args, t_shell *shell);
-void	expand_redirection_files(t_redir *redirs, t_shell *shell);
-char	*extract_var_name(const char *str);
-char	*get_var_value(const char *var_name, t_shell *shell);
-char	*remove_quotes(const char *str);
-char	*build_expanded(char *str, char *value, char *dollar, size_t len);
-size_t	get_var_len(char *var_name);
+char		*expand_variables(char *str, t_shell *shell);
+void		expand_cmd_args(t_arg *args, t_shell *shell);
+void		expand_redirection_files(t_redir *redirs, t_shell *shell);
+char		*extract_var_name(const char *str);
+char		*get_var_value(const char *var_name, t_shell *shell);
+char		*remove_quotes(const char *str);
+char		*build_expanded(char *str, char *value, char *dollar, size_t len);
+size_t		get_var_len(char *var_name);
 
 /* wildcard.c */
-int		has_wildcard(const char *str);
-char	**expand_wildcard(const char *pattern);
-void	free_wildcard_matches(char **arr);
-char	*join_wildcard_matches(char **matches);
-t_arg	*expand_wildcards_in_args(t_arg *args);
+int			has_wildcard(const char *str);
+char		**expand_wildcard(const char *pattern);
+void		free_wildcard_matches(char **arr);
+char		*join_wildcard_matches(char **matches);
+t_arg		*expand_wildcards_in_args(t_arg *args);
 
 /*
 ** ============================================================================
@@ -290,7 +317,7 @@ t_arg	*expand_wildcards_in_args(t_arg *args);
 */
 
 /* execute_ast.c */
-int		execute_ast(t_ast *node, t_shell *shell);
+int			execute_ast(t_ast *node, t_shell *shell);
 
 /*
 ** ============================================================================
@@ -299,26 +326,26 @@ int		execute_ast(t_ast *node, t_shell *shell);
 */
 
 /* process.c - KAN-53 */
-pid_t	create_process(void);
+pid_t		create_process(void);
 
 /* wait.c - KAN-55 */
-int		wait_for_process(pid_t pid);
-int		wait_for_pipeline(pid_t *pids, int count);
+int			wait_for_process(pid_t pid);
+int			wait_for_pipeline(pid_t *pids, int count);
 /* Pipeline helpers */
-void	configure_stds(int *pipes, int pipe_indice, int numb_of_pipes);
-int		calc_numb_pipes(t_ast *node);
+void		configure_stds(int *pipes, int pipe_indice, int numb_of_pipes);
+int			calc_numb_pipes(t_ast *node);
 
 /* Pipeline execution */
-int		execute_pipeline(t_ast *node, t_shell *shell);
+int			execute_pipeline(t_ast *node, t_shell *shell);
 
 /* exec.c - KAN-54 */
-char	*find_command_in_path(char *cmd, t_env *env);
-int		execute_external_cmd(char **args, t_shell *shell);
+char		*find_command_in_path(char *cmd, t_env *env);
+int			execute_external_cmd(char **args, t_shell *shell);
 
 /* pipes.c - KAN-52 */
-int		*create_pipes(int num_commands);
-void	setup_pipe_fds(int *pipes, int index, int total);
-void	close_all_pipes(int *pipes, int num_pipes);
+int			*create_pipes(int num_commands);
+void		setup_pipe_fds(int *pipes, int index, int total);
+void		close_all_pipes(int *pipes, int num_pipes);
 
 /*
 ** ============================================================================
@@ -326,22 +353,22 @@ void	close_all_pipes(int *pipes, int num_pipes);
 ** ============================================================================
 */
 
-//-----------------------------------------EXECUTER--------------------------------------------------
-int		apply_redirections(t_ast *cmd_node, int heredoc_pipe_read_fd);
-
-void	save_std_fds(int saved_std_fds[2]);
-void	restore_std_fds(int saved_stdin, int saved_stdout);
-void	execute_in_child(t_ast *node, t_shell *shell, int heredoc_pipe_read_fd);
-int		execute_command_node(t_ast *node, t_shell *shell);
-int		cmd_name_is_redir(char *cmd_name);
-int		has_in_redirs(t_redir *redirs);
-int		has_out_redirs(t_redir *redirs);
-char	**prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
-int		handle_heredocs(t_redir *first_redir, t_shell *shell);
-int		has_heredocs(t_redir *first_redir);
-char	*process_heredoc_line(char *line, int expand, t_shell *shell);
-void	write_heredoc_line(int fd, char *line);
-int		execute_ast_in_child(t_ast *node, t_shell *shell);
-int		execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
+//-----------------------------------------EXECUTER--------------------------
+int			apply_redirections(t_ast *cmd_node, int heredoc_pipe_read_fd);		
+void		save_std_fds(int saved_std_fds[2]);
+void		restore_std_fds(int saved_stdin, int saved_stdout);
+void		execute_in_child(t_ast *node, t_shell *shell,
+				int heredoc_pipe_read_fd);
+int			execute_command_node(t_ast *node, t_shell *shell);
+int			cmd_name_is_redir(char *cmd_name);
+int			has_in_redirs(t_redir *redirs);
+int			has_out_redirs(t_redir *redirs);
+char		**prepare_cmd_for_execution(t_cmd *cmd, t_shell *shell);
+int			handle_heredocs(t_redir *first_redir, t_shell *shell);
+int			has_heredocs(t_redir *first_redir);
+char		*process_heredoc_line(char *line, int expand, t_shell *shell);
+void		write_heredoc_line(int fd, char *line);
+int			execute_ast_in_child(t_ast *node, t_shell *shell);
+int			execute_pipe_node_no_wait(t_ast *node, t_shell *shell);
 
 #endif

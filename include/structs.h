@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   structs.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: framiran <framiran@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/19 11:46:23 by framiran          #+#    #+#             */
+/*   Updated: 2026/01/19 11:48:23 by framiran         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef STRUCTS_H
-#define STRUCTS_H
+# define STRUCTS_H
 
-#include <sys/types.h>
+# include <sys/types.h>
 
-//---------------------------------------------------LISTA DE TOKENS--------------------------------------------------------
+//---------------------LISTA DE TOKENS-------------
 typedef enum e_token_type
 {
 	WORD,
@@ -29,11 +41,11 @@ typedef struct s_token
 	t_token_type	type;
 	struct s_token	*next;
 }	t_token;
-//--------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------
 
-//--------------------------------------------------------LISTA DE NODES-------------------------------------------------
+//--------------LISTA DE NODES-----------
 
-// -------------------ESTRUTURA DA LISTA DE REDIRECTS-----------------------
+// -----ESTRUTURA DA LISTA DE REDIRECTS--------
 
 typedef struct s_redir
 {
@@ -44,7 +56,7 @@ typedef struct s_redir
 	struct s_redir	*next;
 }	t_redir;
 
-//------------------ESTRUTURA DA LISTA DE ARGUMENTOS---------------------
+//-----ESTRUTURA DA LISTA DE ARGUMENTOS-----
 
 typedef struct s_arg
 {
@@ -55,7 +67,7 @@ typedef struct s_arg
 	struct s_arg	*next;
 }	t_arg;
 
-//-------------------ESTRUTURA DO COMANDO----------------------------------------
+//------------ESTRUTURA DO COMANDO---------
 typedef struct s_cmd
 {
 	char	*cmd_name;
@@ -63,7 +75,7 @@ typedef struct s_cmd
 	t_redir	*redirs;
 }	t_cmd;
 
-//-------------------ESTRUTURA DO NODE--------------------------------------------
+//----------ESTRUTURA DO NODE--------
 
 typedef struct s_ast
 {
@@ -73,11 +85,11 @@ typedef struct s_ast
 	int				is_expandable;
 	t_cmd			*cmd;
 }	t_ast;
-//---------------------------------------------------------------------------------
+//-----------------------------------
 
 typedef struct s_shell	t_shell;
 
-//-------------------PIPELINE CONTEXT STRUCTURE-----------------------------------
+//-----PIPELINE CONTEXT STRUCTURE----------
 typedef struct s_pipe_ctx
 {
 	int			*pipes;
