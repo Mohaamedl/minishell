@@ -276,7 +276,6 @@ bash tests/phase1/test_exit.sh    # 17/17 passing
 ```bash
 # AST parser tests (expect failures - tests bonus features)
 bash parser_tests/ast_tests/run_tests.sh
-# Note: These test AND/OR operators not yet implemented
 ```
 
 ### Memory Leak Testing
@@ -321,38 +320,6 @@ User Input → Tokenization → Node List → AST Building → Execution
 - **Compilation**: Zero warnings with `-Wall -Wextra -Werror`
 - **Memory Leaks**: None (excluding readline)
 - **Files**: 41 C source files across 10 modules
-
-## 🐛 Known Issues & Next Steps
-
-### Next Steps (Priority Order)
-1. **External Command Execution** (src/ast/execute_ast.c:85)
-   - Implement PATH search
-   - Add execve for external commands
-   - Handle command not found errors
-
-2. **Pipeline Implementation** (src/ast/execute_ast.c:113)
-   - Add fork/pipe/dup2 logic
-   - Connect stdout/stdin between commands
-   - Wait for all processes
-
-3. **Redirection Execution**
-   - Implement file opening (`<`, `>`, `>>`)
-   - Add heredoc processing (`<<`)
-   - dup2 for file descriptor manipulation
-
-4. **Quote Processing**
-   - Remove quotes from arguments
-   - Handle escaped characters
-
-5. **Variable Expansion**
-   - Implement `$VAR` expansion
-   - Add `$?` for exit status
-   - Handle unset variables
-
-### Known Limitations
-1. **Readline Memory**: Minimal leaks ignored per subject
-2. **Parser Tests**: 0/7 passing (test bonus features)
-3. **Advanced Bash**: Not in scope (aliases, job control, history expansion)
 
 
 ## 📖 Resources
