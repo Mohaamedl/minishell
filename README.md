@@ -44,16 +44,16 @@ Minishell is a 42 school project that challenges students to create their own si
 - ✅ **AST Parser**: Complete syntax tree construction
 - ✅ **Execution Engine**: Command execution via AST traversal
 - ✅ **Interactive/Non-interactive** mode detection
-- ⚠️ **Pipes**: Basic structure (sequential execution, needs fork/pipe/dup2)
-- ⚠️ **Redirections**: Parsed but not executed (`<`, `>`, `<<`, `>>`)
-- ❌ **External commands**: PATH resolution not implemented
-- ❌ **Quote processing**: Quotes detected but not removed/processed
+-  **Pipes**: Basic structure (sequential execution, needs fork/pipe/dup2)
+-  **Redirections**: Parsed but not executed (`<`, `>`, `<<`, `>>`)
+-  **External commands**: PATH resolution not implemented
+-  **Quote processing**: Quotes detected but not removed/processed
 - ✅ **Variable expansion**: `$VAR`, `$?` fully implemented (18 tests passing)
 
 ### Bonus Features (Planned)
-- ⚠️ **Logical operators**: `&&`, `||` (parsed, placeholder implementation)
-- ⚠️ **Parentheses**: `()` grouping (parsed, not executed)
-- ❌ **Wildcards**: `*` expansion not implemented
+-  **Logical operators**: `&&`, `||` (parsed, placeholder implementation)
+-  **Parentheses**: `()` grouping (parsed, not executed)
+-  **Wildcards**: `*` expansion not implemented
 
 ## 🏗️ Architecture
 
@@ -309,70 +309,10 @@ User Input → Tokenization → Node List → AST Building → Execution
 4. Construct binary AST (PIPE, AND, OR as internal nodes)
 5. Execute AST recursively
    - Built-in: Execute directly
-   - External: TODO - PATH search + execve
-   - Pipes: TODO - fork/pipe/dup2
+   - External: PATH search + execve
+   - Pipes: fork/pipe/dup2
 ```
 
-### 4. What Works vs What Doesn't
-
-**✅ Fully Working:**
-- All 7 builtins with comprehensive validation
-- Environment variable management
-- Signal handling (Ctrl-C, Ctrl-D, Ctrl-\)
-- Tokenization with quote detection
-- AST construction
-- Basic execution engine
-
-**⚠️ Partially Implemented:**
-- Pipes: Structure exists, sequential execution only
-- Redirections: Parsed but not executed
-- AND/OR operators: Parsed, placeholder execution
-
-**❌ Not Implemented:**
-- External command execution (PATH search, execve)
-- Quote removal and processing
-- Variable expansion ($VAR, $?)
-- Actual pipe/fork/dup2 implementation
-- Redirection file operations
-
-## 🎓 Development Status
-
-**Current Phase**: Execution Integration (80% Complete)
-
-### ✅ Phase 1: Foundation (Complete)
-- Environment management
-- Signal handling
-- Utility functions
-- Project structure
-
-### ✅ Phase 2: Parsing (Complete)
-- Lexical analysis (tokenizer)
-- Syntax tree construction (AST)
-- Token validation
-
-### ✅ Phase 3: Built-ins (Complete - 100%)
-- All 7 built-in commands implemented and tested
-- 113/113 tests passing
-- Comprehensive error handling
-
-### ⚠️ Phase 4: Execution (In Progress - 40%)
-- ✅ Builtin command routing and execution
-- ✅ AST traversal engine
-- ⚠️ External command execution (TODO)
-- ⚠️ Pipeline execution (placeholder)
-- ❌ I/O redirections (parsed only)
-- ❌ Heredoc execution
-
-### ⏸️ Phase 5: Integration & Testing (Pending)
-- Integration testing
-- Memory leak fixes
-- Bash compatibility testing
-- Edge case handling
-
-### ⏸️ Phase 6: Bonus (Planned)
-- Logical operators (AND/OR parsed)
-- Parentheses grouping (parsed)
-- Wildcard expansion
 
 ## 📊 Project Metrics
 
@@ -414,22 +354,12 @@ User Input → Tokenization → Node List → AST Building → Execution
 2. **Parser Tests**: 0/7 passing (test bonus features)
 3. **Advanced Bash**: Not in scope (aliases, job control, history expansion)
 
-## 🤝 Team Collaboration
-
-See [COLLABORATION.md](docs/COLLABORATION.md) for Git workflow and code review guidelines.
 
 ## 📖 Resources
 
 ### Official Documentation
-- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/) - Complete bash documentation
-- [GNU Readline Library](https://tiswww.case.edu/php/chet/readline/rltop.html) - Readline documentation for command-line editing
-- [POSIX Shell Command Language](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html) - POSIX standards
-
-### Useful Guides & Tutorials
-- [Process Management in Unix](https://www.geeksforgeeks.org/process-management-in-unix/) - Understanding fork, exec, and wait
 - [File Descriptors Explained](https://www.bottomupcs.com/file_descriptors.xhtml) - Deep dive into file descriptors
 - [Signal Handling in C](https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html) - Signal handling concepts
-- [Building a Shell in C](https://brennan.io/2015/01/16/write-a-shell-in-c/) - Tutorial on shell implementation
 - [Pipes, Forks, and Dups](https://www.rozmichelle.com/pipes-forks-dups/) - Understanding pipes and redirection
 
 ### Articles & Learning Resources
@@ -438,87 +368,8 @@ See [COLLABORATION.md](docs/COLLABORATION.md) for Git workflow and code review g
 - [Unix Shells Tutorial](https://www.tutorialspoint.com/unix/unix-shell.htm) - Unix shell basics
 
 ### 42 Resources
-- [42 Norm](https://github.com/42School/norminette) - Code style checker
-- [Minishell Subject](https://cdn.intra.42.fr/pdf/pdf/960/minishell.en.pdf) - Official project subject
-- [Testing Guide](docs/TESTING.md) - Project testing documentation
-
-### AI Usage Description
-
-**AI tools were used in this project for the following purposes:**
-
-1. **Code Structure and Architecture Planning**
-   - Helped design the modular architecture (tokenizer, parser, AST, executor)
-   - Suggested separation of concerns and directory organization
-   - Provided guidance on data structure design (tokens, nodes, AST)
-
-2. **Debugging and Error Resolution**
-   - Assisted in identifying memory leaks and fixing them
-   - Helped debug complex parsing edge cases
-   - Provided suggestions for signal handling issues
-
-3. **Documentation**
-   - Helped structure and format README.md, ARCHITECTURE.md, and other documentation
-   - Assisted in creating clear code comments
-   - Generated test documentation templates
-
-4. **Research and Learning**
-   - Explained Unix system calls (fork, execve, pipe, dup2)
-   - Clarified bash behavior for edge cases
-   - Provided examples of proper signal handling patterns
-
-5. **Code Review and Optimization**
-   - Suggested improvements for code readability
-   - Helped identify potential bugs and edge cases
-   - Provided alternative implementation approaches
-
-**Parts NOT written by AI:**
-- Core algorithm implementations (tokenizer, parser, AST builder, executor)
-- Built-in commands implementation
-- All test cases and test suite
-- Project-specific business logic and shell behavior
-- Memory management and cleanup functions
-
-**Note:** All AI-generated suggestions were reviewed, tested, and adapted to fit the project requirements and 42 Norm standards. The final implementation reflects our understanding and coding decisions.
-
-## 🔍 Current Test Results
-
-### ✅ Builtin Tests: 113/113 (100%)
-```
-echo:   24/24 ✅
-pwd:    12/12 ✅
-cd:     20/20 ✅
-env:    11/11 ✅
-export: 16/16 ✅
-unset:  13/13 ✅
-exit:   17/17 ✅
-```
-
-### ⏸️ Parser Tests: 0/7 (Bonus Features)
-```
-AND operators:  Not implemented
-OR operators:   Not implemented
-Parentheses:    Not implemented
-```
-
-### 📋 Integration Tests: Pending
-- External commands
-- Pipes
-- Redirections
-- Complex command chains
-
-**Note**: Bonus is only evaluated if mandatory part is perfect!
-
-## 👥 Authors
-
-- [Your Name]
-- [Colleague Name]
-
-## 📜 License
-
-This project is part of the 42 school curriculum.
-
-## 🙏 Acknowledgments
-
+- [42 Norm](https://github.com/42School/norminette) - Code style c
+## 🙏 Acknowle
 - 42 Network for the project subject
 - Bash developers for inspiration
 - Peers for discussions and testing
