@@ -1,10 +1,12 @@
+*This project has been created as part of the 42 curriculum by framiran and mhaddadi.*
+
 # 🐚 Minishell - A Simple Shell Implementation
 
 [![42 Project](https://img.shields.io/badge/42-Project-blue)](https://42.fr)
 [![Norminette](https://img.shields.io/badge/Norminette-passing-brightgreen)]()
 [![Language](https://img.shields.io/badge/Language-C-orange)]()
 
-## 📖 Overview
+## 📖 Description
 
 Minishell is a 42 school project that challenges students to create their own simplified version of bash. This project provides deep insights into:
 
@@ -55,104 +57,142 @@ Minishell is a 42 school project that challenges students to create their own si
 
 ## 🏗️ Architecture
 
-### Current Project Structure (Actual)
+### Project Folder and File Structure
 
 ```
 minishell/
-├── 📁 include/          # Header files
-│   ├── minishell.h      # Main header (function prototypes)
-│   └── minishell_backup.h
+├── 📁 include/              # Header files
+│   ├── minishell.h           # Main header with function prototypes
+│   └── structs.h             # Data structure definitions
 │
-├── 📁 src/              # Source files (41 files, ~3,200 LOC)
-│   ├── main.c           # ✅ Entry point and REPL loop
-│   ├── main_helpers.c   # ✅ Helper functions
-│   ├── init.c           # ✅ Shell initialization
-│   ├── cleanup.c        # ✅ Resource cleanup
-│   ├── parser_simple.c  # Temporary simple parser
+├── 📁 src/                   # Source files (~68 files)
+│   ├── main.c                # Entry point and REPL loop
+│   ├── main_helpers.c        # Main helper functions
+│   ├── init.c                # Shell initialization
+│   ├── cleanup.c             # Resource cleanup
 │   │
-│   ├── 📁 environment/  # ✅ Environment management (4 files)
-│   │   ├── env_init.c   # Initialize from envp
-│   │   ├── env_get.c    # Get/find variables
-│   │   ├── env_set.c    # Set/unset variables
-│   │   └── env_utils.c  # List conversion, utilities
+│   ├── 📁 environment/       # Environment management (4 files)
+│   │   ├── env_init.c         # Initialize environment from envp
+│   │   ├── env_get.c          # Get/find environment variables
+│   │   ├── env_set.c          # Set/unset environment variables
+│   │   └── env_utils.c        # Environment utilities
 │   │
-│   ├── 📁 signals/      # ✅ Signal handling (1 file)
-│   │   └── signals.c    # SIGINT, SIGQUIT, EOF
+│   ├── 📁 signals/           # Signal handling (2 files)
+│   │   ├── signals.c          # SIGINT, SIGQUIT, EOF handling
+│   │   └── signals_heredoc.c  # Heredoc signal handling
 │   │
-│   ├── 📁 parser/       # ✅ Tokenization & parsing
-│   │   └── tokenizer/   # (5 files)
-│   │       ├── tokenizer.c          # Main tokenizer
-│   │       ├── tokenizer_helpers.c  # Helper functions
-│   │       ├── type_handlers.c      # Token type handlers
-│   │       ├── token_memory.c       # Memory management
-│   │       └── validate_token_list.c # Validation
+│   ├── 📁 tokenizer/         # Lexical analysis (11 files)
+│   │   ├── tokenizer.c                    # Main tokenizer
+│   │   ├── create_token.c                 # Token creation
+│   │   ├── create_token_helpers.c         # Token helpers
+│   │   ├── tokenizer_helpers.c            # Tokenizer utilities
+│   │   ├── token_memory.c                 # Token memory management
+│   │   ├── handle_word_token.c            # Word token handling
+│   │   ├── handle_redirection_token.c     # Redirection token handling
+│   │   ├── handle_operator_token.c        # Operator token handling
+│   │   ├── handle_special_token.c         # Special token handling
+│   │   ├── validate_token_list.c          # Token validation
+│   │   └── validate_token_list_helpers.c  # Validation helpers
 │   │
-│   ├── 📁 ast/          # ✅ Abstract Syntax Tree (5 files)
-│   │   ├── build_tree.c        # Build binary tree from nodes
-│   │   ├── build_tree_helpers.c # Tree building utilities
-│   │   ├── ast_memory.c        # AST cleanup
-│   │   ├── ast_debuggers.c     # Tree visualization
-│   │   └── execute_ast.c       # ✅ **NEW** Execution engine
+│   ├── 📁 cmd_and_ops_list/  # Command/operator list (5 files)
+│   │   ├── build_list.c                 # Build node list from tokens
+│   │   ├── create_cmd_node.c            # Command node creation
+│   │   ├── create_cmd_node_helpers.c    # Command node helpers
+│   │   ├── create_op_node.c             # Operator node creation
+│   │   └── node_memory.c                # Node memory management
 │   │
-│   ├── 📁 cmd_and_ops_list/ # ✅ Command/operator list (5 files)
-│   │   ├── build_list.c             # Build node list
-│   │   ├── create_cmd_node.c        # Command nodes
-│   │   ├── create_cmd_node_helpers.c # Command helpers
-│   │   ├── create_op_node.c         # Operator nodes
-│   │   └── node_memory.c            # Memory management
+│   ├── 📁 ast/               # Abstract Syntax Tree (5 files)
+│   │   ├── build_tree.c               # Build binary tree from nodes
+│   │   ├── build_tree_helpers.c       # Tree building helpers
+│   │   ├── build_complete_ast.c       # Complete AST construction
+│   │   ├── ast_memory.c               # AST memory management
+│   │   └── ast_debuggers.c            # Tree visualization/debugging
 │   │
-│   ├── 📁 builtins/     # ✅ Built-in commands (8 files)
-│   │   ├── builtin_utils.c  # Command dispatcher
-│   │   ├── echo.c           # echo with -n
-│   │   ├── cd.c             # cd with HOME/OLDPWD
-│   │   ├── pwd.c            # pwd implementation
-│   │   ├── export.c         # export with validation
-│   │   ├── unset.c          # unset implementation
-│   │   ├── env.c            # env display
-│   │   └── exit.c           # exit with validation
+│   ├── 📁 expander/          # Variable expansion (7 files)
+│   │   ├── var_expand.c               # Variable expansion ($VAR, $?)
+│   │   ├── get_var_value.c            # Get variable values
+│   │   ├── one_var_expand_helpers.c   # Expansion helpers
+│   │   ├── wildcard.c                 # Wildcard detection
+│   │   ├── wildcard_match.c           # Pattern matching
+│   │   ├── wildcard_expand.c          # Wildcard expansion
+│   │   └── wildcard_args.c            # Wildcard argument handling
 │   │
-│   ├── 📁 expander/     # ✅ **NEW** Variable expansion (1 file)
-│   │   └── var_expand.c     # $VAR and $? expansion
+│   ├── 📁 execution/         # Command execution (10 files)
+│   │   ├── execute_ast.c              # AST execution engine
+│   │   ├── execute_cmd.c              # Command execution
+│   │   ├── execute_cmd_helpers.c      # Command execution helpers
+│   │   ├── pipeline_execution.c       # Pipeline execution
+│   │   ├── pipeline_traversal.c       # Pipeline traversal
+│   │   ├── pipeline_helpers.c         # Pipeline utilities
+│   │   ├── apply_redirections.c       # Apply redirections
+│   │   ├── handle_redirections.c      # Redirection handling
+│   │   ├── heredoc.c                  # Heredoc implementation
+│   │   └── heredoc_utils.c            # Heredoc utilities
 │   │
-│   ├── 📁 debuggers/    # ✅ Debug utilities (2 files)
-│   │   ├── print_tokens.c   # Token visualization
-│   │   └── print_nodes.c    # Node/tree visualization
+│   ├── 📁 process/           # Process management (5 files)
+│   │   ├── process.c          # Process creation (fork)
+│   │   ├── wait.c             # Wait for processes
+│   │   ├── exec.c             # Execute commands (execve)
+│   │   ├── pipes.c            # Pipe creation and setup
+│   │   └── pipes_utils.c      # Pipe utilities
 │   │
-│   └── 📁 utils/        # ✅ Utility functions (6 files)
-│       ├── error.c          # Error handling
-│       ├── string_utils.c   # String operations
-│       ├── string_utils2.c  # Additional string utils
-│       ├── number_utils.c   # Number parsing
-│       ├── memory_utils.c   # Memory operations
-│       └── ft_split.c       # String splitting
+│   ├── 📁 builtins/          # Built-in commands (8 files)
+│   │   ├── builtin_utils.c    # Builtin dispatcher and utilities
+│   │   ├── echo.c             # echo with -n option
+│   │   ├── cd.c               # cd with HOME/OLDPWD support
+│   │   ├── pwd.c              # pwd implementation
+│   │   ├── export.c           # export with validation
+│   │   ├── unset.c            # unset implementation
+│   │   ├── env.c              # env display
+│   │   └── exit.c             # exit with validation
+│   │
+│   ├── 📁 debuggers/         # Debug utilities (2 files)
+│   │   ├── print_tokens.c     # Token visualization
+│   │   └── print_nodes.c      # Node/tree visualization
+│   │
+│   └── 📁 utils/             # Utility functions (7 files)
+│       ├── error.c            # Error handling
+│       ├── string_utils.c     # String operations
+│       ├── string_utils2.c    # Additional string utilities
+│       ├── char_utils.c       # Character utilities
+│       ├── number_utils.c     # Number parsing/validation
+│       ├── memory_utils.c     # Memory operations
+│       └── ft_split.c         # String splitting
 │
-├── 📁 Libft/            # ✅ 42's standard library (43 functions)
+├── 📁 Libft/                 # 42's standard library (43+ functions)
+│   ├── Makefile
+│   ├── libft.h
+│   └── ft_*.c                 # Standard functions (strlen, strcmp, etc.)
 │
-├── 📁 tests/phase1/     # ✅ Comprehensive test suite (14 files)
-│   ├── run_all_tests.sh # Master test runner
-│   ├── test_echo.sh     # 24 tests
-│   ├── test_pwd.sh      # 12 tests
-│   ├── test_cd.sh       # 20 tests
-│   ├── test_env.sh      # 11 tests
-│   ├── test_export.sh   # 16 tests
-│   ├── test_unset.sh    # 13 tests
-│   ├── test_exit.sh     # 17 tests
-│   └── test_expansion.sh # ✅ **NEW** 18 tests
+├── 📁 tests/                 # Test suite
+│   ├── run_all_tests.sh       # Master test runner
+│   ├── phase1/                # Builtin tests (113 tests)
+│   ├── tokenizer/             # Tokenizer tests
+│   ├── parser/                # Parser tests
+│   ├── ast/                   # AST tests
+│   ├── expander/              # Expansion tests
+│   ├── executor/              # Execution tests
+│   ├── redirections/          # Redirection tests
+│   ├── integration/           # Integration tests
+│   └── bonus/                 # Bonus feature tests
 │
-├── 📁 parser_tests/ast_tests/ # Parser tests (bonus features)
+├── 📁 docs/                  # Documentation
+│   ├── ARCHITECTURE.md        # Architecture documentation
+│   ├── COLLABORATION.md       # Git workflow and collaboration
+│   ├── TESTING.md             # Testing guidelines
+│   ├── WORKFLOW_DIAGRAM.md    # Workflow diagrams
+│   ├── MODULAR_DIAGRAMS.md    # Module diagrams
+│   ├── PROJECT_STATUS.md      # Project progress tracking
+│   ├── EXECUTION_PLAN.md      # Execution implementation plan
+│   ├── MEMORY_FD_MANAGEMENT.md # Memory and FD management
+│   └── JIRA_STATUS.md         # Task tracking
 │
-├── 📁 docs/             # ✅ Documentation (5 files)
-│   ├── ARCHITECTURE.md
-│   ├── COLLABORATION.md
-│   ├── MODULAR_DIAGRAMS.md
-│   ├── TESTING.md
-│   └── WORKFLOW_DIAGRAM.md
+├── 📁 .github/               # GitHub configurations
 │
-├── structs.h            # ✅ Core data structures
-├── minishell.h          # ✅ Function prototypes
-├── PROJECT_STATUS.md    # ✅ Detailed progress tracking
-├── Makefile             # ✅ Build system
-└── README.md            # This file
+├── Makefile                  # Build system
+├── README.md                 # This file
+├── TODO.md                   # Task list
+└── .gitignore                # Git ignore rules
 ```
 
 ### Key Statistics
@@ -161,7 +201,7 @@ minishell/
 - **Test Coverage**: 113 comprehensive tests (100% passing)
 - **Compilation**: Clean with `-Wall -Wextra -Werror`
 
-## 🚀 Getting Started
+## 📋 Instructions
 
 ### Prerequisites
 
@@ -169,11 +209,11 @@ minishell/
 - GNU Make
 - readline library (`libreadline-dev` on Ubuntu/Debian)
 
-### Installation
+### Installation & Compilation
 
 ```bash
 # Clone the repository
-git clone <your-repo-url> minishell
+git clone https://github.com/Mohaamedl/minishell.git
 cd minishell
 
 # Install readline library (if needed)
@@ -188,14 +228,32 @@ make
 ./minishell
 ```
 
-### Building
+### Compilation Commands
 
 ```bash
 make          # Build the project
 make clean    # Remove object files
 make fclean   # Remove all generated files
 make re       # Rebuild everything
+make norm     # Check 42 norm compliance
+make test     # Run test suite
 ```
+
+### Execution
+
+To start the minishell:
+```bash
+./minishell
+```
+
+The shell will display a prompt where you can enter commands. It supports:
+- Built-in commands (echo, cd, pwd, export, unset, env, exit)
+- External commands with PATH resolution
+- Pipes (`|`)
+- Redirections (`<`, `>`, `<<`, `>>`)
+- Environment variable expansion (`$VAR`, `$?`)
+- Signal handling (Ctrl-C, Ctrl-D, Ctrl-\)
+- Logical operators (`&&`, `||`)
 
 ## 🧪 Testing
 
@@ -363,17 +421,64 @@ See [COLLABORATION.md](docs/COLLABORATION.md) for Git workflow and code review g
 ## 📖 Resources
 
 ### Official Documentation
-- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/)
-- [GNU Readline Library](https://tiswww.case.edu/php/chet/readline/rltop.html)
+- [Bash Reference Manual](https://www.gnu.org/software/bash/manual/) - Complete bash documentation
+- [GNU Readline Library](https://tiswww.case.edu/php/chet/readline/rltop.html) - Readline documentation for command-line editing
+- [POSIX Shell Command Language](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html) - POSIX standards
 
-### Useful Guides
-- [Process Management in Unix](https://www.geeksforgeeks.org/process-management-in-unix/)
-- [File Descriptors Explained](https://www.bottomupcs.com/file_descriptors.xhtml)
-- [Signal Handling in C](https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html)
+### Useful Guides & Tutorials
+- [Process Management in Unix](https://www.geeksforgeeks.org/process-management-in-unix/) - Understanding fork, exec, and wait
+- [File Descriptors Explained](https://www.bottomupcs.com/file_descriptors.xhtml) - Deep dive into file descriptors
+- [Signal Handling in C](https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html) - Signal handling concepts
+- [Building a Shell in C](https://brennan.io/2015/01/16/write-a-shell-in-c/) - Tutorial on shell implementation
+- [Pipes, Forks, and Dups](https://www.rozmichelle.com/pipes-forks-dups/) - Understanding pipes and redirection
+
+### Articles & Learning Resources
+- [How does a shell work?](https://github.com/tokenrove/build-your-own-shell) - Shell internals
+- [Write a Shell in C](https://danishpraka.sh/posts/write-a-shell/) - Step-by-step guide
+- [Unix Shells Tutorial](https://www.tutorialspoint.com/unix/unix-shell.htm) - Unix shell basics
 
 ### 42 Resources
-- [42 Norm](https://github.com/42School/norminette)
-- [Testing Guide](docs/TESTING.md)
+- [42 Norm](https://github.com/42School/norminette) - Code style checker
+- [Minishell Subject](https://cdn.intra.42.fr/pdf/pdf/960/minishell.en.pdf) - Official project subject
+- [Testing Guide](docs/TESTING.md) - Project testing documentation
+
+### AI Usage Description
+
+**AI tools were used in this project for the following purposes:**
+
+1. **Code Structure and Architecture Planning**
+   - Helped design the modular architecture (tokenizer, parser, AST, executor)
+   - Suggested separation of concerns and directory organization
+   - Provided guidance on data structure design (tokens, nodes, AST)
+
+2. **Debugging and Error Resolution**
+   - Assisted in identifying memory leaks and fixing them
+   - Helped debug complex parsing edge cases
+   - Provided suggestions for signal handling issues
+
+3. **Documentation**
+   - Helped structure and format README.md, ARCHITECTURE.md, and other documentation
+   - Assisted in creating clear code comments
+   - Generated test documentation templates
+
+4. **Research and Learning**
+   - Explained Unix system calls (fork, execve, pipe, dup2)
+   - Clarified bash behavior for edge cases
+   - Provided examples of proper signal handling patterns
+
+5. **Code Review and Optimization**
+   - Suggested improvements for code readability
+   - Helped identify potential bugs and edge cases
+   - Provided alternative implementation approaches
+
+**Parts NOT written by AI:**
+- Core algorithm implementations (tokenizer, parser, AST builder, executor)
+- Built-in commands implementation
+- All test cases and test suite
+- Project-specific business logic and shell behavior
+- Memory management and cleanup functions
+
+**Note:** All AI-generated suggestions were reviewed, tested, and adapted to fit the project requirements and 42 Norm standards. The final implementation reflects our understanding and coding decisions.
 
 ## 🔍 Current Test Results
 
