@@ -44,16 +44,16 @@ Minishell is a 42 school project that challenges students to create their own si
 - ✅ **AST Parser**: Complete syntax tree construction
 - ✅ **Execution Engine**: Command execution via AST traversal
 - ✅ **Interactive/Non-interactive** mode detection
--  **Pipes**: Basic structure (sequential execution, needs fork/pipe/dup2)
--  **Redirections**: Parsed but not executed (`<`, `>`, `<<`, `>>`)
--  **External commands**: PATH resolution not implemented
--  **Quote processing**: Quotes detected but not removed/processed
-- ✅ **Variable expansion**: `$VAR`, `$?` fully implemented (18 tests passing)
+- ✅ **Pipes**: Basic structure (sequential execution, needs fork/pipe/dup2)
+- ✅ **Redirections**: (`<`, `>`, `<<`, `>>`)
+- ✅ **External commands**: PATH resolution
+- ✅ **Quote processing**: Quotes detection
+- ✅ **Variable expansion**: `$VAR`, `$?`
 
-### Bonus Features (Planned)
--  **Logical operators**: `&&`, `||` (parsed, placeholder implementation)
--  **Parentheses**: `()` grouping (parsed, not executed)
--  **Wildcards**: `*` expansion not implemented
+### Bonus Features
+- ✅ **Logical operators**: `&&`, `||`
+- ✅ **Parentheses**: `()` grouping
+- ✅ **Wildcards**: `*` expansion
 
 ## 🏗️ Architecture
 
